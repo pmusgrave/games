@@ -176,7 +176,6 @@ int TicTacToe::checkIfWon(){
             gameWon = true;
             return 2;
         }
-        else return 0;
     }
 
     for (int i = 0; i<=3; i++){
@@ -190,7 +189,6 @@ int TicTacToe::checkIfWon(){
             gameWon = true;
             return 2;
         }
-        else return 0;
     }
     if (board[0][0] == board[1][1] && board[0][0] == board[2][2] && board[0][0] == 1){
         QMessageBox::information(NULL,"Winner","Player 1 wins!");
@@ -214,7 +212,7 @@ int TicTacToe::checkIfWon(){
         gameWon = true;
         return 2;
     }
-    else return 0;
+if (gameWon == false) return 0;
 
 
 }
