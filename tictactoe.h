@@ -19,8 +19,9 @@ private:
     Ui::TicTacToe *ui;
     int turn;
     int board[3][3];
+    bool gameWon;
     void ItemSetup();
-    bool checkIfWon();
+    int checkIfWon();
     void changePlayer();    
 
 public slots:    
