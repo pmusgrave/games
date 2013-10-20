@@ -15,7 +15,7 @@ void TicTacToe::ItemSetup(){
 }
 
 void TicTacToe::changeSquare(){
-    std::cout << "testing" << '\n';
+    ui->pushButton->setText("X");
 }
 
 TicTacToe::~TicTacToe()
