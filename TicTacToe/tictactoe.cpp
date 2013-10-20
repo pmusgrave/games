@@ -17,6 +17,13 @@ void TicTacToe::ItemSetup(){
 void TicTacToe::changeSquare(){
     ui->pushButton->setText("X");
 }
+bool checkIfWon(){
+
+}
+
+void changePlayer(){
+
+}
 
 TicTacToe::~TicTacToe()
 {

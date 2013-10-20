@@ -14,15 +14,16 @@ class TicTacToe : public QMainWindow
 public:
     explicit TicTacToe(QWidget *parent = 0);
     ~TicTacToe();
-    int turns;
 
 private:
     Ui::TicTacToe *ui;
+    int turn;
     void ItemSetup();
+    bool checkIfWon();
+    void changePlayer();
 
 public slots:
     void changeSquare();
-
 };
 
 #endif // TICTACTOE_H
