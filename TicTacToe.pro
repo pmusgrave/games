@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2013-10-19T18:50:49
+# Project created by QtCreator 2013-10-19T20:20:03
 #
 #-------------------------------------------------
 
@@ -13,8 +13,8 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        tictactoe.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += tictactoe.h
 
-FORMS    += mainwindow.ui
+FORMS    += tictactoe.ui
