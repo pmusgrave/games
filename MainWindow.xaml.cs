@@ -20,6 +20,7 @@ namespace chess
     /// </summary>
     public partial class MainWindow : Window
     {
+
         public MainWindow()
         {
             InitializeComponent();
@@ -31,19 +32,28 @@ namespace chess
                     Button new_button = new Button();
                     new_button.Width = 100;
                     new_button.Height = 100;
+                    new_button.FontSize = 60;
 
                     Grid.SetRow(new_button, i);
                     Grid.SetColumn(new_button, j);
-                    ChessBoard.Children.Add(new_button);
+                    ChessBoardGrid.Children.Add(new_button);
                 }
             }
 
             Game game = new Game();
-            while(game.State == "In Progress")
+            Board board = new Board(this, game);
+            /*while(game.State == "In Progress")
             {
 
             }
-            MessageBox.Show("Player {0} wins!", game.Winner);
+            if (game.Winner != null)
+            {
+                MessageBox.Show("Player {0} wins!", game.Winner.Color);
+            }
+            else
+            {
+                MessageBox.Show("Stalemate!");
+            }*/
         }
     }
 }

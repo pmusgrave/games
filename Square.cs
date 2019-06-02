@@ -2,12 +2,12 @@
 {
     public class Square
     {
-        public Square(int rank, char file)
+        public Square(int rank, int file)
         {
             Rank = rank;
             File = file;
         }
         public int Rank { get; set; }
-        public char File { get; set; }
+        public int File { get; set; }
     }
 }

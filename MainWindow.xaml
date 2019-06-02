@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:chess"
         mc:Ignorable="d"
         Title="Chess" Height="860" Width="850">
-    <Grid Name="ChessBoard" Height="800" Width="800">
+    <Grid Name="ChessBoardGrid" Height="800" Width="800">
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
             <RowDefinition Height="100"/>

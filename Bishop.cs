@@ -8,11 +8,15 @@ namespace chess
 {
     class Bishop : Piece
     {
-        public Bishop(Square position)
+        public Bishop(Square position, string color)
         {
             Position = position;
+            Color = color;
+            Content = Color == "White" ? "\u2657" : "\u265D";
         }
         public Square Position { get; set; }
+        public string Content { get; set; }
+        public string Color { get; set; }
         public void Capture(Piece target)
         {
             throw new NotImplementedException();

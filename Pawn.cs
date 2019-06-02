@@ -8,13 +8,16 @@ namespace chess
 {
     class Pawn : Piece
     {
-        public Pawn(Square position)
+        public Pawn(Square position, string color)
         {
             Position = position;
-            FirstMove = true;
+            Color = color;
+            Content = Color == "White" ? "\u2659": "\u265F";
         }
         public Square Position { get; set; }
-        bool FirstMove { get; set; }
+        public string Content { get; set; }
+        public string Color { get; set; }
+        public bool FirstMove { get; set; }
         public void Capture(Piece target)
         {
             throw new NotImplementedException();

@@ -5,25 +5,50 @@
         public Player(string color)
         {
             Color = color;
-            ActivePieces = new Piece[16] 
+            if (Color == "White")
             {
-                new King(new Square(0,'e')),
-                new Queen(new Square(0,'d')),
-                new Rook(new Square(0,'a')),
-                new Rook(new Square(0,'h')),
-                new Bishop(new Square(0,'c')),
-                new Bishop(new Square(0,'f')),
-                new Knight(new Square(0,'b')),
-                new Knight(new Square(0,'g')),
-                new Pawn(new Square(1,'a')),
-                new Pawn(new Square(1,'b')),
-                new Pawn(new Square(1,'c')),
-                new Pawn(new Square(1,'d')),
-                new Pawn(new Square(1,'e')),
-                new Pawn(new Square(1,'f')),
-                new Pawn(new Square(1,'g')),
-                new Pawn(new Square(1,'h')),
-            };
+                ActivePieces = new Piece[16]
+                {
+                    new King(new Square(7,4), color),
+                    new Queen(new Square(7,3), color),
+                    new Rook(new Square(7,0), color),
+                    new Rook(new Square(7,7), color),
+                    new Bishop(new Square(7,2), color),
+                    new Bishop(new Square(7,5), color),
+                    new Knight(new Square(7,1), color),
+                    new Knight(new Square(7,6), color),
+                    new Pawn(new Square(6,0), color),
+                    new Pawn(new Square(6,1), color),
+                    new Pawn(new Square(6,2), color),
+                    new Pawn(new Square(6,3), color),
+                    new Pawn(new Square(6,4), color),
+                    new Pawn(new Square(6,5), color),
+                    new Pawn(new Square(6,6), color),
+                    new Pawn(new Square(6,7), color),
+                };
+            }
+            else
+            {
+                ActivePieces = new Piece[16]
+                {
+                    new King(new Square(0,4), color),
+                    new Queen(new Square(0,3), color),
+                    new Rook(new Square(0,0), color),
+                    new Rook(new Square(0,7), color),
+                    new Bishop(new Square(0,2), color),
+                    new Bishop(new Square(0,5), color),
+                    new Knight(new Square(0,1), color),
+                    new Knight(new Square(0,6), color),
+                    new Pawn(new Square(1,0), color),
+                    new Pawn(new Square(1,1), color),
+                    new Pawn(new Square(1,2), color),
+                    new Pawn(new Square(1,3), color),
+                    new Pawn(new Square(1,4), color),
+                    new Pawn(new Square(1,5), color),
+                    new Pawn(new Square(1,6), color),
+                    new Pawn(new Square(1,7), color),
+                };
+            }
             CapturedPieces = new Piece[16];
         }
         public string Color { get; set; }

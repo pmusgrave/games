@@ -8,11 +8,15 @@ namespace chess
 {
     class Knight : Piece
     {
-        public Knight(Square position)
+        public Knight(Square position, string color)
         {
             Position = position;
+            Color = color;
+            Content = Color == "White" ? "\u2658" : "\u265E";
         }
         public Square Position { get; set; }
+        public string Content { get; set; }
+        public string Color { get; set; }
         public void Capture(Piece target)
         {
             throw new NotImplementedException();
