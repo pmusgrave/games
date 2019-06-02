@@ -7,7 +7,8 @@
         string Content { get; set; }
         void Move(Square target);
         bool IsAvailableMove(Square target);
-        void Capture(Piece target);
+        bool CanCapture(Square target);
+        void Capture(Square target);
         void Remove();
     }
 }

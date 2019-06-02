@@ -1,4 +1,6 @@
-﻿namespace chess
+﻿using System.Collections.Generic;
+
+namespace chess
 {
     public class Player
     {
@@ -7,7 +9,7 @@
             Color = color;
             if (Color == "White")
             {
-                ActivePieces = new Piece[16]
+                ActivePieces = new List<Piece>()
                 {
                     new King(new Square(7,4), color),
                     new Queen(new Square(7,3), color),
@@ -29,7 +31,7 @@
             }
             else
             {
-                ActivePieces = new Piece[16]
+                ActivePieces = new List<Piece>()
                 {
                     new King(new Square(0,4), color),
                     new Queen(new Square(0,3), color),
@@ -49,11 +51,11 @@
                     new Pawn(new Square(1,7), color),
                 };
             }
-            CapturedPieces = new Piece[16];
+            CapturedPieces = new List<Piece>();
         }
         public string Color { get; set; }
-        public Piece[] ActivePieces { get; set; }
-        public Piece[] CapturedPieces { get; set; }
+        public List<Piece> ActivePieces { get; set; }
+        public List<Piece> CapturedPieces { get; set; }
         public Piece SelectedPiece { get; set; }
         public bool IsInCheck()
         {

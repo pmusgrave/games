@@ -17,7 +17,13 @@ namespace chess
         public Square Position { get; set; }
         public string Content { get; set; }
         public string Color { get; set; }
-        public void Capture(Piece target)
+
+        public bool CanCapture(Square target)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Capture(Square target)
         {
             throw new NotImplementedException();
         }

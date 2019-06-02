@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -53,9 +55,9 @@ namespace chess
                 Grid.GetRow(selected_square_button),
                 Grid.GetColumn(selected_square_button));
 
-            foreach(Piece piece in CurrentGame.CurrentPlayer.ActivePieces)
+            foreach (Piece piece in CurrentGame.CurrentPlayer.ActivePieces)
             {
-                if(piece.Position.Rank == selected_square.Rank
+                if (piece.Position.Rank == selected_square.Rank
                 && piece.Position.File == selected_square.File)
                 {
                     CurrentGame.GameBoard.RenderPieces();
@@ -70,6 +72,27 @@ namespace chess
             && CurrentGame.IsValidMove(CurrentGame.CurrentPlayer.SelectedPiece, selected_square))
             {
                 CurrentGame.CurrentPlayer.SelectedPiece.Move(selected_square);
+                CurrentGame.GameBoard.RenderPieces();
+                selected_square_button.BorderThickness = new Thickness(1);
+                selected_square_button.BorderBrush = Brushes.Black;
+                CurrentGame.SwitchPlayers();
+            }
+            else if (CurrentGame.CurrentPlayer.SelectedPiece != null
+            && selected_square != null
+            && CurrentGame.IsValidCapture(CurrentGame.CurrentPlayer.SelectedPiece, selected_square))
+            {
+                CurrentGame.CurrentPlayer.SelectedPiece.Move(selected_square);
+                List<Player> player_filter = CurrentGame.Players
+                    .Where(player => player != CurrentGame.CurrentPlayer).ToList();
+                Player OtherPlayer = player_filter[0];
+                
+                IEnumerable<Piece> capture = OtherPlayer.ActivePieces
+                    .Where(piece =>
+                        piece.Position.Rank == selected_square.Rank
+                        && piece.Position.File == selected_square.File);
+                OtherPlayer.CapturedPieces.Add(capture.First());
+                OtherPlayer.ActivePieces.Remove(capture.First());
+
                 CurrentGame.GameBoard.RenderPieces();
                 selected_square_button.BorderThickness = new Thickness(1);
                 selected_square_button.BorderBrush = Brushes.Black;

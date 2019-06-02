@@ -22,9 +22,16 @@
 
         public bool IsValidMove(Piece selected_piece, Square target)
         {
-            if (!CurrentPlayer.IsInCheck()
-             && !IsSquareOccupied(target)
-             && selected_piece.IsAvailableMove(target))
+            if (!CurrentPlayer.IsInCheck() 
+            && (!IsSquareOccupied(target) && selected_piece.IsAvailableMove(target)))
+            {
+                return true;
+            }
+            else return false;
+        }
+        public bool IsValidCapture(Piece selected_piece, Square target)
+        {
+            if (IsSquareOccupied(target) && selected_piece.CanCapture(target))
             {
                 return true;
             }
@@ -32,14 +39,15 @@
         }
         public bool IsSquareOccupied(Square target)
         {
-            // only checks if current player's pieces occupy target.
-            // This function shouldn't interfere with captures
-            foreach(Piece piece in CurrentPlayer.ActivePieces)
+            foreach (Player player in Players)
             {
-                if (piece.Position.Rank == target.Rank 
-                    && piece.Position.File == target.File)
+                foreach (Piece piece in player.ActivePieces)
                 {
-                    return true;
+                    if (piece.Position.Rank == target.Rank
+                        && piece.Position.File == target.File)
+                    {
+                        return true;
+                    }
                 }
             }
 
