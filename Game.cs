@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace chess
+﻿namespace chess
 {
     public class Game
     {
@@ -20,6 +14,7 @@ namespace chess
             CurrentPlayer = Player1;
             State = "In Progress";
         }
+        public Board GameBoard { get; set; }
         public Player[] Players { get; set; }
         public Player CurrentPlayer { get; set; }
         public string State { get; set; }

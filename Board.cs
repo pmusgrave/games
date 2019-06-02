@@ -1,4 +1,7 @@
-﻿namespace chess
+﻿using System.Windows;
+using System.Windows.Media;
+
+namespace chess
 {
     public class Board
     {
@@ -6,12 +9,13 @@
         public Board(MainWindow ui, Game game)
         {
             CurrentGame = game;
+            CurrentGame.GameBoard = this;
             UI = ui;
             RenderPieces();
         }
         Game CurrentGame { get; set; }
 
-        private void RenderPieces()
+        public void RenderPieces()
         {
             ClearBoard();
             foreach (Player player in CurrentGame.Players)
@@ -26,11 +30,13 @@
                 }
             }
         }
-        private void ClearBoard()
+        public void ClearBoard()
         {
             foreach(System.Windows.Controls.Button button in UI.ChessBoardGrid.Children)
             {
                 button.Content = "";
+                button.BorderThickness = new Thickness(1);
+                button.BorderBrush = Brushes.Black;
             }
         }
         private System.Windows.Controls.Button GetButton(Square position)

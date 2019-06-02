@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace chess
 {
@@ -20,6 +9,7 @@ namespace chess
     /// </summary>
     public partial class MainWindow : Window
     {
+        Game CurrentGame { get; set; }
 
         public MainWindow()
         {
@@ -33,6 +23,7 @@ namespace chess
                     new_button.Width = 100;
                     new_button.Height = 100;
                     new_button.FontSize = 60;
+                    new_button.Click += new RoutedEventHandler(this.HandleSquareClick);
 
                     Grid.SetRow(new_button, i);
                     Grid.SetColumn(new_button, j);
@@ -40,8 +31,8 @@ namespace chess
                 }
             }
 
-            Game game = new Game();
-            Board board = new Board(this, game);
+            CurrentGame = new Game();
+            Board board = new Board(this, CurrentGame);
             /*while(game.State == "In Progress")
             {
 
@@ -54,6 +45,23 @@ namespace chess
             {
                 MessageBox.Show("Stalemate!");
             }*/
+        }
+        private void HandleSquareClick(object sender, RoutedEventArgs e)
+        {
+            Button selected_square_button = (Button)sender;
+            Square selected_square = new Square(
+                Grid.GetRow(selected_square_button),
+                Grid.GetColumn(selected_square_button));
+            foreach(Piece piece in CurrentGame.CurrentPlayer.ActivePieces)
+            {
+                if(piece.Position.Rank == selected_square.Rank
+                && piece.Position.File == selected_square.File)
+                {
+                    CurrentGame.GameBoard.RenderPieces();
+                    selected_square_button.BorderThickness = new Thickness(5);
+                    selected_square_button.BorderBrush = Brushes.Blue;
+                }
+            }
         }
     }
 }
