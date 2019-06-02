@@ -64,6 +64,7 @@ namespace chess
                     CurrentGame.CurrentPlayer.SelectedPiece = piece;
                     selected_square_button.BorderThickness = new Thickness(5);
                     selected_square_button.BorderBrush = Brushes.Blue;
+                    return;
                 }
             }
 
@@ -76,6 +77,7 @@ namespace chess
                 selected_square_button.BorderThickness = new Thickness(1);
                 selected_square_button.BorderBrush = Brushes.Black;
                 CurrentGame.SwitchPlayers();
+                CurrentGame.CurrentPlayer.SelectedPiece = null;
             }
             else if (CurrentGame.CurrentPlayer.SelectedPiece != null
             && selected_square != null
@@ -97,6 +99,7 @@ namespace chess
                 selected_square_button.BorderThickness = new Thickness(1);
                 selected_square_button.BorderBrush = Brushes.Black;
                 CurrentGame.SwitchPlayers();
+                CurrentGame.CurrentPlayer.SelectedPiece = null;
             }
         }
     }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace chess
 {
@@ -17,19 +13,24 @@ namespace chess
         public Square Position { get; set; }
         public string Content { get; set; }
         public string Color { get; set; }
-
        
         public bool IsAvailableMove(Square target)
         {
-            throw new NotImplementedException();
+            if (Math.Abs(target.Rank - Position.Rank) == Math.Abs(target.File - Position.File))
+            {
+                return true;
+            }
+            else return false;
         }
         public bool CanCapture(Square target)
         {
-            throw new NotImplementedException();
+            if (IsAvailableMove(target)) return true;
+            else return false;
         }
         public void Move(Square target)
         {
-            throw new NotImplementedException();
+            Position.Rank = target.Rank;
+            Position.File = target.File;
         }
     }
 }
