@@ -18,29 +18,18 @@ namespace chess
         public string Content { get; set; }
         public string Color { get; set; }
 
-        public bool CanCapture(Square target)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Capture(Square target)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool IsAvailableMove(Square target)
         {
             throw new NotImplementedException();
         }
-
-        public void Move(Square target)
+        public bool CanCapture(Square target)
         {
             throw new NotImplementedException();
         }
-
-        public void Remove()
+        public void Move(Square target)
         {
-            throw new NotImplementedException();
+            Position.Rank = target.Rank;
+            Position.File = target.File;
         }
     }
 }

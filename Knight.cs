@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace chess
+﻿namespace chess
 {
     class Knight : Piece
     {
@@ -17,30 +11,31 @@ namespace chess
         public Square Position { get; set; }
         public string Content { get; set; }
         public string Color { get; set; }
-
-        public bool CanCapture(Square target)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Capture(Square target)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public bool IsAvailableMove(Square target)
         {
-            throw new NotImplementedException();
+            if ((target.Rank == Position.Rank + 2
+                || target.Rank == Position.Rank - 2)
+            && (target.File == Position.File + 1
+                || target.File == Position.File - 1)
+            || (target.Rank == Position.Rank + 1
+                || target.Rank == Position.Rank - 1)
+            && (target.File == Position.File + 2
+                || target.File == Position.File - 2))
+            {
+                return true;
+            }
+            else return false;
         }
-
+        public bool CanCapture(Square target)
+        {
+            if (IsAvailableMove(target)) return true;
+            else return false;
+        }
         public void Move(Square target)
         {
-            throw new NotImplementedException();
-        }
-
-        public void Remove()
-        {
-            throw new NotImplementedException();
+            Position.Rank = target.Rank;
+            Position.File = target.File;
         }
     }
 }

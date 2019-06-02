@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace chess
+﻿namespace chess
 {
     class Pawn : Piece
     {
@@ -17,15 +15,6 @@ namespace chess
         public string Color { get; set; }
         private int DirectionMultiplier { get; set; }
         public bool FirstMove { get; set; }
-        public void Capture(Square target)
-        {
-            if (FirstMove)
-            {
-                FirstMove = false;
-            }
-            Position.Rank = target.Rank;
-            Position.File = target.File;
-        }
 
         public bool IsAvailableMove(Square target)
         {
@@ -67,7 +56,6 @@ namespace chess
 
             return false;
         }
-
         public void Move(Square target)
         {
             if (FirstMove)
@@ -76,11 +64,6 @@ namespace chess
             }
             Position.Rank = target.Rank;
             Position.File = target.File;
-        }
-
-        public void Remove()
-        {
-            throw new NotImplementedException();
         }
     }
 }

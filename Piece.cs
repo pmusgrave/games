@@ -8,7 +8,5 @@
         void Move(Square target);
         bool IsAvailableMove(Square target);
         bool CanCapture(Square target);
-        void Capture(Square target);
-        void Remove();
     }
 }
