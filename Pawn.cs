@@ -13,11 +13,13 @@ namespace chess
             Position = position;
             Color = color;
             Content = Color == "White" ? "\u2659": "\u265F";
+            DirectionMultiplier = Color == "White" ? -1 : 1;
             FirstMove = true;
         }
         public Square Position { get; set; }
         public string Content { get; set; }
         public string Color { get; set; }
+        private int DirectionMultiplier { get; set; }
         public bool FirstMove { get; set; }
         public void Capture(Piece target)
         {
@@ -28,14 +30,15 @@ namespace chess
         {
             if (FirstMove)
             {
-                if((target.Rank == Position.Rank - 1
-                || target.Rank == Position.Rank - 2)
+                if((target.Rank == Position.Rank + DirectionMultiplier
+                || target.Rank == Position.Rank + 2 * DirectionMultiplier)
                 && target.File == Position.File)
                 {
                     return true;
                 }
             }
-            else if (target.Rank == Position.Rank - 1 && target.File == Position.File)
+            else if (target.Rank == Position.Rank + DirectionMultiplier 
+                  && target.File == Position.File)
             {
                 return true;
             }
