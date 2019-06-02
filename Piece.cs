@@ -5,7 +5,8 @@
         Square Position { get; set; }
         string Color { get; set; }
         string Content { get; set; }
-        void Move();
+        void Move(Square target);
+        bool IsAvailableMove(Square target);
         void Capture(Piece target);
         void Remove();
     }

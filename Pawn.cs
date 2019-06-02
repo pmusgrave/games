@@ -13,6 +13,7 @@ namespace chess
             Position = position;
             Color = color;
             Content = Color == "White" ? "\u2659": "\u265F";
+            FirstMove = true;
         }
         public Square Position { get; set; }
         public string Content { get; set; }
@@ -23,16 +24,33 @@ namespace chess
             throw new NotImplementedException();
         }
 
-        public void Move()
+        public bool IsAvailableMove(Square target)
+        {
+            if (FirstMove)
+            {
+                if((target.Rank == Position.Rank - 1
+                || target.Rank == Position.Rank - 2)
+                && target.File == Position.File)
+                {
+                    return true;
+                }
+            }
+            else if (target.Rank == Position.Rank - 1 && target.File == Position.File)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public void Move(Square target)
         {
             if (FirstMove)
             {
                 FirstMove = false;
             }
-            else
-            {
-                
-            }
+            Position.Rank = target.Rank;
+            Position.File = target.File;
         }
 
         public void Remove()

@@ -23,7 +23,22 @@ namespace chess
             throw new NotImplementedException();
         }
 
-        public void Move()
+        public bool IsAvailableMove(Square target)
+        {
+            if ((Position.Rank == target.Rank + 1
+              || Position.Rank == target.Rank - 1
+              || Position.Rank == target.Rank)
+             &&(Position.File == target.File + 1
+             || Position.File == target.File - 1
+             || Position.File == target.File)
+             &&(Position.Rank != target.Rank && Position.File != target.File))
+            {
+                return true;
+            }
+            else return false;
+        }
+
+        public void Move(Square target)
         {
             throw new NotImplementedException();
         }

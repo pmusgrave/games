@@ -54,5 +54,10 @@
         public string Color { get; set; }
         public Piece[] ActivePieces { get; set; }
         public Piece[] CapturedPieces { get; set; }
+        public Piece SelectedPiece { get; set; }
+        public bool IsInCheck()
+        {
+            return false;
+        }
     }
 }

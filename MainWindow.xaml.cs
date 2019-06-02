@@ -52,12 +52,24 @@ namespace chess
             Square selected_square = new Square(
                 Grid.GetRow(selected_square_button),
                 Grid.GetColumn(selected_square_button));
+
+            if(CurrentGame.CurrentPlayer.SelectedPiece != null
+            && selected_square != null
+            && CurrentGame.IsValidMove(CurrentGame.CurrentPlayer.SelectedPiece, selected_square))
+            {
+                CurrentGame.CurrentPlayer.SelectedPiece.Move(selected_square);
+                CurrentGame.GameBoard.RenderPieces();
+                selected_square_button.BorderThickness = new Thickness(1);
+                selected_square_button.BorderBrush = Brushes.Black;
+            }
+
             foreach(Piece piece in CurrentGame.CurrentPlayer.ActivePieces)
             {
                 if(piece.Position.Rank == selected_square.Rank
                 && piece.Position.File == selected_square.File)
                 {
                     CurrentGame.GameBoard.RenderPieces();
+                    CurrentGame.CurrentPlayer.SelectedPiece = piece;
                     selected_square_button.BorderThickness = new Thickness(5);
                     selected_square_button.BorderBrush = Brushes.Blue;
                 }

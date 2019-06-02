@@ -22,7 +22,12 @@ namespace chess
             throw new NotImplementedException();
         }
 
-        public void Move()
+        public bool IsAvailableMove(Square target)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Move(Square target)
         {
             throw new NotImplementedException();
         }
