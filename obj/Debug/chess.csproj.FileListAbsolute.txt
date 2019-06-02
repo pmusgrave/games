@@ -1,0 +1,15 @@
+E:\Documents\Engineering\Code\games\chess\chess\bin\Debug\chess.exe.config
+E:\Documents\Engineering\Code\games\chess\chess\bin\Debug\chess.exe
+E:\Documents\Engineering\Code\games\chess\chess\bin\Debug\chess.pdb
+E:\Documents\Engineering\Code\games\chess\chess\obj\Debug\chess.csprojAssemblyReference.cache
+E:\Documents\Engineering\Code\games\chess\chess\obj\Debug\MainWindow.g.cs
+E:\Documents\Engineering\Code\games\chess\chess\obj\Debug\App.g.cs
+E:\Documents\Engineering\Code\games\chess\chess\obj\Debug\chess_MarkupCompile.cache
+E:\Documents\Engineering\Code\games\chess\chess\obj\Debug\chess_MarkupCompile.lref
+E:\Documents\Engineering\Code\games\chess\chess\obj\Debug\MainWindow.baml
+E:\Documents\Engineering\Code\games\chess\chess\obj\Debug\chess.g.resources
+E:\Documents\Engineering\Code\games\chess\chess\obj\Debug\chess.Properties.Resources.resources
+E:\Documents\Engineering\Code\games\chess\chess\obj\Debug\chess.csproj.GenerateResource.cache
+E:\Documents\Engineering\Code\games\chess\chess\obj\Debug\chess.csproj.CoreCompileInputs.cache
+E:\Documents\Engineering\Code\games\chess\chess\obj\Debug\chess.exe
+E:\Documents\Engineering\Code\games\chess\chess\obj\Debug\chess.pdb
