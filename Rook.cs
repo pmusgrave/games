@@ -20,12 +20,12 @@ namespace chess
 
         public bool IsAvailableMove(Square target)
         {
-            throw new NotImplementedException();
+            return (target.Rank == Position.Rank && target.File != Position.File)
+                || (target.File == Position.File && target.Rank != Position.Rank);
         }
         public bool CanCapture(Square target)
         {
-            if (IsAvailableMove(target)) return true;
-            else return false;
+            return IsAvailableMove(target);
         }
         public void Move(Square target)
         {

@@ -33,8 +33,7 @@ namespace chess
         }
         public bool CanCapture(Square target)
         {
-            if (IsAvailableMove(target)) return true;
-            else return false;
+            return IsAvailableMove(target);
         }
         public void Move(Square target)
         {
