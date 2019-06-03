@@ -24,8 +24,13 @@ namespace chess
                     Button new_button = new Button();
                     new_button.Width = 100;
                     new_button.Height = 100;
-                    new_button.FontSize = 60;
+                    new_button.FontSize = 75;
                     new_button.Click += new RoutedEventHandler(this.HandleSquareClick);
+                    if(i%2 == 0)
+                    {
+                        new_button.Background = (j % 2 != 0) ? Brushes.Brown : Brushes.White;
+                    }
+                    else new_button.Background = (j % 2 == 0) ? Brushes.Brown : Brushes.White;
 
                     Grid.SetRow(new_button, i);
                     Grid.SetColumn(new_button, j);
