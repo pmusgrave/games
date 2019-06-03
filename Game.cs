@@ -55,7 +55,7 @@
         }
         public void SwitchPlayers()
         {
-            CurrentPlayer = Players[(System.Array.IndexOf(Players, CurrentPlayer) + 1) % 2];
+            CurrentPlayer = (CurrentPlayer == Players[0]) ? Players[1] : Players[0];
         }
     }
 }
