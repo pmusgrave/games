@@ -20,16 +20,9 @@ namespace chess
 
         public bool IsAvailableMove(Square target)
         {
-            if ((Position.Rank == target.Rank + 1
-              || Position.Rank == target.Rank - 1
-              || Position.Rank == target.Rank)
-             && (Position.File == target.File + 1
-             || Position.File == target.File - 1
-             || Position.File == target.File))
-            {
-                return true;
-            }
-            else return false;
+            return ((Math.Abs(target.Rank - Position.Rank) == Math.Abs(target.File - Position.File))
+            || ((target.Rank == Position.Rank && target.File != Position.File)
+                || (target.File == Position.File && target.Rank != Position.Rank)));
         }
         public bool CanCapture(Square target)
         {
