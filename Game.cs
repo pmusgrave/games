@@ -1,4 +1,6 @@
-﻿namespace chess
+﻿using System;
+
+namespace chess
 {
     public class Game
     {
@@ -20,6 +22,48 @@
         public string State { get; set; }
         public Player Winner { get; set; }
 
+        public bool IsValidCastle(Piece selected_piece, Square target)
+        {
+            if (ReferenceEquals(selected_piece.GetType(), new King(new Square(0, 0), "White").GetType())
+            && (target.File - selected_piece.Position.File) == -2
+            && target.Rank == selected_piece.Position.Rank
+            && (!IsSquareOccupied(new Square(0, selected_piece.Position.File - 1))
+                  && !IsSquareOccupied(new Square(0, selected_piece.Position.File - 2))
+                  && !IsSquareOccupied(new Square(0, selected_piece.Position.File - 3))))
+
+            {
+                King king = (King)selected_piece;
+                if (king.FirstMove && CurrentPlayer.Rook1.FirstMove) return true;
+            }
+            else if (ReferenceEquals(selected_piece.GetType(), new King(new Square(0, 0), "White").GetType())
+            && (target.File - selected_piece.Position.File) == 2
+            && target.Rank == selected_piece.Position.Rank
+            && (!IsSquareOccupied(new Square(0, selected_piece.Position.File + 1))
+                  && !IsSquareOccupied(new Square(0, selected_piece.Position.File + 2))))
+            {
+                King king = (King)selected_piece;
+                if (king.FirstMove && CurrentPlayer.Rook2.FirstMove) return true;
+            }
+            else if (ReferenceEquals(selected_piece.GetType(), new Rook(new Square(0, 0), "White").GetType())
+            && (target.File - selected_piece.Position.File) == 3
+            && target.Rank == selected_piece.Position.Rank
+            && (!IsSquareOccupied(new Square(0, selected_piece.Position.File + 1))
+                  && !IsSquareOccupied(new Square(0, selected_piece.Position.File + 2))
+                  && !IsSquareOccupied(new Square(0, selected_piece.Position.File + 3))))
+            {
+                if (CurrentPlayer.KingPiece.FirstMove && CurrentPlayer.Rook1.FirstMove) return true;
+            }
+            else if (ReferenceEquals(selected_piece.GetType(), new Rook(new Square(0, 0), "White").GetType())
+            && (target.File - selected_piece.Position.File) == -2
+            && target.Rank == selected_piece.Position.Rank
+            && (!IsSquareOccupied(new Square(0, selected_piece.Position.File - 1))
+                  && !IsSquareOccupied(new Square(0, selected_piece.Position.File - 2))))
+            {
+                if (CurrentPlayer.KingPiece.FirstMove && CurrentPlayer.Rook2.FirstMove) return true;
+            }
+
+            return false;
+        }
         public bool IsValidMove(Piece selected_piece, Square target)
         {
             if (!CurrentPlayer.IsInCheck() 

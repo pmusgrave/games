@@ -70,6 +70,17 @@ namespace chess
 
             if (CurrentGame.CurrentPlayer.SelectedPiece != null
             && selected_square != null
+            && CurrentGame.IsValidCastle(CurrentGame.CurrentPlayer.SelectedPiece, selected_square))
+            {
+                CurrentGame.CurrentPlayer.Castle(selected_square);
+                CurrentGame.GameBoard.RenderPieces();
+                selected_square_button.BorderThickness = new Thickness(1);
+                selected_square_button.BorderBrush = Brushes.Black;
+                CurrentGame.SwitchPlayers();
+                CurrentGame.CurrentPlayer.SelectedPiece = null;
+            }
+            else if (CurrentGame.CurrentPlayer.SelectedPiece != null
+            && selected_square != null
             && CurrentGame.IsValidMove(CurrentGame.CurrentPlayer.SelectedPiece, selected_square))
             {
                 CurrentGame.CurrentPlayer.SelectedPiece.Move(selected_square);
@@ -87,7 +98,7 @@ namespace chess
                 List<Player> player_filter = CurrentGame.Players
                     .Where(player => player != CurrentGame.CurrentPlayer).ToList();
                 Player OtherPlayer = player_filter[0];
-                
+
                 IEnumerable<Piece> capture = OtherPlayer.ActivePieces
                     .Where(piece =>
                         piece.Position.Rank == selected_square.Rank

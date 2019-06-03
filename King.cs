@@ -6,21 +6,31 @@ using System.Threading.Tasks;
 
 namespace chess
 {
-    class King : Piece
+    public class King : Piece
     {
         public King(Square position, string color)
         {
             Position = position;
             Color = color;
             Content = Color == "White" ? "\u2654" : "\u265A";
+            FirstMove = true;
         }
         public Square Position { get; set; }
         public string Content { get; set; }
         public string Color { get; set; }
-
+        public bool FirstMove { get; set; }
+        
         public bool IsAvailableMove(Square target)
         {
-            return (target.Rank == Position.Rank && Math.Abs(target.File - Position.File) == 1)
+            if (FirstMove)
+            {
+                return (target.Rank == Position.Rank && Math.Abs(target.File - Position.File) == 1)
+                || (target.File == Position.File && Math.Abs(target.Rank - Position.Rank) == 1)
+                || (Math.Abs(target.File - Position.File) == 1 && Math.Abs(target.Rank - Position.Rank) == 1)
+                || (Math.Abs(target.Rank - Position.Rank) == 1 && Math.Abs(target.File - Position.File) == 1)
+                || (Math.Abs(target.File - Position.File) == 2) && target.Rank == Position.Rank;
+            }
+            else return (target.Rank == Position.Rank && Math.Abs(target.File - Position.File) == 1)
                 || (target.File == Position.File && Math.Abs(target.Rank - Position.Rank) == 1)
                 || (Math.Abs(target.File - Position.File) == 1 && Math.Abs(target.Rank - Position.Rank) == 1)
                 || (Math.Abs(target.Rank - Position.Rank) == 1 && Math.Abs(target.File - Position.File) == 1);
