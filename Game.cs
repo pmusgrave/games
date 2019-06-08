@@ -31,7 +31,12 @@
 
             {
                 King king = (King)selected_piece;
-                if (king.FirstMove && CurrentPlayer.Rook1.FirstMove) return true;
+                if (king.FirstMove && CurrentPlayer.Rook1.FirstMove)
+                {
+                    king.FirstMove = false;
+                    CurrentPlayer.Rook1.FirstMove = false;
+                    return true;
+                }
             }
             else if (ReferenceEquals(selected_piece.GetType(), new King(new Square(0, 0), "White").GetType())
             && (target.File - selected_piece.Position.File) == 2
@@ -40,7 +45,12 @@
                   && !IsSquareOccupied(new Square(0, selected_piece.Position.File + 2))))
             {
                 King king = (King)selected_piece;
-                if (king.FirstMove && CurrentPlayer.Rook2.FirstMove) return true;
+                if (king.FirstMove && CurrentPlayer.Rook2.FirstMove)
+                {
+                    king.FirstMove = false;
+                    CurrentPlayer.Rook2.FirstMove = false;
+                    return true;
+                }
             }
             else if (ReferenceEquals(selected_piece.GetType(), new Rook(new Square(0, 0), "White").GetType())
             && (target.File - selected_piece.Position.File) == 3
@@ -49,7 +59,12 @@
                   && !IsSquareOccupied(new Square(0, selected_piece.Position.File + 2))
                   && !IsSquareOccupied(new Square(0, selected_piece.Position.File + 3))))
             {
-                if (CurrentPlayer.KingPiece.FirstMove && CurrentPlayer.Rook1.FirstMove) return true;
+                if (CurrentPlayer.KingPiece.FirstMove && CurrentPlayer.Rook1.FirstMove)
+                {
+                    CurrentPlayer.KingPiece.FirstMove = false;
+                    CurrentPlayer.Rook1.FirstMove = false;
+                    return true;
+                }
             }
             else if (ReferenceEquals(selected_piece.GetType(), new Rook(new Square(0, 0), "White").GetType())
             && (target.File - selected_piece.Position.File) == -2
@@ -57,7 +72,12 @@
             && (!IsSquareOccupied(new Square(0, selected_piece.Position.File - 1))
                   && !IsSquareOccupied(new Square(0, selected_piece.Position.File - 2))))
             {
-                if (CurrentPlayer.KingPiece.FirstMove && CurrentPlayer.Rook2.FirstMove) return true;
+                if (CurrentPlayer.KingPiece.FirstMove && CurrentPlayer.Rook2.FirstMove)
+                {
+                    CurrentPlayer.KingPiece.FirstMove = false;
+                    CurrentPlayer.Rook2.FirstMove = false;
+                    return true;
+                }
             }
 
             return false;
