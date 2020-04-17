@@ -1,18 +1,17 @@
-extern crate ncurses;
-use ncurses::*;
-
 mod point;
 mod piece;
+mod state;
+extern crate ncurses;
+use ncurses::*;
 use point::Point;
 use piece::Piece;
+use state::State;
 
 static BOARD_HEIGHT: i32 = 22;
 static BOARD_WIDTH: i32 = 22;
 
 fn main() {
-	// follow ncurses convention and access with y,x
-	let mut grid = [[false; 10]; 20];
-	
+	// Init ncurses
 	setlocale(LcCategory::all, "");
 	initscr();
 	raw();
@@ -20,15 +19,16 @@ fn main() {
 	halfdelay(3);
 	noecho();
 	curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
-
 	refresh();
 
+	// Init game board
+	let mut state = Default::default();
 	let mut y: usize = 0;
-	let mut x: usize = 0;
+	let mut x: usize = 3;
 	let board_origin = Point { x:0, y:0 };
-	let win = create_game_board(board_origin.y as i32, board_origin.x as i32);
+	let win = create_game_board(board_origin);
 
-	let mut test_piece = Piece {
+	let mut current_piece = Piece {
 		origin : Point { x:x, y:y },
 		squares : [
 			Point { x:x , y:y },
@@ -43,40 +43,26 @@ fn main() {
 	let mut ch = getch();
 	while ch != KEY_F(1)
 	{
-		y += 1;
-		// x += 1;
-		if x >= 7 {
-			x = 0;
-		}
-		if y >= 20 {
-			y = 0;
-		}
-		// let mut grid = clear_grid();
-		// grid[y][x] = true;
-		// grid[y][x+1] = true;
-		// grid[y][x+2] = true;
-		// grid[y][x+3] = true;
-
-		let mut grid = update(&mut test_piece);
-		render(&mut grid, win);
+		update(&mut state, &mut current_piece);
+		render(&mut state, win);
 
 		ch = getch();
 		match ch {
 			KEY_LEFT => {
-				if test_piece.origin.x > 0 {
-					test_piece.move_left();
+				if current_piece.origin.x > 0 {
+					current_piece.move_left();
 				}
 			},
 			KEY_RIGHT => {
-				if test_piece.origin.x < 6 {
-					test_piece.move_right();
+				if current_piece.origin.x < 6 {
+					current_piece.move_right();
 				}
 			},
 			KEY_UP => {},
 			KEY_DOWN => {},
 			_ => {
-				if test_piece.origin.y < 19 {
-					test_piece.move_down();
+				if current_piece.origin.y < 19 {
+					current_piece.move_down();
 				}
 			},
 		}
@@ -85,23 +71,24 @@ fn main() {
 	endwin();
 }
 
-fn create_game_board(x: i32, y: i32) -> WINDOW {
-	let win = newwin(BOARD_HEIGHT, BOARD_WIDTH, y, x);
+fn create_game_board(origin: Point) -> WINDOW {
+	let win = newwin(BOARD_HEIGHT, 
+		BOARD_WIDTH, 
+		origin.y as i32, 
+		origin.x as i32);
 	box_(win,0,0);
 	wrefresh(win);
 	win
 }
 
-fn update(current_piece: &mut Piece) -> [[bool; 10]; 20] {
-	let mut grid = clear_grid();
+fn update(state: &mut State, current_piece: &mut Piece) {
+	state.clear_grid();
 	for square in current_piece.squares.iter() {
-		grid[square.y][square.x] = true;
+		state.grid[square.y][square.x] = true;
 	}
-
-	grid
 }
 
-fn render(grid: &mut [[bool; 10]; 20], win: WINDOW) {
+fn render(state: &State, win: WINDOW) {
 	delwin(win);
 	let mut max_x = 0;
 	let mut max_y = 0;
@@ -109,9 +96,9 @@ fn render(grid: &mut [[bool; 10]; 20], win: WINDOW) {
 
 	let start_y = (max_y - BOARD_HEIGHT) / 2;
 	let start_x = (max_x - BOARD_WIDTH) / 2;
-	let new_win = create_game_board(0, 0);
+	let new_win = create_game_board(Point{ x:0, y:0 });
 
-	for (y, row) in grid.iter().enumerate() {
+	for (y, row) in state.grid.iter().enumerate() {
 		for (x, element) in row.iter().enumerate() {
 			if *element {
 				// mvwprintw(new_win, y as i32 + 1, x as i32 + 1, "■");
@@ -122,8 +109,4 @@ fn render(grid: &mut [[bool; 10]; 20], win: WINDOW) {
 	}
 
 	wrefresh(new_win);
-}
-
-fn clear_grid() -> [[bool; 10]; 20] {
-	return [[false; 10]; 20];
 }
