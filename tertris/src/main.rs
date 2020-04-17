@@ -1,8 +1,8 @@
 extern crate ncurses;
 use ncurses::*;
 
-static BOARD_HEIGHT: i32 = 19;
-static BOARD_WIDTH: i32 = 12;
+static BOARD_HEIGHT: i32 = 22;
+static BOARD_WIDTH: i32 = 22;
 
 fn main() {
 	// follow ncurses convention and access with y,x
@@ -17,12 +17,6 @@ fn main() {
 
 	refresh();
 
-	// mvwprintw(win, 1, 1, "■");
-	// mvwprintw(win, 1, 2, "■");
-	// mvwprintw(win, 1, 3, "■");
-	// mvwprintw(win, 1, 4, "■");
-	// wrefresh(win);
-
 	let mut y:usize= 0;
 	let mut x:usize = 0;
 	let win = create_game_board(0,0);
@@ -31,7 +25,7 @@ fn main() {
 	while ch != KEY_F(1)
 	{
 		y += 1;
-		// x += 1;
+		x += 1;
 		if x >= 7 {
 			x = 0;
 		}
@@ -72,7 +66,9 @@ fn render(grid: &mut [[bool; 10]; 20], win: WINDOW) {
 	for (y, row) in grid.iter().enumerate() {
 		for (x, element) in row.iter().enumerate() {
 			if *element {
-				mvwprintw(new_win, y as i32 + 1, x as i32 + 1, "■");
+				// mvwprintw(new_win, y as i32 + 1, x as i32 + 1, "■");
+				mvwprintw(new_win, y as i32 + 1, (x as i32)*2 + 1, "▓");
+				mvwprintw(new_win, y as i32 + 1, (x as i32)*2 + 2, "▓");
 			}
 		}
 	}
