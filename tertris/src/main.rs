@@ -9,47 +9,47 @@ fn main() {
 	let mut grid = [[false; 10]; 20];
 	
 	setlocale(LcCategory::all, "");
-  initscr();
-  raw();
-  keypad(stdscr(), true);
-  noecho();
-  curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
+	initscr();
+	raw();
+	keypad(stdscr(), true);
+	noecho();
+	curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
 
-  refresh();
+	refresh();
 
-  // mvwprintw(win, 1, 1, "■");
-  // mvwprintw(win, 1, 2, "■");
-  // mvwprintw(win, 1, 3, "■");
-  // mvwprintw(win, 1, 4, "■");
-  // wrefresh(win);
+	// mvwprintw(win, 1, 1, "■");
+	// mvwprintw(win, 1, 2, "■");
+	// mvwprintw(win, 1, 3, "■");
+	// mvwprintw(win, 1, 4, "■");
+	// wrefresh(win);
 
-  let mut y:usize= 0;
-  let mut x:usize = 0;
-  let win = create_game_board(0,0);
+	let mut y:usize= 0;
+	let mut x:usize = 0;
+	let win = create_game_board(0,0);
 
-  let mut ch = getch();
-  while ch != KEY_F(1)
-  {
-  	y += 1;
-  	// x += 1;
-  	if x >= 7 {
-  		x = 0;
-  	}
-  	if y >= 17 {
-  		y = 0;
-  	}
-  	let mut grid = clear_grid();
-  	grid[y][x] = true;
-	  grid[y][x+1] = true;
-	  grid[y][x+2] = true;
-	  grid[y][x+3] = true;
-	  
-  	render(&mut grid, win);
+	let mut ch = getch();
+	while ch != KEY_F(1)
+	{
+		y += 1;
+		// x += 1;
+		if x >= 7 {
+			x = 0;
+		}
+		if y >= 17 {
+			y = 0;
+		}
+		let mut grid = clear_grid();
+		grid[y][x] = true;
+		grid[y][x+1] = true;
+		grid[y][x+2] = true;
+		grid[y][x+3] = true;
+		
+		render(&mut grid, win);
 
-    ch = getch();
-  }
+		ch = getch();
+	}
 
-  endwin();
+	endwin();
 }
 
 fn create_game_board(x: i32, y: i32) -> WINDOW {
@@ -62,12 +62,12 @@ fn create_game_board(x: i32, y: i32) -> WINDOW {
 fn render(grid: &mut [[bool; 10]; 20], win: WINDOW) {
 	delwin(win);
 	let mut max_x = 0;
-  let mut max_y = 0;
-  getmaxyx(stdscr(), &mut max_y, &mut max_x);
+	let mut max_y = 0;
+	getmaxyx(stdscr(), &mut max_y, &mut max_x);
 
-  let start_y = (max_y - BOARD_HEIGHT) / 2;
-  let start_x = (max_x - BOARD_WIDTH) / 2;
-  let new_win = create_game_board(0, 0);
+	let start_y = (max_y - BOARD_HEIGHT) / 2;
+	let start_x = (max_x - BOARD_WIDTH) / 2;
+	let new_win = create_game_board(0, 0);
 
 	for (y, row) in grid.iter().enumerate() {
 		for (x, element) in row.iter().enumerate() {
