@@ -1,41 +1,13 @@
 extern crate ncurses;
 use ncurses::*;
 
+mod point;
+mod piece;
+use point::Point;
+use piece::Piece;
+
 static BOARD_HEIGHT: i32 = 22;
 static BOARD_WIDTH: i32 = 22;
-
-struct Point {
-	x: usize,
-	y: usize,
-}
-
-struct Piece {
-	origin: Point,
-	squares: [Point; 4],
-}
-
-impl Piece {
-	fn move_down(&mut self) {
-		self.origin.y += 1;
-		for square in &mut self.squares {
-			square.y += 1;
-		}
-	}
-
-	fn move_left(&mut self) {
-		self.origin.x -= 1;
-		for square in &mut self.squares {
-			square.x -= 1;
-		}
-	}
-
-	fn move_right(&mut self) {
-		self.origin.x += 1;
-		for square in &mut self.squares {
-			square.x += 1;
-		}
-	}
-}
 
 fn main() {
 	// follow ncurses convention and access with y,x
