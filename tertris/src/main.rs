@@ -49,12 +49,12 @@ fn main() {
 		ch = getch();
 		match ch {
 			KEY_LEFT => {
-				if current_piece.origin.x > 0 {
+				if !collision_left(&state, &current_piece) {
 					current_piece.move_left();
 				}
 			},
 			KEY_RIGHT => {
-				if current_piece.origin.x < 6 {
+				if !collision_right(&state, &current_piece) {
 					current_piece.move_right();
 				}
 			},
@@ -102,6 +102,42 @@ fn collision_down(state: &State, piece: &Piece) -> bool {
 				&Point {
 					x: square.x,
 					y: square.y + 1,
+				},
+				piece))
+		{
+			return true;
+		}
+	}
+
+	false
+}
+
+fn collision_left(state: &State, piece: &Piece) -> bool {
+	for square in piece.squares.iter() {
+		if square.x == 0 
+		|| (state.grid[square.y][square.x - 1] 
+			&& !is_square_of_current_piece(
+				&Point {
+					x: square.x - 1,
+					y: square.y,
+				},
+				piece))
+		{
+			return true;
+		}
+	}
+
+	false
+}
+
+fn collision_right(state: &State, piece: &Piece) -> bool {
+	for square in piece.squares.iter() {
+		if square.x >= 9 
+		|| (state.grid[square.y][square.x + 1] 
+			&& !is_square_of_current_piece(
+				&Point {
+					x: square.x + 1,
+					y: square.y,
 				},
 				piece))
 		{
