@@ -22,9 +22,9 @@ fn main() {
 	refresh();
 
 	// Init game board
-	let mut state: State = Default::default();
-	let mut y: usize = 0;
-	let mut x: usize = 3;
+	let mut state: State = State::new();
+	let y: usize = 0;
+	let x: usize = 3;
 	let board_origin = Point { x:0, y:0 };
 	let win = create_game_board(board_origin);
 
@@ -38,12 +38,12 @@ fn main() {
 		],
 	};
 
-	// let mut pieces: Vec<Piece>;
+	let mut pieces: Vec<Piece> = vec![];
 
 	let mut ch = getch();
 	while ch != KEY_F(1)
 	{
-		update(&mut state, &mut current_piece);
+		update(&mut state, &pieces, &mut current_piece);
 		render(&mut state, win);
 
 		ch = getch();
@@ -63,6 +63,19 @@ fn main() {
 			_ => {
 				if !collision_down(&state, &current_piece) {
 					current_piece.move_down();
+				}
+				else {
+					let locked_piece = current_piece;
+					pieces.push(locked_piece);
+					current_piece = Piece {
+						origin : Point { x:x, y:y },
+						squares : [
+							Point { x:x , y:y },
+							Point { x:x , y:y + 1},
+							Point { x:x + 1 , y:y },
+							Point { x:x + 1, y:y + 1},
+						],
+					};
 				}
 			},
 		}
@@ -109,9 +122,14 @@ fn is_square_of_current_piece(square: &Point, piece: &Piece) -> bool {
 	false
 }
 
-fn update(state: &mut State, current_piece: &mut Piece) {
+fn update(state: &mut State, locked_pieces: &Vec<Piece>, current_piece: &mut Piece) {
 	state.clear_grid();
-	state.grid[19][0] = true;
+	for piece in locked_pieces {
+		for square in piece.squares.iter() {
+			state.grid[square.y][square.x] = true;
+		}
+	}
+
 	for square in current_piece.squares.iter() {
 		state.grid[square.y][square.x] = true;
 	}
@@ -123,8 +141,8 @@ fn render(state: &State, win: WINDOW) {
 	let mut max_y = 0;
 	getmaxyx(stdscr(), &mut max_y, &mut max_x);
 
-	let start_y = (max_y - BOARD_HEIGHT) / 2;
-	let start_x = (max_x - BOARD_WIDTH) / 2;
+	// let start_y = (max_y - BOARD_HEIGHT) / 2;
+	// let start_x = (max_x - BOARD_WIDTH) / 2;
 	let new_win = create_game_board(Point{ x:0, y:0 });
 
 	for (y, row) in state.grid.iter().enumerate() {
