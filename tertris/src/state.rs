@@ -18,4 +18,3 @@ impl State {
 		self.grid = [[false; 10]; 20];
 	}
 }
-

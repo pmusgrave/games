@@ -38,12 +38,12 @@ fn main() {
 		],
 	};
 
-	let mut pieces: Vec<Piece> = vec![];
+	let mut locked_squares: Vec<Point> = vec![];
 
 	let mut ch = getch();
 	while ch != KEY_F(1)
 	{
-		update(&mut state, &pieces, &mut current_piece);
+		update(&mut state, &mut locked_squares, &mut current_piece);
 		render(&mut state, win);
 
 		ch = getch();
@@ -65,8 +65,9 @@ fn main() {
 					current_piece.move_down();
 				}
 				else {
-					let locked_piece = current_piece;
-					pieces.push(locked_piece);
+					for square in &current_piece.squares {
+						locked_squares.push(Point { x: square.x, y: square.y });
+					}
 					current_piece = Piece {
 						origin : Point { x:x, y:y },
 						squares : [
@@ -158,16 +159,39 @@ fn is_square_of_current_piece(square: &Point, piece: &Piece) -> bool {
 	false
 }
 
-fn update(state: &mut State, locked_pieces: &Vec<Piece>, current_piece: &mut Piece) {
+fn update(
+	state: &mut State,
+	locked_squares: &mut Vec<Point>,
+	current_piece: &mut Piece) 
+{
 	state.clear_grid();
-	for piece in locked_pieces {
-		for square in piece.squares.iter() {
-			state.grid[square.y][square.x] = true;
-		}
+	for point in locked_squares.iter() {
+		state.grid[point.y][point.x] = true;
 	}
 
 	for square in current_piece.squares.iter() {
 		state.grid[square.y][square.x] = true;
+	}
+
+	let mut full_row_indices = vec![];
+	for (y, row) in state.grid.iter().enumerate() {
+		let mut row_is_full = true;
+		for (x, _element) in row.iter().enumerate() {
+			let square = Point { x: x, y: y };
+			if state.grid[y][x] == false || is_square_of_current_piece(&square, &current_piece) {
+				row_is_full = false;
+				break;
+			}
+		}
+		if row_is_full {
+			full_row_indices.push(y);
+		}
+	}
+	for row in full_row_indices.iter() {
+		for col in 0..10 {
+			state.grid[*row][col] = false;
+			locked_squares.retain(|s| s.y != *row);
+		}
 	}
 }
 
