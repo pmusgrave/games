@@ -5,6 +5,7 @@ extern crate ncurses;
 use ncurses::*;
 use point::Point;
 use piece::Piece;
+use piece::PieceVariant;
 use state::State;
 
 static BOARD_HEIGHT: i32 = 22;
@@ -23,20 +24,10 @@ fn main() {
 
 	// Init game board
 	let mut state: State = State::new();
-	let y: usize = 0;
-	let x: usize = 3;
 	let board_origin = Point { x:0, y:0 };
 	let win = create_game_board(board_origin);
 
-	let mut current_piece = Piece {
-		origin : Point { x:x, y:y },
-		squares : [
-			Point { x:x , y:y },
-			Point { x:x , y:y + 1},
-			Point { x:x + 1 , y:y },
-			Point { x:x + 1, y:y + 1},
-		],
-	};
+	let mut current_piece = Piece::new();
 
 	let mut locked_squares: Vec<Point> = vec![];
 
@@ -68,15 +59,7 @@ fn main() {
 					for square in &current_piece.squares {
 						locked_squares.push(Point { x: square.x, y: square.y });
 					}
-					current_piece = Piece {
-						origin : Point { x:x, y:y },
-						squares : [
-							Point { x:x , y:y },
-							Point { x:x , y:y + 1},
-							Point { x:x + 1 , y:y },
-							Point { x:x + 1, y:y + 1},
-						],
-					};
+					current_piece = Piece::new();
 				}
 			},
 		}
