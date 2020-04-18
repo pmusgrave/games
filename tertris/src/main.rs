@@ -22,7 +22,7 @@ fn main() {
 	refresh();
 
 	// Init game board
-	let mut state = Default::default();
+	let mut state: State = Default::default();
 	let mut y: usize = 0;
 	let mut x: usize = 3;
 	let board_origin = Point { x:0, y:0 };
@@ -32,9 +32,9 @@ fn main() {
 		origin : Point { x:x, y:y },
 		squares : [
 			Point { x:x , y:y },
-			Point { x:x +1, y:y },
-			Point { x:x +2, y:y },
-			Point { x:x +3, y:y },
+			Point { x:x , y:y + 1},
+			Point { x:x + 1 , y:y },
+			Point { x:x + 1, y:y + 1},
 		],
 	};
 
@@ -61,7 +61,7 @@ fn main() {
 			KEY_UP => {},
 			KEY_DOWN => {},
 			_ => {
-				if current_piece.origin.y < 19 {
+				if !collision_down(&state, &current_piece) {
 					current_piece.move_down();
 				}
 			},
@@ -81,8 +81,37 @@ fn create_game_board(origin: Point) -> WINDOW {
 	win
 }
 
+fn collision_down(state: &State, piece: &Piece) -> bool {
+	for square in piece.squares.iter() {
+		if square.y >= 19 
+		|| (state.grid[square.y + 1][square.x] 
+			&& !is_square_of_current_piece(
+				&Point {
+					x: square.x,
+					y: square.y + 1,
+				},
+				piece))
+		{
+			return true;
+		}
+	}
+
+	false
+}
+
+fn is_square_of_current_piece(square: &Point, piece: &Piece) -> bool {
+	for s in piece.squares.iter() {
+		if s.y == square.y && s.x == square.x {
+			return true;			
+		}
+	}
+
+	false
+}
+
 fn update(state: &mut State, current_piece: &mut Piece) {
 	state.clear_grid();
+	state.grid[19][0] = true;
 	for square in current_piece.squares.iter() {
 		state.grid[square.y][square.x] = true;
 	}
