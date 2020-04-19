@@ -51,6 +51,9 @@ fn main() {
 			},
 			KEY_UP => {},
 			KEY_DOWN => {},
+			122 => { // not sure why, there's a bug when I don't use magic numbers
+				current_piece.rotate();
+			},
 			_ => {
 				if !collision_down(&state, &current_piece) {
 					current_piece.move_down();
@@ -143,8 +146,8 @@ fn is_square_of_current_piece(square: &Point, piece: &Piece) -> bool {
 }
 
 fn update(
-	state: &mut State,
-	locked_squares: &mut Vec<Point>,
+	mut state: &mut State,
+	mut locked_squares: &mut Vec<Point>,
 	current_piece: &mut Piece) 
 {
 	state.clear_grid();
@@ -174,9 +177,18 @@ fn update(
 		for col in 0..10 {
 			state.grid[*row][col] = false;
 			locked_squares.retain(|s| s.y != *row);
+			// shift_down_above(&mut state, &mut locked_squares, *row);
 		}
 	}
 }
+
+// fn shift_down_above(
+// 	state: &mut State,
+// 	locked_squares: &mut Vec<Point>,
+// 	row: usize) 
+// {
+// 	let new_grid: [[bool; 10]; 20] = state.grid[0..row][..];
+// }
 
 fn render(state: &State, win: WINDOW) {
 	delwin(win);

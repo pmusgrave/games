@@ -5,6 +5,7 @@ use crate::point::Point;
 pub struct Piece {
 	pub origin: Point,
 	pub squares: [Point; 4],
+	variant: PieceVariant,
 }
 
 impl Piece {
@@ -21,6 +22,7 @@ impl Piece {
 						Point { x:0, y:2 },
 						Point { x:0, y:3 },
 					],
+					variant: PieceVariant::I
 				};
 			},
 			1 => {
@@ -32,6 +34,7 @@ impl Piece {
 						Point { x:1, y:0 },
 						Point { x:1, y:1 },
 					],
+					variant: PieceVariant::O
 				};
 			}
 			2 => {
@@ -43,6 +46,7 @@ impl Piece {
 						Point { x:1, y:2 },
 						Point { x:0, y:1 },
 					],
+					variant: PieceVariant::T
 				};
 			}
 			3 => {
@@ -54,6 +58,7 @@ impl Piece {
 						Point { x:0, y:1 },
 						Point { x:0, y:2 },
 					],
+					variant: PieceVariant::S
 				};
 			}
 			4 => {
@@ -65,6 +70,7 @@ impl Piece {
 						Point { x:1, y:1 },
 						Point { x:1, y:2 },
 					],
+					variant: PieceVariant::Z
 				};
 			}
 			5 => {
@@ -76,6 +82,7 @@ impl Piece {
 						Point { x:1, y:1 },
 						Point { x:1, y:2 },
 					],
+					variant: PieceVariant::J
 				};
 			}
 			6 => {
@@ -87,6 +94,7 @@ impl Piece {
 						Point { x:1, y:1 },
 						Point { x:1, y:2 },
 					],
+					variant: PieceVariant::L
 				};
 			}
 			_ => {
@@ -98,6 +106,7 @@ impl Piece {
 						Point { x:0, y:2 },
 						Point { x:0, y:3 },
 					],
+					variant: PieceVariant::I
 				};
 			},
 		}
@@ -123,10 +132,40 @@ impl Piece {
 			square.x += 1;
 		}
 	}
+
+	pub fn rotate(&mut self) {
+		match self.variant {
+			PieceVariant::I => {
+				self.squares = [
+					Point { x:self.origin.x, y:self.origin.y },
+					Point { x:self.origin.x + 1, y:self.origin.y },
+					Point { x:self.origin.x + 2, y:self.origin.y },
+					Point { x:self.origin.x + 3, y:self.origin.y },
+				];
+				self.variant = PieceVariant::I2;
+			},
+			PieceVariant::I2 => {
+				self.squares = [
+					Point { x:self.origin.x, y:self.origin.y },
+					Point { x:self.origin.x, y:self.origin.y + 1 },
+					Point { x:self.origin.x, y:self.origin.y + 2 },
+					Point { x:self.origin.x, y:self.origin.y + 3 },
+				];
+				self.variant = PieceVariant::I;
+			}
+			PieceVariant::O => {},
+			PieceVariant::T => {},
+			PieceVariant::S => {},
+			PieceVariant::Z => {},
+			PieceVariant::J => {},
+			PieceVariant::L => {},
+		}
+	}
 }
 
 pub enum PieceVariant {
 	I,
+	I2,
 	O,
 	T,
 	S,
