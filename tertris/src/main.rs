@@ -38,7 +38,7 @@ fn main() {
 	let advance_piece = Arc::new(Mutex::new(false));
 	let guard = {
 		let advance_piece = advance_piece.clone();
-	  timer.schedule_repeating(chrono::Duration::milliseconds(500), move || {
+	  timer.schedule_repeating(chrono::Duration::milliseconds(state.tick_rate), move || {
 	  	*advance_piece.lock().unwrap() = true;
 	  })
 	};	
@@ -61,8 +61,16 @@ fn main() {
 					current_piece.move_right();
 				}
 			},
-			KEY_UP => {},
-			KEY_DOWN => {},
+			KEY_UP => {
+				while !collision_down(&state, &current_piece) {
+					current_piece.move_down();
+				} 
+			},
+			KEY_DOWN => {
+				if !collision_down(&state, &current_piece) {
+					current_piece.move_down();
+				} 
+			},
 			122 => { // not sure why, there's a bug when I don't use magic numbers
 				current_piece.rotate();
 			},
@@ -185,6 +193,7 @@ fn update(
 			}
 		}
 		if row_is_full {
+			state.lines += 1;
 			locked_squares.retain(|s| s.y != y);
 			for locked_square in locked_squares.iter_mut() {
 				if locked_square.y < 19 && locked_square.y < y {
@@ -192,6 +201,14 @@ fn update(
 				}
 			}
 		}
+
+		state.level = state.lines % 10;
+		if state.level < 9 {
+			state.tick_rate = 1000 - (state.level as i64)*100;
+		}
+		else {
+			state.tick_rate = 1000 / (state.level as i64);
+		};
 	}
 }
 
