@@ -37,96 +37,96 @@ impl Piece {
 		match piece_rng {
 			0 => {
 				return Piece {
-					origin : Point { x:0, y:0 },
+					origin : Point { x:4, y:0 },
 					squares : [
-						Point { x:0, y:0 },
-						Point { x:0, y:1 },
-						Point { x:0, y:2 },
-						Point { x:0, y:3 },
+						Point { x:4, y:0 },
+						Point { x:4, y:1 },
+						Point { x:4, y:2 },
+						Point { x:4, y:3 },
 					],
 					variant: PieceVariant::I
 				};
 			},
 			1 => {
 				return Piece {
-					origin : Point { x:0, y:0 },
+					origin : Point { x:4, y:0 },
 					squares : [
-						Point { x:0, y:0 },
-						Point { x:0, y:1 },
-						Point { x:1, y:0 },
-						Point { x:1, y:1 },
+						Point { x:4, y:0 },
+						Point { x:4, y:1 },
+						Point { x:5, y:0 },
+						Point { x:5, y:1 },
 					],
 					variant: PieceVariant::O
 				};
 			}
 			2 => {
 				return Piece {
-					origin : Point { x:0, y:0 },
+					origin : Point { x:4, y:0 },
 					squares : [
-						Point { x:1, y:0 },
-						Point { x:1, y:1 },
-						Point { x:1, y:2 },
-						Point { x:0, y:1 },
+						Point { x:4, y:0 },
+						Point { x:4, y:1 },
+						Point { x:4, y:2 },
+						Point { x:5, y:1 },
 					],
 					variant: PieceVariant::T
 				};
 			}
 			3 => {
 				return Piece {
-					origin : Point { x:0, y:0 },
+					origin : Point { x:4, y:0 },
 					squares : [
-						Point { x:1, y:0 },
-						Point { x:1, y:1 },
-						Point { x:0, y:1 },
-						Point { x:0, y:2 },
+						Point { x:5, y:0 },
+						Point { x:5, y:1 },
+						Point { x:4, y:1 },
+						Point { x:4, y:2 },
 					],
 					variant: PieceVariant::S
 				};
 			}
 			4 => {
 				return Piece {
-					origin : Point { x:0, y:0 },
+					origin : Point { x:4, y:0 },
 					squares : [
-						Point { x:0, y:0 },
-						Point { x:0, y:1 },
-						Point { x:1, y:1 },
-						Point { x:1, y:2 },
+						Point { x:4, y:0 },
+						Point { x:4, y:1 },
+						Point { x:5, y:1 },
+						Point { x:5, y:2 },
 					],
 					variant: PieceVariant::Z
 				};
 			}
 			5 => {
 				return Piece {
-					origin : Point { x:0, y:0 },
+					origin : Point { x:4, y:0 },
 					squares : [
-						Point { x:0, y:0 },
-						Point { x:1, y:0 },
-						Point { x:1, y:1 },
-						Point { x:1, y:2 },
+						Point { x:4, y:0 },
+						Point { x:5, y:0 },
+						Point { x:5, y:1 },
+						Point { x:5, y:2 },
 					],
 					variant: PieceVariant::L
 				};
 			}
 			6 => {
 				return Piece {
-					origin : Point { x:0, y:0 },
+					origin : Point { x:4, y:0 },
 					squares : [
-						Point { x:0, y:2 },
-						Point { x:1, y:0 },
-						Point { x:1, y:1 },
-						Point { x:1, y:2 },
+						Point { x:4, y:2 },
+						Point { x:5, y:0 },
+						Point { x:5, y:1 },
+						Point { x:5, y:2 },
 					],
 					variant: PieceVariant::J3
 				};
 			}
 			_ => {
 				return Piece {
-					origin : Point { x:0, y:0 },
+					origin : Point { x:4, y:0 },
 					squares : [
-						Point { x:0, y:0 },
-						Point { x:0, y:1 },
-						Point { x:0, y:2 },
-						Point { x:0, y:3 },
+						Point { x:4, y:0 },
+						Point { x:4, y:1 },
+						Point { x:4, y:2 },
+						Point { x:4, y:3 },
 					],
 					variant: PieceVariant::I
 				};

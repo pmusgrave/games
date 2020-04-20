@@ -159,7 +159,6 @@ fn update(
 		state.grid[square.y][square.x] = true;
 	}
 
-	let mut full_row_indices = vec![];
 	for (y, row) in state.grid.iter().enumerate() {
 		let mut row_is_full = true;
 		for (x, _element) in row.iter().enumerate() {
@@ -170,25 +169,49 @@ fn update(
 			}
 		}
 		if row_is_full {
-			full_row_indices.push(y);
-		}
-	}
-	for row in full_row_indices.iter() {
-		for col in 0..10 {
-			state.grid[*row][col] = false;
-			locked_squares.retain(|s| s.y != *row);
-			// shift_down_above(&mut state, &mut locked_squares, *row);
+			locked_squares.retain(|s| s.y != y);
+			for locked_square in locked_squares.iter_mut() {
+				if locked_square.y < 19 {
+					locked_square.y += 1;	
+				}
+			}
 		}
 	}
 }
 
-// fn shift_down_above(
-// 	state: &mut State,
-// 	locked_squares: &mut Vec<Point>,
-// 	row: usize) 
-// {
-// 	let new_grid: [[bool; 10]; 20] = state.grid[0..row][..];
-// }
+fn shift_down_above(
+	row: usize,
+	state: &mut State,
+	locked_squares: &mut Vec<Point>)
+{
+	for square in locked_squares {
+		square.y += 1;
+	}
+
+	// let mut new_grid = [[false; 10]; 20];
+	// for (y, current_row) in state.grid.iter().enumerate() {
+	// 	for (x, current_col) in  current_row.iter().enumerate() {
+	// 		if y > row {
+	// 			new_grid[y][x] = state.grid[y][x];
+	// 		}
+	// 		else if y > 0 {
+	// 			new_grid[y][x] = state.grid[y-1][x];
+	// 		}
+	// 		else {
+	// 			new_grid[y][x] = false;	
+	// 		}
+	// 	}
+	// }
+
+	// for (y, current_row) in new_grid.iter().enumerate() {
+	// 	for (x, current_col) in  current_row.iter().enumerate() {
+	// 		state.grid[y][x] = new_grid[y][x];
+	// 	}
+	// }
+
+
+
+}
 
 fn render(state: &State, win: WINDOW) {
 	delwin(win);
