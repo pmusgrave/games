@@ -9,3 +9,5 @@ edition = "2018"
 [dependencies]
 ncurses = "5.99.0"
 rand = ""
+timer = ""
+chrono = ""

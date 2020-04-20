@@ -1,8 +1,12 @@
 mod point;
 mod piece;
 mod state;
+extern crate timer;
+extern crate chrono;
 extern crate ncurses;
 use ncurses::*;
+use std::thread;
+use std::sync::{Arc, Mutex};
 use point::Point;
 use piece::Piece;
 use piece::PieceVariant;
@@ -17,7 +21,7 @@ fn main() {
 	initscr();
 	raw();
 	keypad(stdscr(), true);
-	halfdelay(3);
+	halfdelay(1);
 	noecho();
 	curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
 	refresh();
@@ -26,10 +30,18 @@ fn main() {
 	let mut state: State = State::new();
 	let board_origin = Point { x:0, y:0 };
 	let win = create_game_board(board_origin);
-
 	let mut current_piece = Piece::new();
-
 	let mut locked_squares: Vec<Point> = vec![];
+
+	// init timer to handle piece advance rate
+	let timer = timer::Timer::new();
+	let advance_piece = Arc::new(Mutex::new(false));
+	let guard = {
+		let advance_piece = advance_piece.clone();
+	  timer.schedule_repeating(chrono::Duration::milliseconds(500), move || {
+	  	*advance_piece.lock().unwrap() = true;
+	  })
+	};	
 
 	let mut ch = getch();
 	while ch != KEY_F(1)
@@ -55,19 +67,23 @@ fn main() {
 				current_piece.rotate();
 			},
 			_ => {
-				if !collision_down(&state, &current_piece) {
-					current_piece.move_down();
-				}
-				else {
-					for square in &current_piece.squares {
-						locked_squares.push(Point { x: square.x, y: square.y });
+				if *advance_piece.lock().unwrap() {
+					*advance_piece.lock().unwrap() = false;
+					if !collision_down(&state, &current_piece) {
+						current_piece.move_down();
 					}
-					current_piece = Piece::new();
+					else {
+						for square in &current_piece.squares {
+							locked_squares.push(Point { x: square.x, y: square.y });
+						}
+						current_piece = Piece::new();
+					}
 				}
 			},
 		}
 	}
 
+	drop(guard);
 	endwin();
 }
 
@@ -171,46 +187,12 @@ fn update(
 		if row_is_full {
 			locked_squares.retain(|s| s.y != y);
 			for locked_square in locked_squares.iter_mut() {
-				if locked_square.y < 19 {
+				if locked_square.y < 19 && locked_square.y < y {
 					locked_square.y += 1;	
 				}
 			}
 		}
 	}
-}
-
-fn shift_down_above(
-	row: usize,
-	state: &mut State,
-	locked_squares: &mut Vec<Point>)
-{
-	for square in locked_squares {
-		square.y += 1;
-	}
-
-	// let mut new_grid = [[false; 10]; 20];
-	// for (y, current_row) in state.grid.iter().enumerate() {
-	// 	for (x, current_col) in  current_row.iter().enumerate() {
-	// 		if y > row {
-	// 			new_grid[y][x] = state.grid[y][x];
-	// 		}
-	// 		else if y > 0 {
-	// 			new_grid[y][x] = state.grid[y-1][x];
-	// 		}
-	// 		else {
-	// 			new_grid[y][x] = false;	
-	// 		}
-	// 	}
-	// }
-
-	// for (y, current_row) in new_grid.iter().enumerate() {
-	// 	for (x, current_col) in  current_row.iter().enumerate() {
-	// 		state.grid[y][x] = new_grid[y][x];
-	// 	}
-	// }
-
-
-
 }
 
 fn render(state: &State, win: WINDOW) {
