@@ -80,7 +80,7 @@ impl Piece {
 						Point { x:4, y:1 },
 						Point { x:4, y:2 },
 					],
-					variant: PieceVariant::S2
+					variant: PieceVariant::S
 				};
 			}
 			4 => {
@@ -92,7 +92,7 @@ impl Piece {
 						Point { x:5, y:1 },
 						Point { x:5, y:2 },
 					],
-					variant: PieceVariant::Z
+					variant: PieceVariant::Z2
 				};
 			}
 			5 => {
