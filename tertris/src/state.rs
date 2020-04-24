@@ -14,7 +14,7 @@ impl State {
 			grid: [[false; 10]; 20],
 			lines: 0,
 			level: 1,
-			tick_rate: 700,
+			tick_rate: 1000,
 		}
 	}
 

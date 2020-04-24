@@ -10,6 +10,8 @@ use point::Point;
 use piece::Piece;
 use state::State;
 
+use std::{thread, time};
+
 static BOARD_HEIGHT: i32 = 22;
 static BOARD_WIDTH: i32 = 22;
 
@@ -33,15 +35,7 @@ fn main() {
 
 	print_score_board(&state);
 
-	// init timer to handle piece advance rate
-	let timer = timer::Timer::new();
-	let advance_piece = Arc::new(Mutex::new(false));
-	let guard = {
-		let advance_piece = advance_piece.clone();
-	  timer.schedule_repeating(chrono::Duration::milliseconds(state.tick_rate), move || {
-	  	*advance_piece.lock().unwrap() = true;
-	  })
-	};	
+	let advance_piece = Arc::new(Mutex::new(true));
 
 	let mut ch = getch();
 	while ch != KEY_F(1)
@@ -64,7 +58,11 @@ fn main() {
 			KEY_UP => {
 				while !collision_down(&state, &current_piece) {
 					current_piece.move_down();
-				} 
+				}
+				for square in &current_piece.squares {
+					locked_squares.push(Point { x: square.x, y: square.y });
+				}
+				current_piece = Piece::new();
 			},
 			KEY_DOWN => {
 				if !collision_down(&state, &current_piece) {
@@ -77,6 +75,18 @@ fn main() {
 			_ => {
 				if *advance_piece.lock().unwrap() {
 					*advance_piece.lock().unwrap() = false;
+
+					// timer to handle piece advance rate
+					let tick_rate = state.tick_rate as u64;
+					{
+						let advance_piece = advance_piece.clone();
+						thread::spawn(move || {
+							let delay = time::Duration::from_millis(tick_rate);
+							thread::sleep(delay);
+							*advance_piece.lock().unwrap() = true;
+						});
+					}
+
 					if !collision_down(&state, &current_piece) {
 						current_piece.move_down();
 					}
@@ -91,7 +101,6 @@ fn main() {
 		}
 	}
 
-	drop(guard);
 	endwin();
 }
 
