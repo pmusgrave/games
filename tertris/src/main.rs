@@ -5,11 +5,9 @@ extern crate timer;
 extern crate chrono;
 extern crate ncurses;
 use ncurses::*;
-use std::thread;
 use std::sync::{Arc, Mutex};
 use point::Point;
 use piece::Piece;
-use piece::PieceVariant;
 use state::State;
 
 static BOARD_HEIGHT: i32 = 22;
@@ -32,6 +30,8 @@ fn main() {
 	let win = create_game_board(board_origin);
 	let mut current_piece = Piece::new();
 	let mut locked_squares: Vec<Point> = vec![];
+
+	print_score_board(&state);
 
 	// init timer to handle piece advance rate
 	let timer = timer::Timer::new();
@@ -105,6 +105,21 @@ fn create_game_board(origin: Point) -> WINDOW {
 	win
 }
 
+fn print_score_board(state: &State) {
+	let score_board_origin = Point { x:(BOARD_WIDTH + 1) as usize, y:1 };
+	let score_board = newwin(
+		5,
+		15,
+		score_board_origin.y as i32,
+		score_board_origin.x as i32);
+	box_(score_board,0,0);
+	let level_str = format!("Level: {}", state.level);
+	let lines_str = format!("Lines: {}", state.lines);
+	mvwprintw(score_board, 1, 1, &level_str);
+	mvwprintw(score_board, 2, 1, &lines_str);
+	wrefresh(score_board);
+}
+
 fn collision_down(state: &State, piece: &Piece) -> bool {
 	for square in piece.squares.iter() {
 		if square.y >= 19 
@@ -171,7 +186,7 @@ fn is_square_of_current_piece(square: &Point, piece: &Piece) -> bool {
 
 fn update(
 	mut state: &mut State,
-	mut locked_squares: &mut Vec<Point>,
+	locked_squares: &mut Vec<Point>,
 	current_piece: &mut Piece) 
 {
 	state.clear_grid();
@@ -202,7 +217,7 @@ fn update(
 			}
 		}
 
-		state.level = state.lines % 10;
+		state.level = state.lines / 10;
 		if state.level < 9 {
 			state.tick_rate = 1000 - (state.level as i64)*100;
 		}
@@ -210,6 +225,8 @@ fn update(
 			state.tick_rate = 1000 / (state.level as i64);
 		};
 	}
+
+	print_score_board(&state);
 }
 
 fn render(state: &State, win: WINDOW) {

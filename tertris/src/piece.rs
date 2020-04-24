@@ -156,7 +156,7 @@ impl Piece {
 		}
 	}
 
-	pub fn rotate(&mut self, state: &State) {
+	pub fn rotate(&mut self, _state: &State) {
 		match self.variant {
 			PieceVariant::I => {
 				handle_boundary_positive(&mut self.origin.x, 6);
@@ -364,12 +364,12 @@ impl Piece {
 
 fn handle_boundary_positive(p: &mut usize, boundary: usize) {
 	if *p > boundary {
-		*p -= (*p - boundary);
+		*p -= *p - boundary;
 	}
 }
 
 fn handle_boundary_negative(p: &mut usize, boundary: usize) {
 	if *p < boundary {
-		*p += (boundary - *p);
+		*p += boundary - *p;
 	}
 }
