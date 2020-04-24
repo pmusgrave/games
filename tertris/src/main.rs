@@ -72,7 +72,7 @@ fn main() {
 				} 
 			},
 			122 => { // not sure why, there's a bug when I don't use magic numbers
-				current_piece.rotate();
+				current_piece.rotate(&state);
 			},
 			_ => {
 				if *advance_piece.lock().unwrap() {

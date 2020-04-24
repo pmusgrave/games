@@ -1,6 +1,7 @@
 extern crate rand;
 use rand::Rng;
 use crate::point::Point;
+use crate::state::State;
 
 pub enum PieceVariant {
 	I,
@@ -155,9 +156,10 @@ impl Piece {
 		}
 	}
 
-	pub fn rotate(&mut self) {
+	pub fn rotate(&mut self, state: &State) {
 		match self.variant {
 			PieceVariant::I => {
+				handle_boundary_positive(&mut self.origin.x, 6);
 				self.squares = [
 					Point { x:self.origin.x, y:self.origin.y },
 					Point { x:self.origin.x + 1, y:self.origin.y },
@@ -167,6 +169,7 @@ impl Piece {
 				self.variant = PieceVariant::I2;
 			},
 			PieceVariant::I2 => {
+				handle_boundary_negative(&mut self.origin.y, 3);
 				self.squares = [
 					Point { x:self.origin.x, y:self.origin.y },
 					Point { x:self.origin.x, y:self.origin.y - 1 },
@@ -177,6 +180,8 @@ impl Piece {
 			},
 			PieceVariant::O => {},
 			PieceVariant::T => {
+				handle_boundary_positive(&mut self.origin.x, 7);
+				handle_boundary_positive(&mut self.origin.y, 18);
 				self.squares = [
 					Point { x:self.origin.x , y:self.origin.y },
 					Point { x:self.origin.x + 1, y:self.origin.y },
@@ -186,6 +191,9 @@ impl Piece {
 				self.variant = PieceVariant::T2;
 			},
 			PieceVariant::T2 => {
+				handle_boundary_positive(&mut self.origin.x, 8);
+				handle_boundary_positive(&mut self.origin.y, 18);
+				handle_boundary_negative(&mut self.origin.y, 1);
 				self.squares = [
 					Point { x:self.origin.x, y:self.origin.y - 1 },
 					Point { x:self.origin.x, y:self.origin.y },
@@ -195,6 +203,8 @@ impl Piece {
 				self.variant = PieceVariant::T3;
 			},
 			PieceVariant::T3 => {
+				handle_boundary_positive(&mut self.origin.x, 7);
+				handle_boundary_negative(&mut self.origin.y, 1);
 				self.squares = [
 					Point { x:self.origin.x , y:self.origin.y },
 					Point { x:self.origin.x + 1, y:self.origin.y },
@@ -204,6 +214,8 @@ impl Piece {
 				self.variant = PieceVariant::T4;
 			},
 			PieceVariant::T4 => {
+				handle_boundary_positive(&mut self.origin.x, 8);
+				handle_boundary_positive(&mut self.origin.y, 17);
 				self.squares = [
 					Point { x:self.origin.x + 1, y:self.origin.y },
 					Point { x:self.origin.x + 1, y:self.origin.y + 1},
@@ -213,6 +225,8 @@ impl Piece {
 				self.variant = PieceVariant::T;
 			},
 			PieceVariant::S => {
+				handle_boundary_positive(&mut self.origin.x, 7);
+				handle_boundary_positive(&mut self.origin.y, 18);
 				self.squares = [
 					Point { x:self.origin.x, y:self.origin.y },
 					Point { x:self.origin.x + 1, y:self.origin.y },
@@ -222,6 +236,8 @@ impl Piece {
 				self.variant = PieceVariant::S2;
 			},
 			PieceVariant::S2 => {
+				handle_boundary_positive(&mut self.origin.x, 8);
+				handle_boundary_positive(&mut self.origin.y, 17);
 				self.squares = [
 					Point { x:self.origin.x + 1, y:self.origin.y },
 					Point { x:self.origin.x + 1, y:self.origin.y + 1},
@@ -231,6 +247,8 @@ impl Piece {
 				self.variant = PieceVariant::S;
 			},
 			PieceVariant::Z => {
+				handle_boundary_positive(&mut self.origin.x, 8);
+				handle_boundary_positive(&mut self.origin.y, 17);
 				self.squares = [
 					Point { x:self.origin.x, y:self.origin.y },
 					Point { x:self.origin.x, y:self.origin.y + 1 },
@@ -240,6 +258,8 @@ impl Piece {
 				self.variant = PieceVariant::Z2;
 			},
 			PieceVariant::Z2 => {
+				handle_boundary_positive(&mut self.origin.x, 7);
+				handle_boundary_positive(&mut self.origin.y, 18);
 				self.squares = [
 					Point { x:self.origin.x, y:self.origin.y + 1},
 					Point { x:self.origin.x + 1, y:self.origin.y + 1},
@@ -249,6 +269,8 @@ impl Piece {
 				self.variant = PieceVariant::Z;
 			},
 			PieceVariant::J => {
+				handle_boundary_positive(&mut self.origin.x, 7);
+				handle_boundary_negative(&mut self.origin.y, 1);
 				self.squares = [
 					Point { x:self.origin.x, y:self.origin.y },
 					Point { x:self.origin.x + 1, y:self.origin.y },
@@ -258,6 +280,8 @@ impl Piece {
 				self.variant = PieceVariant::J2;
 			},
 			PieceVariant::J2 => {
+				handle_boundary_positive(&mut self.origin.x, 8);
+				handle_boundary_negative(&mut self.origin.y, 2);
 				self.squares = [
 					Point { x:self.origin.x + 1, y:self.origin.y },
 					Point { x:self.origin.x + 1, y:self.origin.y - 1 },
@@ -267,6 +291,9 @@ impl Piece {
 				self.variant = PieceVariant::J3;
 			},
 			PieceVariant::J3 => {
+				handle_boundary_positive(&mut self.origin.x, 8);
+				handle_boundary_negative(&mut self.origin.x, 1);
+				handle_boundary_positive(&mut self.origin.y, 18);
 				self.squares = [
 					Point { x:self.origin.x + 1, y:self.origin.y },
 					Point { x:self.origin.x, y:self.origin.y },
@@ -276,6 +303,8 @@ impl Piece {
 				self.variant = PieceVariant::J4;
 			},
 			PieceVariant::J4 => {
+				handle_boundary_positive(&mut self.origin.x, 8);
+				handle_boundary_positive(&mut self.origin.y, 17);
 				self.squares = [
 					Point { x:self.origin.x + 1, y:self.origin.y },
 					Point { x:self.origin.x, y:self.origin.y },
@@ -285,6 +314,8 @@ impl Piece {
 				self.variant = PieceVariant::J;
 			},
 			PieceVariant::L => {
+				handle_boundary_positive(&mut self.origin.x, 7);
+				handle_boundary_positive(&mut self.origin.y, 18);
 				self.squares = [
 					Point { x:self.origin.x, y:self.origin.y },
 					Point { x:self.origin.x + 1, y:self.origin.y },
@@ -294,6 +325,8 @@ impl Piece {
 				self.variant = PieceVariant::L2;
 			},
 			PieceVariant::L2 => {
+				handle_boundary_positive(&mut self.origin.x, 8);
+				handle_boundary_negative(&mut self.origin.y, 2);
 				self.squares = [
 					Point { x:self.origin.x, y:self.origin.y },
 					Point { x:self.origin.x, y:self.origin.y - 1 },
@@ -303,6 +336,9 @@ impl Piece {
 				self.variant = PieceVariant::L3;
 			},
 			PieceVariant::L3 => {
+				handle_boundary_positive(&mut self.origin.x, 8);
+				handle_boundary_negative(&mut self.origin.x, 1);
+				handle_boundary_negative(&mut self.origin.y, 1);
 				self.squares = [
 					Point { x:self.origin.x + 1, y:self.origin.y },
 					Point { x:self.origin.x, y:self.origin.y },
@@ -312,6 +348,8 @@ impl Piece {
 				self.variant = PieceVariant::L4;
 			},
 			PieceVariant::L4 => {
+				handle_boundary_positive(&mut self.origin.x, 8);
+				handle_boundary_positive(&mut self.origin.y, 17);
 				self.squares = [
 					Point { x:self.origin.x, y:self.origin.y },
 					Point { x:self.origin.x + 1, y:self.origin.y },
@@ -321,5 +359,17 @@ impl Piece {
 				self.variant = PieceVariant::L;
 			},
 		}
+	}
+}
+
+fn handle_boundary_positive(p: &mut usize, boundary: usize) {
+	if *p > boundary {
+		*p -= (*p - boundary);
+	}
+}
+
+fn handle_boundary_negative(p: &mut usize, boundary: usize) {
+	if *p < boundary {
+		*p += (boundary - *p);
 	}
 }
