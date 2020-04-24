@@ -259,28 +259,28 @@ impl Piece {
 			},
 			PieceVariant::J2 => {
 				self.squares = [
+					Point { x:self.origin.x + 1, y:self.origin.y },
+					Point { x:self.origin.x + 1, y:self.origin.y - 1 },
+					Point { x:self.origin.x + 1, y:self.origin.y - 2 },
 					Point { x:self.origin.x, y:self.origin.y },
-					Point { x:self.origin.x, y:self.origin.y - 1 },
-					Point { x:self.origin.x, y:self.origin.y - 2 },
-					Point { x:self.origin.x - 1, y:self.origin.y },
 				];
 				self.variant = PieceVariant::J3;
 			},
 			PieceVariant::J3 => {
 				self.squares = [
+					Point { x:self.origin.x + 1, y:self.origin.y },
 					Point { x:self.origin.x, y:self.origin.y },
 					Point { x:self.origin.x - 1, y:self.origin.y },
-					Point { x:self.origin.x - 2, y:self.origin.y },
-					Point { x:self.origin.x, y:self.origin.y + 1},
+					Point { x:self.origin.x + 1, y:self.origin.y + 1},
 				];
 				self.variant = PieceVariant::J4;
 			},
 			PieceVariant::J4 => {
 				self.squares = [
+					Point { x:self.origin.x + 1, y:self.origin.y },
 					Point { x:self.origin.x, y:self.origin.y },
-					Point { x:self.origin.x - 1, y:self.origin.y },
-					Point { x:self.origin.x - 1, y:self.origin.y + 1 },
-					Point { x:self.origin.x - 1, y:self.origin.y + 2},
+					Point { x:self.origin.x, y:self.origin.y + 1 },
+					Point { x:self.origin.x, y:self.origin.y + 2},
 				];
 				self.variant = PieceVariant::J;
 			},
@@ -304,10 +304,10 @@ impl Piece {
 			},
 			PieceVariant::L3 => {
 				self.squares = [
+					Point { x:self.origin.x + 1, y:self.origin.y },
 					Point { x:self.origin.x, y:self.origin.y },
 					Point { x:self.origin.x - 1, y:self.origin.y },
-					Point { x:self.origin.x - 2, y:self.origin.y },
-					Point { x:self.origin.x, y:self.origin.y - 1},
+					Point { x:self.origin.x + 1, y:self.origin.y - 1},
 				];
 				self.variant = PieceVariant::L4;
 			},
