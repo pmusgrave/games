@@ -2,15 +2,18 @@
 
 Tetris in the terminal. Written in Rust.
 
-To play this, you'll need Rust installed. You can get Rust [here](https://rustup.rs/).
+### Requirements
+To play this, you'll need Rust installed. You can get Rust [here](https://rustup.rs/). 
 
-Installation instructions:
+This has been tested to work on Linux and Mac systems. It uses ncurses for display, so Windows is not supported at this time.
+
+### Installation instructions:
 ```
 cd tertris
 cargo run
 ```
 
-Playing instructions:
+### Playing instructions:
 ```
 Left/Right arrow keys to move.
 Down arrow key to move down manually.
