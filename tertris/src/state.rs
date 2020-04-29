@@ -6,6 +6,7 @@ pub struct State {
 	pub lines: u32,
 	pub level: u32,
 	pub tick_rate: i64,
+	pub paused: bool,
 }
 
 impl State {
@@ -15,6 +16,7 @@ impl State {
 			lines: 0,
 			level: 1,
 			tick_rate: 1000,
+			paused: false,
 		}
 	}
 

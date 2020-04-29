@@ -17,7 +17,7 @@ Down arrow key to move down manually.
 Up arrow key to drop to the bottom.
 'z' to rotate piece.
 F1 to quit.
+Esc key to pause/unpause.
 ```
 
 This is a learning project, not for commercial use.
-<sub><sup><sub><sup>(Please don't sue me).</sup></sub></sup></sub>

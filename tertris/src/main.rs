@@ -40,11 +40,20 @@ fn main() {
 	let mut ch = getch();
 	while ch != KEY_F(1)
 	{
-		update(&mut state, &mut locked_squares, &mut current_piece);
-		render(&mut state, win);
+		if state.paused {
+			print_paused_box();
+		}
+		else{
+			update(&mut state, &mut locked_squares, &mut current_piece);
+			render(&mut state, win);	
+		}
+		
 
 		ch = getch();
 		match ch {
+			27 => { // escape key
+				state.paused = !state.paused;
+			},
 			KEY_LEFT => {
 				if !collision_left(&state, &current_piece) {
 					current_piece.move_left();
@@ -112,6 +121,18 @@ fn create_game_board(origin: Point) -> WINDOW {
 	box_(win,0,0);
 	wrefresh(win);
 	win
+}
+
+fn print_paused_box() {
+	let paused_box_origin = Point { x:7, y:7 };
+	let paused_box = newwin(
+		3,
+		8,
+		paused_box_origin.y as i32,
+		paused_box_origin.x as i32);
+	box_(paused_box,0,0);
+	mvwprintw(paused_box, 1, 1, "Paused");
+	wrefresh(paused_box);
 }
 
 fn print_score_board(state: &State) {
