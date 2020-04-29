@@ -82,7 +82,7 @@ fn main() {
 				current_piece.rotate(&state);
 			},
 			_ => {
-				if *advance_piece.lock().unwrap() {
+				if *advance_piece.lock().unwrap() && !state.paused {
 					*advance_piece.lock().unwrap() = false;
 
 					// timer to handle piece advance rate
