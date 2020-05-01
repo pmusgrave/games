@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include <ncurses.h>
 #include <stdio.h>
 #include <time.h>
 #include <stdio.h>
@@ -6,6 +7,9 @@
 #include <chrono>
 
 Game::Game(){
+  this->win = newwin(0,0,0,0);
+  initscr();
+
   srand(time(NULL));
   for (int i = 0; i < GRID_SIZE + 1; i++) {
     for (int j = 0; j < GRID_SIZE + 1; j++) {
@@ -118,11 +122,19 @@ int Game::calculate_neighbors(size_t i, size_t j){
 }
 
 void Game::print() {
+  delwin(this->win);
+  this->win = newwin(0,0,0,0);
+  wrefresh(this->win);
+
   for (int i = 0; i < GRID_SIZE + 1; i++) {
     for (int j = 0; j < GRID_SIZE + 1; j++) {
-      std::cout << this->grid[i][j].occupied;// << " ";
+      wprintw(this->win, "%d", this->grid[i][j].occupied);
+      // std::cout << this->grid[i][j].occupied;// << " ";
     }
-    std::cout << std::endl;
+    wprintw(this->win, "\n");
+    // std::cout << std::endl;
   }
-  std::cout << std::endl;
+  wprintw(this->win, "\n");
+  // std::cout << std::endl;
+  wrefresh(this->win);
 }

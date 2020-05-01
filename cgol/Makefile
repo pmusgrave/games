@@ -12,7 +12,7 @@ inc/*.hpp \
 CPP_INCLUDES= \
 -Iinc \
 
-LIBS=
+LIBS= -lncurses
 CFLAGS = $(OPT) $(CPP_INCLUDES) $(LIBS) -Wall
 
 all: build/main
