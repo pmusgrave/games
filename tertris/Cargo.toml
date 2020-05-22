@@ -11,3 +11,4 @@ ncurses = "5.99.0"
 rand = ""
 timer = ""
 chrono = ""
+cursive = { git = "https://github.com/gyscos/Cursive" }
