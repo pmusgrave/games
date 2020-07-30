@@ -6,8 +6,9 @@
 #include <iostream>
 #include <vector>
 
-#include "entity.hpp"
 #include "black_hole.hpp"
+#include "entity.hpp"
+#include "resume.hpp"
 
 void must_init(bool test, const char *description) {
   if(test) return;
@@ -42,8 +43,13 @@ int main() {
   al_register_event_source(queue, al_get_timer_event_source(timer));
 
   std::vector<Entity*> entities;
-  entities.push_back(std::move(new BlackHole(100,100)));
-  entities.push_back(std::move(new BlackHole(200,200)));
+  std::vector<BlackHole*> black_holes;
+  //  entities.push_back(std::move(new BlackHole(100,100)));
+  BlackHole bh1(200, 200);
+  black_holes.push_back(&bh1);
+  entities.push_back(&bh1);
+  Resume resume(100, 500, &black_holes);
+  entities.push_back(&resume);
 
   bool redraw = true;
   ALLEGRO_EVENT event;
@@ -63,6 +69,7 @@ int main() {
 
       std::vector<Entity*>::iterator itr;
       for (itr = entities.begin(); itr < entities.end(); itr++) {
+        (*itr)->update();
         (*itr)->draw();
       }
 
@@ -76,11 +83,11 @@ int main() {
   al_destroy_timer(timer);
   al_destroy_event_queue(queue);
 
+  /*
   std::vector<Entity*>::iterator itr;
   for (itr = entities.begin(); itr < entities.end(); itr++) {
     delete (*itr);
   }
-
-
+  */
   return 0;
 }

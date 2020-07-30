@@ -8,9 +8,12 @@ public:
   BlackHole(int x, int y);
   ~BlackHole() {}
   void draw() override;
-private:
+  void update() override;
   int x;
   int y;
+  int radius;
+  int m;
+  static constexpr double G = 6.67430e-11;
 };
 
 #endif  // INC_BLACK_HOLE_HPP
