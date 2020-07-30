@@ -7,7 +7,7 @@ src/*.cpp \
 #test/*.cpp
 
 DEPS= \
-#inc/*.hpp \
+inc/*.hpp \
 
 CPP_INCLUDES= \
 -Iinc \
