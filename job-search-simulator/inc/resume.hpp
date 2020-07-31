@@ -5,13 +5,16 @@
 
 #include "black_hole.hpp"
 #include "entity.hpp"
+#include "manager.hpp"
 
 class Resume final : public Entity {
 public:
-  Resume(int x, int y, std::vector<BlackHole*>* black_holes);
+  Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* manager);
   ~Resume() {}
   void draw() override;
   void launch();
+  void move_down();
+  void move_up();
   void reset();
   void update() override;
   int x;
@@ -26,6 +29,7 @@ private:
   static const int width = 50;
   static const int height = 70;
   std::vector<BlackHole*>* black_holes;
+  Manager* manager;
 };
 
 #endif  // INC_RESUME_HPP_

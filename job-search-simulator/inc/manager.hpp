@@ -14,10 +14,10 @@ public:
   void update() override;
   int x;
   int y;
-private:
-  ALLEGRO_BITMAP* img;
   static const int width = 100;
   static const int height = 140;
+private:
+  ALLEGRO_BITMAP* img;
 };
 
 #endif  // INC_MANAGER_HPP_

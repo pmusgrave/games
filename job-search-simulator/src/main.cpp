@@ -67,11 +67,12 @@ int main() {
     entities.push_back(&bh1);
     entities.push_back(&bh2);
     entities.push_back(&bh3);*/
-  Resume resume(0, 500, &black_holes);
-  entities.push_back(&resume);
 
   Manager manager(2460, 700);
   entities.push_back(&manager);
+
+  Resume resume(0, 500, &black_holes, &manager);
+  entities.push_back(&resume);
 
   bool done = false;
   bool redraw = true;
@@ -90,13 +91,15 @@ int main() {
     switch(event.type) {
     case ALLEGRO_EVENT_TIMER:
       if(key[ALLEGRO_KEY_W])
-        resume.y -= 10;
+        resume.move_down();
       if(key[ALLEGRO_KEY_S])
-        resume.y += 10;
+        resume.move_up();
       if(key[ALLEGRO_KEY_A])
         resume.launch_angle--;
       if(key[ALLEGRO_KEY_D])
         resume.launch_angle++;
+      if(key[ALLEGRO_KEY_R])
+        resume.reset();
       if(key[ALLEGRO_KEY_SPACE])
         resume.launch();
 

@@ -6,8 +6,8 @@
 
 #include <iostream>
 
-Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes)
-  : x(x), y(y), vx(0), vy(0), angle(0), launched(false), fail(false), black_holes(black_holes)
+Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* manager)
+  : x(x), y(y), vx(0), vy(0), angle(0), launched(false), fail(false), black_holes(black_holes), manager(manager)
 {}
 
 void Resume::draw() {
@@ -36,6 +36,16 @@ void Resume::launch() {
   launched = true;
   vx = 20*cos(angle);
   vy = 20*sin(angle);
+}
+
+void Resume::move_down() {
+  if (!launched)
+    y -= 10;
+}
+
+void Resume::move_up() {
+  if (!launched)
+    y += 10;
 }
 
 void Resume::reset() {
@@ -98,5 +108,12 @@ void Resume::update() {
       fail = true;
       (*itr)->show_message();
     }
+  }
+
+  if ((x+width) >= manager->x
+      && y >= manager->y
+      && y <= (manager->y + manager->height)) {
+    // win = true;
+    reset();
   }
 }
