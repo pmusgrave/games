@@ -94,7 +94,7 @@ void Resume::update() {
   }
 
   for (itr = black_holes->begin(); itr < black_holes->end(); itr++) {
-    if (abs(x - (*itr)->x + (*itr)->radius) < 20 && abs(y - (*itr)->y + (*itr)->radius) < 20) {
+    if (abs(x - (*itr)->x) <= (*itr)->radius && abs(y - (*itr)->y) <= (*itr)->radius) {
       fail = true;
       (*itr)->show_message();
     }
