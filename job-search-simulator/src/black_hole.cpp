@@ -8,7 +8,7 @@ BlackHole::BlackHole(int x, int y)
 {
   srand(time(NULL));
   radius = rand()%((100 - 30) + 1);
-  m = radius;
+  m = radius * 1e12;
 }
 
 void BlackHole::draw() {

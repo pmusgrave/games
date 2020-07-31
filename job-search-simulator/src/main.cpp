@@ -45,10 +45,16 @@ int main() {
   std::vector<Entity*> entities;
   std::vector<BlackHole*> black_holes;
   //  entities.push_back(std::move(new BlackHole(100,100)));
-  BlackHole bh1(200, 200);
+  BlackHole bh1(200, 100);
+  BlackHole bh2(600, 300);
+  BlackHole bh3(100, 500);
   black_holes.push_back(&bh1);
+  black_holes.push_back(&bh2);
+  black_holes.push_back(&bh3);
   entities.push_back(&bh1);
-  Resume resume(100, 500, &black_holes);
+  entities.push_back(&bh2);
+  entities.push_back(&bh3);
+  Resume resume(500, 500, &black_holes);
   entities.push_back(&resume);
 
   bool redraw = true;

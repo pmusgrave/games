@@ -12,7 +12,7 @@ public:
   int x;
   int y;
   int radius;
-  int m;
+  long m;
   static constexpr double G = 6.67430e-11;
 };
 
