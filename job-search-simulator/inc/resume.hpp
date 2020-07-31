@@ -12,6 +12,7 @@ public:
   ~Resume() {}
   void draw() override;
   void launch();
+  void reset();
   void update() override;
   int x;
   int y;
@@ -21,6 +22,7 @@ private:
   double vy;
   double angle;
   bool launched;
+  bool fail;
   static const int width = 50;
   static const int height = 70;
   std::vector<BlackHole*>* black_holes;

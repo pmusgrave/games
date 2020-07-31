@@ -144,11 +144,10 @@ int main() {
   al_destroy_timer(timer);
   al_destroy_event_queue(queue);
 
-  /*
-    std::vector<Entity*>::iterator itr;
-    for (itr = entities.begin(); itr < entities.end(); itr++) {
+  std::vector<BlackHole*>::iterator itr;
+  for (itr = black_holes.begin(); itr < black_holes.end(); itr++) {
     delete (*itr);
-    }
-  */
+  }
+
   return 0;
 }

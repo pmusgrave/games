@@ -7,10 +7,14 @@
 #include <iostream>
 
 Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes)
-  : x(x), y(y), vx(0), vy(0), launched(false), black_holes(black_holes)
+  : x(x), y(y), vx(0), vy(0), angle(0), launched(false), fail(false), black_holes(black_holes)
 {}
 
 void Resume::draw() {
+  if (fail) {
+    reset();
+  }
+
   ALLEGRO_TRANSFORM trans;
   al_identity_transform(&trans);
   al_translate_transform(&trans, -x-width/2, -y-height/2);
@@ -32,6 +36,16 @@ void Resume::launch() {
   launched = true;
   vx = 20*cos(angle);
   vy = 20*sin(angle);
+}
+
+void Resume::reset() {
+  x = 0;
+  y = 500;
+  vx = 0;
+  vy = 0;
+  angle = 0;
+  launched = false;
+  fail = false;
 }
 
 void Resume::update() {
@@ -80,10 +94,9 @@ void Resume::update() {
   }
 
   for (itr = black_holes->begin(); itr < black_holes->end(); itr++) {
-    if (abs(x - (*itr)->x) < 10 && abs(y - (*itr)->y) < 10) {
-      std::cout << "black hole" << std::endl;
-      vx = 0;
-      vy = 0;
+    if (abs(x - (*itr)->x + (*itr)->radius) < 20 && abs(y - (*itr)->y + (*itr)->radius) < 20) {
+      fail = true;
+      (*itr)->show_message();
     }
   }
 }
