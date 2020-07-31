@@ -7,7 +7,7 @@
 #include <iostream>
 
 Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes)
-  : x(x), y(y), vx(0), vy(0), black_holes(black_holes), launched(false)
+  : x(x), y(y), vx(0), vy(0), launched(false), black_holes(black_holes)
 {}
 
 void Resume::draw() {

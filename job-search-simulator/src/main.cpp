@@ -10,6 +10,7 @@
 
 #include "black_hole.hpp"
 #include "entity.hpp"
+#include "manager.hpp"
 #include "resume.hpp"
 
 void must_init(bool test, const char *description) {
@@ -41,6 +42,8 @@ int main() {
 
   must_init(al_init_primitives_addon(), "primitives");
 
+  must_init(al_init_image_addon(), "image addon");
+
   al_register_event_source(queue, al_get_keyboard_event_source());
   al_register_event_source(queue, al_get_display_event_source(disp));
   al_register_event_source(queue, al_get_timer_event_source(timer));
@@ -67,13 +70,12 @@ int main() {
   Resume resume(0, 500, &black_holes);
   entities.push_back(&resume);
 
+  Manager manager(2460, 700);
+  entities.push_back(&manager);
+
   bool done = false;
   bool redraw = true;
   ALLEGRO_EVENT event;
-
-  float x, y;
-  x = 100;
-  y = 100;
 
 #define KEY_SEEN     1
 #define KEY_RELEASED 2
@@ -88,9 +90,9 @@ int main() {
     switch(event.type) {
     case ALLEGRO_EVENT_TIMER:
       if(key[ALLEGRO_KEY_W])
-        resume.y--;
+        resume.y -= 10;
       if(key[ALLEGRO_KEY_S])
-        resume.y++;
+        resume.y += 10;
       if(key[ALLEGRO_KEY_A])
         resume.launch_angle--;
       if(key[ALLEGRO_KEY_D])
