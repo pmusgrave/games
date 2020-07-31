@@ -17,6 +17,7 @@ private:
   int y;
   double vx;
   double vy;
+  double angle;
   static const int width = 50;
   static const int height = 70;
   std::vector<BlackHole*>* black_holes;

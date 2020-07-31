@@ -3,6 +3,8 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 
+#include <time.h>
+
 #include <iostream>
 #include <vector>
 
@@ -30,7 +32,8 @@ int main() {
   al_set_new_display_option(ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
   al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
   al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
-  ALLEGRO_DISPLAY* disp = al_create_display(800, 600);
+  al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
+  ALLEGRO_DISPLAY* disp = al_create_display(2560, 1440);
   must_init(disp, "display");
 
   ALLEGRO_FONT* font = al_create_builtin_font();
@@ -45,7 +48,13 @@ int main() {
   std::vector<Entity*> entities;
   std::vector<BlackHole*> black_holes;
   //  entities.push_back(std::move(new BlackHole(100,100)));
-  BlackHole bh1(200, 100);
+  srand(time(NULL));
+  for (int i = 0; i < 4; i++) {
+    BlackHole* bh = new BlackHole();
+    black_holes.push_back(bh);
+    entities.push_back(bh);
+  }
+  /*BlackHole bh1(200, 100);
   BlackHole bh2(600, 300);
   BlackHole bh3(100, 500);
   black_holes.push_back(&bh1);
@@ -53,7 +62,7 @@ int main() {
   black_holes.push_back(&bh3);
   entities.push_back(&bh1);
   entities.push_back(&bh2);
-  entities.push_back(&bh3);
+  entities.push_back(&bh3);*/
   Resume resume(500, 500, &black_holes);
   entities.push_back(&resume);
 

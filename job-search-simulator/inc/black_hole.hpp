@@ -5,7 +5,7 @@
 
 class BlackHole final : public Entity {
 public:
-  BlackHole(int x, int y);
+  BlackHole();
   ~BlackHole() {}
   void draw() override;
   void update() override;

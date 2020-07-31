@@ -7,13 +7,24 @@
 #include <iostream>
 
 Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes)
-  : x(x), y(y), vx(1), vy(0), black_holes(black_holes)
+  : x(x), y(y), vx(15), vy(0), black_holes(black_holes)
 {}
 
 void Resume::draw() {
+  angle += 0.15;
+  ALLEGRO_TRANSFORM trans;
+  al_identity_transform(&trans);
+  al_translate_transform(&trans, -x-width/2, -y-height/2);
+  al_rotate_transform(&trans, angle);
+  al_translate_transform(&trans, x+width/2, y+height/2);
+  al_use_transform(&trans);
+
   al_draw_filled_rectangle(x, y,
                            x + width, y + height,
                            al_map_rgba_f(1, 1, 1, 1));
+
+  al_identity_transform(&trans);
+  al_use_transform(&trans);
 }
 
 void Resume::update() {
@@ -27,19 +38,34 @@ void Resume::update() {
     vx = dx > 0 ? vx + a*cos(theta) : vx - a*cos(theta);
     vy = dy > 0 ? vy + a*sin(theta) : vy - a*cos(theta);
     //std::cout << "a:" << a << std::endl;
-    std::cout << "vx:" << vx << " vy: " << vy << " r:" << r << std::endl;
+    //std::cout << "vx:" << vx << " vy: " << vy << " r:" << r << std::endl;
   }
-  x = (int)(x+vx) % 800;
-  y = (int)(y+vy) % 600;
+  x = (int)(x+vx);
+  y = (int)(y+vy);
   if (x <= 0) {
-    x = 800;
+    vx = -vx;
+    x = 0;
+  }
+  if (x + width >= 2560) {
+    vx = -vx;
   }
   if (y <= 0) {
-    y = 600;
+    vy = -vy;
+    y = 0;
+  }
+  if (y + height >= 1440) {
+    vy = -vy;
+  }
+
+  if (vx >= 30) {
+    vx = 30;
+  }
+  if (vy >= 30) {
+    vy = 30;
   }
 
   for (itr = black_holes->begin(); itr < black_holes->end(); itr++) {
-    if (x == (*itr)->x && y == (*itr)->y) {
+    if (abs(x - (*itr)->x) < 10 && abs(y - (*itr)->y) < 10) {
       std::cout << "black hole" << std::endl;
       vx = 0;
       vy = 0;
