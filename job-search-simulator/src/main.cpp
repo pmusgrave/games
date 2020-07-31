@@ -48,36 +48,80 @@ int main() {
   std::vector<Entity*> entities;
   std::vector<BlackHole*> black_holes;
   //  entities.push_back(std::move(new BlackHole(100,100)));
-  srand(time(NULL));
+  //srand(time(NULL));
+  srand(0);
   for (int i = 0; i < 4; i++) {
     BlackHole* bh = new BlackHole();
     black_holes.push_back(bh);
     entities.push_back(bh);
   }
   /*BlackHole bh1(200, 100);
-  BlackHole bh2(600, 300);
-  BlackHole bh3(100, 500);
-  black_holes.push_back(&bh1);
-  black_holes.push_back(&bh2);
-  black_holes.push_back(&bh3);
-  entities.push_back(&bh1);
-  entities.push_back(&bh2);
-  entities.push_back(&bh3);*/
-  Resume resume(500, 500, &black_holes);
+    BlackHole bh2(600, 300);
+    BlackHole bh3(100, 500);
+    black_holes.push_back(&bh1);
+    black_holes.push_back(&bh2);
+    black_holes.push_back(&bh3);
+    entities.push_back(&bh1);
+    entities.push_back(&bh2);
+    entities.push_back(&bh3);*/
+  Resume resume(0, 500, &black_holes);
   entities.push_back(&resume);
 
+  bool done = false;
   bool redraw = true;
   ALLEGRO_EVENT event;
 
-  al_start_timer(timer);
+  float x, y;
+  x = 100;
+  y = 100;
 
+#define KEY_SEEN     1
+#define KEY_RELEASED 2
+
+  unsigned char key[ALLEGRO_KEY_MAX];
+  memset(key, 0, sizeof(key));
+
+  al_start_timer(timer);
   while(1) {
     al_wait_for_event(queue, &event);
 
-    if(event.type == ALLEGRO_EVENT_TIMER)
+    switch(event.type) {
+    case ALLEGRO_EVENT_TIMER:
+      if(key[ALLEGRO_KEY_W])
+        resume.y--;
+      if(key[ALLEGRO_KEY_S])
+        resume.y++;
+      if(key[ALLEGRO_KEY_A])
+        resume.launch_angle--;
+      if(key[ALLEGRO_KEY_D])
+        resume.launch_angle++;
+      if(key[ALLEGRO_KEY_SPACE])
+        resume.launch();
+
+      if(key[ALLEGRO_KEY_ESCAPE])
+        done = true;
+
+      for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
+        key[i] &= KEY_SEEN;
+
       redraw = true;
-    else if((event.type == ALLEGRO_EVENT_KEY_DOWN) || (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE))
       break;
+
+    case ALLEGRO_EVENT_KEY_DOWN:
+      key[event.keyboard.keycode] = KEY_SEEN | KEY_RELEASED;
+      break;
+    case ALLEGRO_EVENT_KEY_UP:
+      key[event.keyboard.keycode] &= KEY_RELEASED;
+      break;
+
+    case ALLEGRO_EVENT_DISPLAY_CLOSE:
+      done = true;
+      break;
+    }
+
+    if(done)
+      break;
+
 
     if(redraw && al_is_event_queue_empty(queue)) {
       al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -99,10 +143,10 @@ int main() {
   al_destroy_event_queue(queue);
 
   /*
-  std::vector<Entity*>::iterator itr;
-  for (itr = entities.begin(); itr < entities.end(); itr++) {
+    std::vector<Entity*>::iterator itr;
+    for (itr = entities.begin(); itr < entities.end(); itr++) {
     delete (*itr);
-  }
+    }
   */
   return 0;
 }
