@@ -56,6 +56,7 @@ void Resume::reset() {
   angle = 0;
   launched = false;
   fail = false;
+  win = false;
 }
 
 void Resume::update() {
@@ -96,11 +97,11 @@ void Resume::update() {
     vy = -vy;
   }
 
-  if (vx >= 30) {
-    vx = 30;
+  if (vx >= vmax) {
+    vx = vmax;
   }
-  if (vy >= 30) {
-    vy = 30;
+  if (vy >= vmax) {
+    vy = vmax;
   }
 
   for (itr = black_holes->begin(); itr < black_holes->end(); itr++) {
@@ -111,9 +112,12 @@ void Resume::update() {
   }
 
   if ((x+width) >= manager->x
-      && y >= manager->y
-      && y <= (manager->y + manager->height)) {
-    // win = true;
-    reset();
+      && (((y >= manager->y
+           && y <= (manager->y + manager->height)))
+      || ((y+height) >= manager->y
+          && (y+height) <= (manager->y + manager->height)))
+      ) {
+    win = true;
+    //reset();
   }
 }

@@ -20,6 +20,7 @@ public:
   int x;
   int y;
   int launch_angle;
+  bool win;
 private:
   double vx;
   double vy;
@@ -28,6 +29,7 @@ private:
   bool fail;
   static const int width = 50;
   static const int height = 70;
+  static const int vmax = 30;
   std::vector<BlackHole*>* black_holes;
   Manager* manager;
 };

@@ -13,6 +13,14 @@
 #include "manager.hpp"
 #include "resume.hpp"
 
+void clear_black_holes(std::vector<BlackHole*>& black_holes) {
+  std::vector<BlackHole*>::iterator itr;
+  for (itr = black_holes.begin(); itr < black_holes.end(); itr++) {
+    delete (*itr);
+  }
+  black_holes.clear();
+}
+
 void must_init(bool test, const char *description) {
   if(test) return;
 
@@ -53,10 +61,11 @@ int main() {
   //  entities.push_back(std::move(new BlackHole(100,100)));
   //srand(time(NULL));
   srand(0);
-  for (int i = 0; i < 4; i++) {
+  int current_level = 1;
+  for (int i = 0; i < current_level; i++) {
     BlackHole* bh = new BlackHole();
     black_holes.push_back(bh);
-    entities.push_back(bh);
+    //    entities.push_back(bh);
   }
   /*BlackHole bh1(200, 100);
     BlackHole bh2(600, 300);
@@ -137,8 +146,25 @@ int main() {
         (*itr)->draw();
       }
 
+      std::vector<BlackHole*>::iterator bh_itr;
+      for (bh_itr = black_holes.begin(); bh_itr < black_holes.end(); bh_itr++) {
+        (*bh_itr)->update();
+        (*bh_itr)->draw();
+      }
+
       al_flip_display();
       redraw = false;
+    }
+
+    if (resume.win) {
+      current_level++;
+      clear_black_holes(black_holes);
+      for (int i = 0; i < current_level; i++) {
+        BlackHole* bh = new BlackHole();
+        black_holes.push_back(bh);
+        //entities.push_back(bh);
+      }
+      resume.reset();
     }
   }
 
@@ -147,10 +173,7 @@ int main() {
   al_destroy_timer(timer);
   al_destroy_event_queue(queue);
 
-  std::vector<BlackHole*>::iterator itr;
-  for (itr = black_holes.begin(); itr < black_holes.end(); itr++) {
-    delete (*itr);
-  }
+  clear_black_holes(black_holes);
 
   return 0;
 }
