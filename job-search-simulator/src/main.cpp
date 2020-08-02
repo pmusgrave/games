@@ -42,7 +42,7 @@ int main() {
   al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
   al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
   al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
-  ALLEGRO_DISPLAY* disp = al_create_display(2560, 1440);
+  ALLEGRO_DISPLAY* disp = al_create_display(1920, 1080);
   must_init(disp, "display");
 
   ALLEGRO_FONT* font = al_create_builtin_font();
@@ -77,7 +77,7 @@ int main() {
     entities.push_back(&bh2);
     entities.push_back(&bh3);*/
 
-  Manager manager(2460, 700);
+  Manager manager(1820, 540);
   entities.push_back(&manager);
 
   Resume resume(0, 500, &black_holes, &manager);

@@ -8,7 +8,7 @@ Manager::Manager(int x, int y)
   : x(x), y(y)
 {
   al_init_image_addon();
-  img = al_load_bitmap("../../../src/businessman.png");
+  img = al_load_bitmap("./businessman.png");
   if(!img){
     printf("couldn't load img\n");
   }

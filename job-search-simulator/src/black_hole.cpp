@@ -9,8 +9,8 @@ BlackHole::BlackHole()
   : message_timer(100), message(false)
 {
   radius = rand()%((100 - 30) + 1);
-  x = rand()%(2560);
-  y = rand()%(1440);
+  x = rand()%(1920);
+  y = rand()%(1080);
   m = radius * 1e13;
 }
 

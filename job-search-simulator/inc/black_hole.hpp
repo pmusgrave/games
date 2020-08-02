@@ -13,7 +13,7 @@ public:
   int x;
   int y;
   int radius;
-  long m;
+  unsigned long long m;
   static constexpr double G = 6.67430e-11;
 private:
   int message_timer;

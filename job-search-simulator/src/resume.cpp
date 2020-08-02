@@ -8,7 +8,8 @@
 #include <iostream>
 
 Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* manager)
-  : x(x), y(y), vx(0), vy(0), angle(0), launched(false), fail(false), black_holes(black_holes), manager(manager)
+  : x(x), y(y), vx(0), vy(0), angle(0), launch_angle(0), launched
+	(false), win(false), fail(false), black_holes(black_holes), manager(manager)
 {}
 
 void Resume::draw() {
@@ -74,7 +75,7 @@ void Resume::update() {
     double dx = (*itr)->x - x;
     double dy = (*itr)->y - y;
     double r = sqrt(pow(dx,2) + pow(dy,2));
-    double theta = atan(dy/dx);
+    double theta = atan(abs(dy/dx));
     double a = (*itr)->G * (*itr)->m / pow(r, 2);
     vx = dx > 0 ? vx + a*cos(theta) : vx - a*cos(theta);
     vy = dy > 0 ? vy + a*sin(theta) : vy - a*cos(theta);
@@ -87,14 +88,14 @@ void Resume::update() {
     vx = -vx;
     x = 0;
   }
-  if (x + width >= 2560) {
+  if (x + width >= 1920) {
     vx = -vx;
   }
   if (y <= 0) {
     vy = -vy;
     y = 0;
   }
-  if (y + height >= 1440) {
+  if (y + height >= 1080) {
     vy = -vy;
   }
 
