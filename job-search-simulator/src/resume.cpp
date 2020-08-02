@@ -1,6 +1,7 @@
 #include "resume.hpp"
 
 #include <allegro5/allegro_primitives.h>
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include <stdlib.h>
 
