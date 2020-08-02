@@ -5,6 +5,7 @@
 #include <allegro5/allegro_image.h>
 
 #include "entity.hpp"
+#include "globals.hpp"
 
 class Manager final : public Entity {
 public:

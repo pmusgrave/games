@@ -5,12 +5,14 @@
 #include <allegro5/allegro_primitives.h>
 #include <time.h>
 
+#include "globals.hpp"
+
 BlackHole::BlackHole()
   : message_timer(100), message(false)
 {
   radius = rand()%((100 - 30) + 1);
-  x = rand()%(1920);
-  y = rand()%(1080);
+  x = rand()%(resolution.x);
+  y = rand()%(resolution.y);
   m = radius * 1e13;
 }
 
