@@ -7,9 +7,20 @@
 
 #include <iostream>
 
+#include "globals.hpp"
+
 Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* manager)
-  : x(x), y(y), vx(0), vy(0), angle(0), launch_angle(0), launched
-	(false), win(false), fail(false), black_holes(black_holes), manager(manager)
+  : x(x),
+    y(y),
+    launch_angle(0),
+    win(false),
+    vx(0),
+    vy(0),
+    angle(0),
+    launched(false),
+    fail(false),
+    black_holes(black_holes),
+    manager(manager)
 {}
 
 void Resume::draw() {
@@ -43,16 +54,19 @@ void Resume::launch() {
 void Resume::move_down() {
   if (!launched)
     y -= 10;
+  if (y <= 0)
+    y = 0;
 }
 
 void Resume::move_up() {
   if (!launched)
     y += 10;
+  y = y % resolution.y;
 }
 
 void Resume::reset() {
   x = 0;
-  y = 500;
+  y = resolution.y / 2;
   vx = 0;
   vy = 0;
   angle = 0;
@@ -88,14 +102,14 @@ void Resume::update() {
     vx = -vx;
     x = 0;
   }
-  if (x + width >= 1920) {
+  if (x + width >= (int)resolution.x) {
     vx = -vx;
   }
   if (y <= 0) {
     vy = -vy;
     y = 0;
   }
-  if (y + height >= 1080) {
+  if (y + height >= (int)resolution.y) {
     vy = -vy;
   }
 
