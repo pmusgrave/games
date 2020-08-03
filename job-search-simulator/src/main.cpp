@@ -63,8 +63,8 @@ int main() {
   std::vector<Entity*> entities;
   std::vector<BlackHole*> black_holes;
   //  entities.push_back(std::move(new BlackHole(100,100)));
-  //srand(time(NULL));
-  srand(0);
+  srand(time(NULL));
+  // srand(0);
   int current_level = 1;
   for (int i = 0; i < current_level; i++) {
     BlackHole* bh = new BlackHole();
@@ -81,7 +81,7 @@ int main() {
     entities.push_back(&bh2);
     entities.push_back(&bh3);*/
 
-  Manager manager(resolution.x - 100, resolution.y / 2);
+  Manager manager(resolution.x - 120, resolution.y / 2);
   entities.push_back(&manager);
 
   Resume resume(0, resolution.y / 2, &black_holes, &manager);
