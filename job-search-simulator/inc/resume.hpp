@@ -10,7 +10,7 @@
 class Resume final : public Entity {
 public:
   Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* manager);
-  ~Resume() {}
+  ~Resume();
   void draw() override;
   void launch();
   void move_down();
@@ -22,6 +22,7 @@ public:
   int launch_angle;
   bool win;
 private:
+  ALLEGRO_BITMAP* img;
   double vx;
   double vy;
   double angle;

@@ -1,8 +1,11 @@
 #include "resume.hpp"
 
+#include <allegro5/allegro5.h>
+#include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include <iostream>
@@ -21,7 +24,17 @@ Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* mana
     fail(false),
     black_holes(black_holes),
     manager(manager)
-{}
+{
+  al_init_image_addon();
+  img = al_load_bitmap("./resume.png");
+  if(!img){
+    printf("couldn't load img\n");
+  }
+}
+
+Resume::~Resume() {
+  al_destroy_bitmap(img);
+}
 
 void Resume::draw() {
   if (fail) {
@@ -35,9 +48,17 @@ void Resume::draw() {
   al_translate_transform(&trans, x+width/2, y+height/2);
   al_use_transform(&trans);
 
-  al_draw_filled_rectangle(x, y,
-                           x + width, y + height,
-                           al_map_rgba_f(1, 1, 1, 1));
+  // al_draw_filled_rectangle(x, y,
+  //                          x + width, y + height,
+  //                          al_map_rgba_f(1, 1, 1, 1));
+  al_draw_scaled_bitmap(img,
+                        0, 0,  // source origin
+                        al_get_bitmap_width(img),  // source width
+                        al_get_bitmap_height(img),  // source height
+                        x, y,  // target origin
+                        width, height,  // target dimensions
+                        0  // flags
+                        );
 
   al_identity_transform(&trans);
   al_use_transform(&trans);

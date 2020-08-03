@@ -17,7 +17,8 @@ BlackHole::BlackHole()
 }
 
 void BlackHole::draw() {
-  al_draw_circle(x, y, radius, al_map_rgb_f(1, 0, 0), 2);
+  al_draw_circle(x, y, radius, al_map_rgb_f(1, 1, 1), 2);
+  al_draw_filled_circle(x, y, radius * 0.9, al_map_rgb_f(0, 0, 0));
   if (message) {
     if (--message_timer <= 0) {
       message = false;

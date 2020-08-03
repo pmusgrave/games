@@ -14,8 +14,8 @@
 #include "manager.hpp"
 #include "resume.hpp"
 
-struct screen_resolution resolution { 2560, 1440 };
-//struct screen_resolution resolution { 1920, 1080 };
+// struct screen_resolution resolution { 2560, 1440 };
+struct screen_resolution resolution { 1920, 1080 };
 
 void clear_black_holes(std::vector<BlackHole*>& black_holes) {
   std::vector<BlackHole*>::iterator itr;
