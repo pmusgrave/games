@@ -5,7 +5,9 @@
 
 #include <time.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 #include <vector>
 
 #include "black_hole.hpp"
@@ -14,8 +16,15 @@
 #include "manager.hpp"
 #include "resume.hpp"
 
-// struct screen_resolution resolution { 2560, 1440 };
-struct screen_resolution resolution { 1920, 1080 };
+struct screen_resolution resolution { 2560, 1440 };
+// struct screen_resolution resolution { 1920, 1080 };
+
+void must_init(bool test, const char *description) {
+  if(test) return;
+
+  printf("couldn't initialize %s\n", description);
+  exit(1);
+}
 
 void clear_black_holes(std::vector<BlackHole*>& black_holes) {
   std::vector<BlackHole*>::iterator itr;
@@ -23,13 +32,6 @@ void clear_black_holes(std::vector<BlackHole*>& black_holes) {
     delete (*itr);
   }
   black_holes.clear();
-}
-
-void must_init(bool test, const char *description) {
-  if(test) return;
-
-  printf("couldn't initialize %s\n", description);
-  exit(1);
 }
 
 int main() {
@@ -87,6 +89,7 @@ int main() {
   Resume resume(0, resolution.y / 2, &black_holes, &manager);
   entities.push_back(&resume);
 
+  bool show_intro_screen = true;
   bool done = false;
   bool redraw = true;
   ALLEGRO_EVENT event;
@@ -140,6 +143,18 @@ int main() {
     if(done)
       break;
 
+    if (show_intro_screen) {
+      al_draw_text(font,
+                   al_map_rgb(255, 255, 255),
+                   resolution.x/2,
+                   resolution.y/2,
+                   0,
+                   "Get a job");
+      al_flip_display();
+      std::chrono::milliseconds timespan(4000);
+      std::this_thread::sleep_for(timespan);
+      show_intro_screen = false;
+    }
 
     if(redraw && al_is_event_queue_empty(queue)) {
       al_clear_to_color(al_map_rgb(0, 0, 0));
