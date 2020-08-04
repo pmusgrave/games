@@ -15,7 +15,7 @@ public:
   void update() override;
   int x;
   int y;
-  static const int width = 120;
+  static const int width = 130;
   static const int height = 140;
 private:
   ALLEGRO_BITMAP* img;

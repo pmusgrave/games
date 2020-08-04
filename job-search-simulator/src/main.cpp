@@ -34,7 +34,7 @@ void clear_black_holes(std::vector<BlackHole*>& black_holes) {
   black_holes.clear();
 }
 
-int main() {
+int main(int argc, char **argv) {
   must_init(al_init(), "allegro");
   must_init(al_install_keyboard(), "keyboard");
 
@@ -83,7 +83,7 @@ int main() {
     entities.push_back(&bh2);
     entities.push_back(&bh3);*/
 
-  Manager manager(resolution.x - 120, resolution.y / 2);
+  Manager manager(resolution.x - 130, resolution.y / 2);
   entities.push_back(&manager);
 
   Resume resume(0, resolution.y / 2, &black_holes, &manager);

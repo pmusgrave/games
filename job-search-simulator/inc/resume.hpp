@@ -17,22 +17,22 @@ public:
   void move_up();
   void reset();
   void update() override;
-  int x;
-  int y;
   int launch_angle;
   bool win;
+  int x;
+  int y;
 private:
+  double angle;
+  std::vector<BlackHole*>* black_holes;
   ALLEGRO_BITMAP* img;
+  bool fail;
+  bool launched;
+  Manager* manager;
   double vx;
   double vy;
-  double angle;
-  bool launched;
-  bool fail;
   static const int width = 50;
   static const int height = 70;
   static const int vmax = 30;
-  std::vector<BlackHole*>* black_holes;
-  Manager* manager;
 };
 
 #endif  // INC_RESUME_HPP_

@@ -13,17 +13,17 @@
 #include "globals.hpp"
 
 Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* manager)
-  : x(x),
-    y(y),
-    launch_angle(0),
+  : launch_angle(0),
     win(false),
-    vx(0),
-    vy(0),
+    x(x),
+    y(y),
     angle(0),
-    launched(false),
-    fail(false),
     black_holes(black_holes),
-    manager(manager)
+    fail(false),
+    launched(false),
+    manager(manager),
+    vx(0),
+    vy(0)
 {
   al_init_image_addon();
   img = al_load_bitmap("./resume.png");
