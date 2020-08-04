@@ -142,9 +142,6 @@ void Resume::update() {
   }
 
   for (itr = black_holes->begin(); itr < black_holes->end(); itr++) {
-    int dx = abs((x + width/2) - (*itr)->x);
-    int dy = abs((y + height/2) - (*itr)->y);
-
     int bb = (*itr)->radius*sqrt(2);
     int circle_bb_x = (*itr)->x - bb/2;
     int circle_bb_y = (*itr)->y - bb/2;

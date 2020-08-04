@@ -67,8 +67,8 @@ void BlackHole::draw() {
     al_draw_text(font,
                  al_map_rgb(255, 255, 255),
                  x,
-                 y,
-                 0,
+                 y + radius + 15,
+                 ALLEGRO_ALIGN_CENTRE,
                  rejection_phrases[message_index].c_str());
   }
 }

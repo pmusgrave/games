@@ -93,6 +93,8 @@ int main() {
   bool done = false;
   bool redraw = true;
   ALLEGRO_EVENT event;
+  std::string level_string = "Level ";
+  level_string += std::to_string(current_level);
 
 #define KEY_SEEN     1
 #define KEY_RELEASED 2
@@ -148,7 +150,7 @@ int main() {
                    al_map_rgb(255, 255, 255),
                    resolution.x/2,
                    resolution.y/2,
-                   0,
+                   ALLEGRO_ALIGN_CENTRE,
                    "Get a job");
       al_flip_display();
       std::chrono::milliseconds timespan(4000);
@@ -158,6 +160,13 @@ int main() {
 
     if(redraw && al_is_event_queue_empty(queue)) {
       al_clear_to_color(al_map_rgb(0, 0, 0));
+
+      al_draw_text(font,
+                   al_map_rgb(255, 255, 255),
+                   resolution.x/2,
+                   15,
+                   ALLEGRO_ALIGN_CENTRE,
+                   level_string.c_str());
 
       std::vector<Entity*>::iterator itr;
       for (itr = entities.begin(); itr < entities.end(); itr++) {
@@ -177,6 +186,8 @@ int main() {
 
     if (resume.win) {
       current_level++;
+      level_string = "Level ";
+      level_string += std::to_string(current_level);
       clear_black_holes(black_holes);
       for (int i = 0; i < current_level; i++) {
         BlackHole* bh = new BlackHole();
