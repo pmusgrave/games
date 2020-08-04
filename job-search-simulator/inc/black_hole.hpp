@@ -1,6 +1,8 @@
 #ifndef INC_BLACK_HOLE_HPP_
 #define INC_BLACK_HOLE_HPP_
 
+#include <stdio.h>
+
 #include "entity.hpp"
 
 class BlackHole final : public Entity {
@@ -16,6 +18,7 @@ public:
   unsigned long long m;
   static constexpr double G = 6.67430e-11;
 private:
+  size_t message_index;
   int message_timer;
   bool message;
 };

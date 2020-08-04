@@ -5,10 +5,41 @@
 #include <allegro5/allegro_primitives.h>
 #include <time.h>
 
+#include <string>
+#include <vector>
+
 #include "globals.hpp"
 
+std::vector<std::string> rejection_phrases {
+  "Thanks for your application! Someone will definitely be getting back to you!",
+  "Your experience is impressive! But not what we're looking for.",
+  "We're looking for someone with at least 5 years of experience.",
+  "We received your application!",
+  "Thanks <applicant name here>!",
+  "Thanks for your interest in this company! We'll carefully review your application!",
+  "Your resume will absolutely be read by a human!",
+  "Thanks for spending an hour on our repetitive application process!",
+  "Hope you had fun manually filling out unnecessary application forms!",
+  "You didn't include a cover letter telling us why you're passionate about this company.",
+  "There's a typo in your resume.",
+  "...",
+  "You wait one week but hear no response.",
+  "Your experience is not impressive.",
+  "You're not passionate enough about this company.",
+  "Your cover letter was a little too passionate about this company.",
+  "Sorry, not a great culture fit.",
+  "We're only looking for senior level applicants.",
+  "Not enough keywords in your resume.",
+  "Your salary expectations were too high.",
+  "Your salary expectations were too low.",
+  "Your salary expectations were reasonable, but someone else is asking for less.",
+  "Your application is sitting in a pile on someone's desk.",
+  "Your application is buried under 1000 other applications.",
+  "You waited too long to apply and the position has been filled.",
+};
+
 BlackHole::BlackHole()
-  : message_timer(100), message(false)
+  : message_index(0), message_timer(100), message(false)
 {
   radius = rand()%((100 - 30) + 1);
   x = rand()%(resolution.x);
@@ -26,17 +57,20 @@ void BlackHole::draw() {
     }
     else message = true;
     ALLEGRO_FONT* font = al_create_builtin_font();
+
     al_draw_text(font,
                  al_map_rgb(255, 255, 255),
                  x,
                  y,
                  0,
-                 "Thanks for your application! Someone will definitely be getting back to you!");
+                 rejection_phrases[message_index].c_str());
   }
 }
 
 void BlackHole::show_message() {
   message = true;
+  message_index = rand()%(rejection_phrases.size());
+  message_timer = 100;
 }
 
 void BlackHole::update() {}
