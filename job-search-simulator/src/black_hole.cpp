@@ -5,6 +5,7 @@
 #include <allegro5/allegro_primitives.h>
 #include <time.h>
 
+#include <random>
 #include <string>
 #include <vector>
 
@@ -36,14 +37,19 @@ std::vector<std::string> rejection_phrases {
   "Your application is sitting in a pile on someone's desk.",
   "Your application is buried under 1000 other applications.",
   "You waited too long to apply and the position has been filled.",
+  "You applied at the wrong time of day.",
 };
 
 BlackHole::BlackHole()
-  : message_index(0), message_timer(100), message(false)
+  :  message(false), message_index(0), message_timer(100)
 {
-  radius = rand()%((100 - 30) + 1);
-  x = rand()%(resolution.x);
-  y = rand()%(resolution.y);
+  // source: https://stackoverflow.com/questions/7560114
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> distr(10, 100);
+  radius = distr(gen);
+  x = rand()%(resolution.x - 200) + 100;
+  y = rand()%(resolution.y - (radius/2)) + (radius/2);
   m = radius * 1e13;
 }
 

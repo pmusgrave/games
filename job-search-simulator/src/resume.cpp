@@ -142,9 +142,18 @@ void Resume::update() {
   }
 
   for (itr = black_holes->begin(); itr < black_holes->end(); itr++) {
-    if (abs(x - (*itr)->x) <= (*itr)->radius && abs(y - (*itr)->y) <= (*itr)->radius) {
+    int dx = abs((x + width/2) - (*itr)->x);
+    int dy = abs((y + height/2) - (*itr)->y);
+
+    int bb = (*itr)->radius*sqrt(2);
+    int circle_bb_x = (*itr)->x - bb/2;
+    int circle_bb_y = (*itr)->y - bb/2;
+
+    if ((circle_bb_x <= (x + width) && x <= (circle_bb_x + bb))
+    && (circle_bb_y <= (y + height) && y <= (circle_bb_y + bb))) {
       fail = true;
       (*itr)->show_message();
+      break;
     }
   }
 

@@ -12,15 +12,15 @@ public:
   void draw() override;
   void show_message();
   void update() override;
+  static constexpr double G = 6.67430e-11;
+  unsigned long long m;
+  int radius;
   int x;
   int y;
-  int radius;
-  unsigned long long m;
-  static constexpr double G = 6.67430e-11;
 private:
+  bool message;
   size_t message_index;
   int message_timer;
-  bool message;
 };
 
 #endif  // INC_BLACK_HOLE_HPP
