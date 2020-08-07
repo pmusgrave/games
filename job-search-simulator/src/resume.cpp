@@ -26,7 +26,7 @@ Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* mana
     vy(0)
 {
   al_init_image_addon();
-  img = al_load_bitmap("./resume.png");
+  img = al_load_bitmap("resources/resume.png");
   if(!img){
     printf("couldn't load img\n");
   }

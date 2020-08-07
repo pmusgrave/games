@@ -19,6 +19,7 @@ all: build/main
 	build/main
 
 build/main: $(CPP_SOURCES) $(DEPS)
+	if [ ! -d "build" ]; then mkdir build; fi
 	$(CC) $(CPP_SOURCES) -o $(BUILD_DIR)/main $(CFLAGS)
 
 .PHONY: all test clean

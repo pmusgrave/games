@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
                    ALLEGRO_ALIGN_CENTRE,
                    "Get a job");
       al_flip_display();
-      std::chrono::milliseconds timespan(4000);
+      std::chrono::milliseconds timespan(3000);
       std::this_thread::sleep_for(timespan);
       show_intro_screen = false;
     }
