@@ -61,8 +61,36 @@ void Resume::draw() {
                         0  // flags
                         );
 
+  if (!launched) {
+    al_draw_line(
+      (x + width),
+      (y + (height / 2)),
+      (x + width) + 15,
+      (y + (height / 2)),
+      al_map_rgb(255, 255, 255),
+      1
+    );
+    al_draw_line(
+      (x + width) + 15,
+      (y + (height / 2)),
+      (x + width) + 10,
+      (y + (height / 2)) + 5,
+      al_map_rgb(255, 255, 255),
+      1
+    );
+    al_draw_line(
+      (x + width) + 15,
+      (y + (height / 2)),
+      (x + width) + 10,
+      (y + (height / 2)) - 5,
+      al_map_rgb(255, 255, 255),
+      1
+    );
+  }
   al_identity_transform(&trans);
   al_use_transform(&trans);
+
+
 }
 
 void Resume::handle_a() {
