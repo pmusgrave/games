@@ -13,19 +13,25 @@ public:
   ~Resume();
   void draw() override;
   void launch();
-  void move_down();
-  void move_up();
+  void handle_a();
+  void handle_d();
+  void handle_s();
+  void handle_space();
+  void handle_w();
   void reset();
   void update() override;
-  int launch_angle;
+  bool powerup_rocket;
   bool win;
   int x;
   int y;
 private:
+  void move_down();
+  void move_up();
   double angle;
   std::vector<BlackHole*>* black_holes;
   ALLEGRO_BITMAP* img;
   bool fail;
+  int launch_angle;
   bool launched;
   Manager* manager;
   double vx;

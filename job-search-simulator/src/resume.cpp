@@ -13,15 +13,16 @@
 #include "globals.hpp"
 
 Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* manager)
-  : launch_angle(0),
-    win(false),
+  : win(false),
     x(x),
     y(y),
     angle(0),
     black_holes(black_holes),
     fail(false),
+    launch_angle(0),
     launched(false),
     manager(manager),
+    powerup_rocket(false),
     vx(0),
     vy(0)
 {
@@ -64,6 +65,48 @@ void Resume::draw() {
   al_use_transform(&trans);
 }
 
+void Resume::handle_a() {
+  if (!launched) {
+    launch_angle--;
+  }
+  else if (powerup_rocket) {
+    vx -= 1;
+  }
+}
+
+void Resume::handle_d() {
+  if (!launched) {
+    launch_angle++;
+  }
+  else if (powerup_rocket) {
+    vx += 1;
+  }
+}
+
+void Resume::handle_s() {
+  if (!launched) {
+    move_down();
+  }
+  else if (powerup_rocket) {
+    vy += 1;
+  }
+}
+
+void Resume::handle_space() {
+  if (!launched) {
+    launch();
+  }
+}
+
+void Resume::handle_w() {
+  if (!launched) {
+    move_up();
+  }
+  else if (powerup_rocket) {
+    vy -= 1;
+  }
+}
+
 void Resume::launch() {
   if (launched)
     return;
@@ -74,15 +117,15 @@ void Resume::launch() {
 
 void Resume::move_down() {
   if (!launched)
-    y -= 10;
-  if (y <= 0)
-    y = 0;
+      y += 10;
+    y = y % resolution.y;
 }
 
 void Resume::move_up() {
   if (!launched)
-    y += 10;
-  y = y % resolution.y;
+    y -= 10;
+  if (y <= 0)
+    y = 0;
 }
 
 void Resume::reset() {

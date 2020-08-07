@@ -109,17 +109,17 @@ int main(int argc, char **argv) {
     switch(event.type) {
     case ALLEGRO_EVENT_TIMER:
       if(key[ALLEGRO_KEY_W])
-        resume.move_down();
+        resume.handle_w();
       if(key[ALLEGRO_KEY_S])
-        resume.move_up();
+        resume.handle_s();
       if(key[ALLEGRO_KEY_A])
-        resume.launch_angle--;
+        resume.handle_a();
       if(key[ALLEGRO_KEY_D])
-        resume.launch_angle++;
+        resume.handle_d();
       if(key[ALLEGRO_KEY_R])
         resume.reset();
       if(key[ALLEGRO_KEY_SPACE])
-        resume.launch();
+        resume.handle_space();
 
       if(key[ALLEGRO_KEY_ESCAPE])
         done = true;
@@ -195,6 +195,10 @@ int main(int argc, char **argv) {
         //entities.push_back(bh);
       }
       resume.reset();
+
+      if (current_level %5 == 0) {
+        resume.powerup_rocket = true;
+      }
     }
   }
 
