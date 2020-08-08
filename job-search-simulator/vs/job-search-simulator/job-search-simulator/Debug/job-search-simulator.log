@@ -1,2 +1,11 @@
-﻿  manager.cpp
-  job-search-simulator.vcxproj -> C:\Users\psmus\Desktop\games\job-search-simulator\vs\job-search-simulator\Debug\job-search-simulator.exe
+﻿  black_hole.cpp
+  main.cpp
+C:\Users\psmus\Desktop\games\job-search-simulator\src\main.cpp(97,24): error C2039:  'to_string': is not a member of 'std'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.21.27702\include\vector(19): message :  see declaration of 'std'
+C:\Users\psmus\Desktop\games\job-search-simulator\src\main.cpp(97,33): error C3861:  'to_string': identifier not found
+C:\Users\psmus\Desktop\games\job-search-simulator\src\main.cpp(190,28): error C2039:  'to_string': is not a member of 'std'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.21.27702\include\vector(19): message :  see declaration of 'std'
+  manager.cpp
+  resume.cpp
+  Generating Code...
+C:\Users\psmus\Desktop\games\job-search-simulator\src\main.cpp(190,37): error C3861:  'to_string': identifier not found
