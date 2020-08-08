@@ -186,6 +186,26 @@ int main(int argc, char **argv) {
     }
 
     if (resume.win) {
+      if (current_level == 5) {
+        resume.powerup_rocket = true;
+        al_clear_to_color(al_map_rgb(0, 0, 0));
+        al_draw_text(font,
+                     al_map_rgb(255, 255, 255),
+                     resolution.x/2,
+                     resolution.y/2,
+                     ALLEGRO_ALIGN_CENTRE,
+                     "\"Thanks so much for your interest in this company! Unfortunately, we will not be moving forward at this time.\"");
+        al_draw_text(font,
+                     al_map_rgb(255, 255, 255),
+                     resolution.x/2,
+                     resolution.y/2 + 15,
+                     ALLEGRO_ALIGN_CENTRE,
+                     "Your persistence has rewarded you with a new ability. You gain ROCKET BOOST.");
+        al_flip_display();
+        std::chrono::milliseconds timespan(6000);
+        std::this_thread::sleep_for(timespan);
+      }
+
       current_level++;
       level_string = "Level ";
       level_string += std::to_string(current_level);
@@ -196,10 +216,6 @@ int main(int argc, char **argv) {
         //entities.push_back(bh);
       }
       resume.reset();
-
-      if (current_level %5 == 0) {
-        resume.powerup_rocket = true;
-      }
     }
   }
 
