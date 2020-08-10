@@ -13,7 +13,8 @@
 #include "globals.hpp"
 
 Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* manager)
-  : win(false),
+  : interlude(false),
+    win(false),
     x(x),
     y(y),
     angle(0),
@@ -94,7 +95,10 @@ void Resume::draw() {
 }
 
 void Resume::handle_a() {
-  if (!launched) {
+  if (interlude) {
+    x -= 10;
+  }
+  else if (!launched) {
     launch_angle--;
   }
   else if (powerup_rocket) {
@@ -103,7 +107,10 @@ void Resume::handle_a() {
 }
 
 void Resume::handle_d() {
-  if (!launched) {
+  if (interlude) {
+    x += 10;
+  }
+  else if (!launched) {
     launch_angle++;
   }
   else if (powerup_rocket) {
@@ -112,7 +119,10 @@ void Resume::handle_d() {
 }
 
 void Resume::handle_s() {
-  if (!launched) {
+  if (interlude) {
+    y += 10;
+  }
+  else if (!launched) {
     move_down();
   }
   else if (powerup_rocket) {
@@ -127,7 +137,10 @@ void Resume::handle_space() {
 }
 
 void Resume::handle_w() {
-  if (!launched) {
+  if (interlude) {
+    y -= 10;
+  }
+  else if (!launched) {
     move_up();
   }
   else if (powerup_rocket) {

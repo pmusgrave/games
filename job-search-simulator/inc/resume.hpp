@@ -20,6 +20,7 @@ public:
   void handle_w();
   void reset();
   void update() override;
+  bool interlude;
   bool powerup_rocket;
   bool win;
   int x;

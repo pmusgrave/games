@@ -17,8 +17,15 @@
 #include "manager.hpp"
 #include "resume.hpp"
 
-// struct screen_resolution resolution { 2560, 1440 };
-struct screen_resolution resolution { 1920, 1080 };
+struct screen_resolution resolution { 2560, 1440 };
+// struct screen_resolution resolution { 1920, 1080 };
+
+enum GameState {
+  intro_screen = 0,
+  normal,
+  interlude,
+  interlude_win,
+};
 
 void must_init(bool test, const char *description) {
   if(test) return;
@@ -68,7 +75,7 @@ int main(int argc, char **argv) {
   //  entities.push_back(std::move(new BlackHole(100,100)));
   srand(time(NULL));
   // srand(0);
-  int current_level = 1;
+  int current_level = 5;
   for (int i = 0; i < current_level; i++) {
     BlackHole* bh = new BlackHole();
     black_holes.push_back(bh);
@@ -90,7 +97,8 @@ int main(int argc, char **argv) {
   Resume resume(0, resolution.y / 2, &black_holes, &manager);
   entities.push_back(&resume);
 
-  bool show_intro_screen = true;
+  //  bool show_intro_screen = true;
+  GameState state = intro_screen;
   bool done = false;
   bool redraw = true;
   ALLEGRO_EVENT event;
@@ -146,7 +154,7 @@ int main(int argc, char **argv) {
     if(done)
       break;
 
-    if (show_intro_screen) {
+    if (state == GameState::intro_screen) {
       al_draw_text(font,
                    al_map_rgb(255, 255, 255),
                    resolution.x/2,
@@ -156,18 +164,28 @@ int main(int argc, char **argv) {
       al_flip_display();
       std::chrono::milliseconds timespan(3000);
       std::this_thread::sleep_for(timespan);
-      show_intro_screen = false;
+      state = normal;
     }
 
-    if(redraw && al_is_event_queue_empty(queue)) {
+    if (state == GameState::interlude) {
       al_clear_to_color(al_map_rgb(0, 0, 0));
-
+      std::vector<Entity*>::iterator itr;
+      for (itr = entities.begin(); itr < entities.end(); itr++) {
+        (*itr)->update();
+        (*itr)->draw();
+      }
       al_draw_text(font,
                    al_map_rgb(255, 255, 255),
                    resolution.x/2,
                    15,
                    ALLEGRO_ALIGN_CENTRE,
-                   level_string.c_str());
+                   "INTERVIEW");
+      al_flip_display();
+      redraw = false;
+    }
+
+    if (state == GameState::normal && redraw && al_is_event_queue_empty(queue)) {
+      al_clear_to_color(al_map_rgb(0, 0, 0));
 
       std::vector<Entity*>::iterator itr;
       for (itr = entities.begin(); itr < entities.end(); itr++) {
@@ -181,12 +199,25 @@ int main(int argc, char **argv) {
         (*bh_itr)->draw();
       }
 
+      al_draw_text(font,
+                   al_map_rgb(255, 255, 255),
+                   resolution.x/2,
+                   15,
+                   ALLEGRO_ALIGN_CENTRE,
+                   level_string.c_str());
+
       al_flip_display();
       redraw = false;
     }
 
     if (resume.win) {
       if (current_level == 5) {
+        state = GameState::interlude;
+        resume.reset();
+        resume.interlude = true;
+      }
+
+      if (state == GameState::interlude_win) {
         resume.powerup_rocket = true;
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
