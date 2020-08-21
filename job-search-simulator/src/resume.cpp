@@ -14,12 +14,12 @@
 
 Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* manager)
   : interlude(false),
+    fail(false),
     win(false),
     x(x),
     y(y),
     angle(0),
     black_holes(black_holes),
-    fail(false),
     launch_angle(0),
     launched(false),
     manager(manager),

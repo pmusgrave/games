@@ -20,6 +20,7 @@ public:
   void handle_w();
   void reset();
   void update() override;
+  bool fail;
   bool interlude;
   bool powerup_rocket;
   bool win;
@@ -31,7 +32,6 @@ private:
   double angle;
   std::vector<BlackHole*>* black_holes;
   ALLEGRO_BITMAP* img;
-  bool fail;
   int launch_angle;
   bool launched;
   Manager* manager;

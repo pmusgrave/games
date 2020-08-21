@@ -17,14 +17,23 @@
 #include "manager.hpp"
 #include "resume.hpp"
 
-struct screen_resolution resolution { 2560, 1440 };
-// struct screen_resolution resolution { 1920, 1080 };
+// struct screen_resolution resolution { 2560, 1440 };
+struct screen_resolution resolution { 1920, 1080 };
 
 enum GameState {
   intro_screen = 0,
   normal,
   interlude,
+  interlude_fail,
   interlude_win,
+};
+
+class GameContext {
+public:
+  GameContext(GameState state) : state(state) {}
+  GameState state;
+  static constexpr float tick_rate = 1.0f / 30.0f;
+  float time_remaining;
 };
 
 void must_init(bool test, const char *description) {
@@ -104,6 +113,8 @@ int main(int argc, char **argv) {
   ALLEGRO_EVENT event;
   std::string level_string = "Level ";
   level_string += std::to_string(current_level);
+  GameContext context(state);
+  context.time_remaining = context.tick_rate * 30;
 
 #define KEY_SEEN     1
 #define KEY_RELEASED 2
@@ -154,7 +165,7 @@ int main(int argc, char **argv) {
     if(done)
       break;
 
-    if (state == GameState::intro_screen) {
+    if (context.state == GameState::intro_screen) {
       al_draw_text(font,
                    al_map_rgb(255, 255, 255),
                    resolution.x/2,
@@ -164,10 +175,10 @@ int main(int argc, char **argv) {
       al_flip_display();
       std::chrono::milliseconds timespan(3000);
       std::this_thread::sleep_for(timespan);
-      state = normal;
+      context.state = normal;
     }
 
-    if (state == GameState::interlude) {
+    if (context.state == GameState::interlude) {
       al_clear_to_color(al_map_rgb(0, 0, 0));
       std::vector<Entity*>::iterator itr;
       for (itr = entities.begin(); itr < entities.end(); itr++) {
@@ -180,11 +191,29 @@ int main(int argc, char **argv) {
                    15,
                    ALLEGRO_ALIGN_CENTRE,
                    "INTERVIEW");
+      al_draw_text(font,
+                  al_map_rgb(255, 255, 255),
+                  resolution.x/2,
+                  30,
+                  ALLEGRO_ALIGN_CENTRE,
+                  std::to_string(context.time_remaining).c_str());
+      context.time_remaining -= context.tick_rate; // has problems with tick rate consistency
       al_flip_display();
       redraw = false;
+
+      if (resume.fail) {
+        context.state = GameState::interlude_fail;
+        resume.interlude = false;
+        resume.win = true;
+      }
+      else if (!resume.fail && context.time_remaining <= 0) {
+        context.state = GameState::interlude_win;
+        resume.interlude = false;
+        resume.win = true;
+      }
     }
 
-    if (state == GameState::normal && redraw && al_is_event_queue_empty(queue)) {
+    if (context.state == GameState::normal && redraw && al_is_event_queue_empty(queue)) {
       al_clear_to_color(al_map_rgb(0, 0, 0));
 
       std::vector<Entity*>::iterator itr;
@@ -212,13 +241,15 @@ int main(int argc, char **argv) {
 
     if (resume.win) {
       if (current_level == 5) {
-        state = GameState::interlude;
+        context.state = GameState::interlude;
+        context.time_remaining = 30;
         resume.reset();
         resume.interlude = true;
       }
 
-      if (state == GameState::interlude_win) {
+      if (context.state == GameState::interlude_win) {
         resume.powerup_rocket = true;
+        context.state = GameState::normal;
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
                      al_map_rgb(255, 255, 255),
@@ -232,6 +263,26 @@ int main(int argc, char **argv) {
                      resolution.y/2 + 15,
                      ALLEGRO_ALIGN_CENTRE,
                      "Your persistence has rewarded you with a new ability. You gain ROCKET BOOST.");
+        al_flip_display();
+        std::chrono::milliseconds timespan(6000);
+        std::this_thread::sleep_for(timespan);
+      }
+
+      if (context.state == GameState::interlude_fail) {
+        context.state = GameState::normal;
+        al_clear_to_color(al_map_rgb(0, 0, 0));
+        al_draw_text(font,
+                     al_map_rgb(255, 255, 255),
+                     resolution.x/2,
+                     resolution.y/2,
+                     ALLEGRO_ALIGN_CENTRE,
+                     "\"Thanks so much for your interest in this company! Unfortunately, we will not be moving forward at this time.\"");
+        al_draw_text(font,
+                    al_map_rgb(255, 255, 255),
+                    resolution.x/2,
+                    resolution.y/2 + 15,
+                    ALLEGRO_ALIGN_CENTRE,
+                    "You do not gain any new abilities.");
         al_flip_display();
         std::chrono::milliseconds timespan(6000);
         std::this_thread::sleep_for(timespan);
