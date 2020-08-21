@@ -26,6 +26,8 @@ class Resume final : public Entity {
   bool win;
   int x;
   int y;
+  static const int width = 50;
+  static const int height = 70;
  private:
   void move_down();
   void move_up();
@@ -37,8 +39,6 @@ class Resume final : public Entity {
   Manager* manager;
   double vx;
   double vy;
-  static const int width = 50;
-  static const int height = 70;
   static const int vmax = 30;
 };
 

@@ -45,6 +45,16 @@ void must_init(bool test, const char *description) {
   exit(1);
 }
 
+void init_level(
+  std::vector<Entity*> &entities,
+  Resume* resume,
+  Manager* manager)
+{
+  entities.clear();
+  entities.push_back(resume);
+  entities.push_back(manager);
+}
+
 void clear_black_holes(std::vector<BlackHole*>& black_holes) {
   std::vector<BlackHole*>::iterator itr;
   for (itr = black_holes.begin(); itr < black_holes.end(); itr++) {
@@ -84,24 +94,13 @@ int main(int argc, char **argv) {
   std::vector<Entity*> entities;
   std::vector<BlackHole*> black_holes;
   std::vector<Bullet*> bullets;
-  //  entities.push_back(std::move(new BlackHole(100,100)));
   srand(time(NULL));
   // srand(0);
   int current_level = 5;
   for (int i = 0; i < current_level; i++) {
     BlackHole* bh = new BlackHole();
     black_holes.push_back(bh);
-    //    entities.push_back(bh);
   }
-  /*BlackHole bh1(200, 100);
-    BlackHole bh2(600, 300);
-    BlackHole bh3(100, 500);
-    black_holes.push_back(&bh1);
-    black_holes.push_back(&bh2);
-    black_holes.push_back(&bh3);
-    entities.push_back(&bh1);
-    entities.push_back(&bh2);
-    entities.push_back(&bh3);*/
 
   Manager manager(resolution.x - 130, resolution.y / 2);
   entities.push_back(&manager);
@@ -110,8 +109,8 @@ int main(int argc, char **argv) {
   entities.push_back(&resume);
 
   //  bool show_intro_screen = true;
-  // GameState state = intro_screen;
-  GameState state = GameState::interlude;
+  GameState state = intro_screen;
+  // GameState state = GameState::interlude;
   bool done = false;
   bool redraw = true;
   ALLEGRO_EVENT event;
@@ -182,7 +181,7 @@ int main(int argc, char **argv) {
       context.state = normal;
     }
 
-    if (context.state == GameState::interlude) {
+    if (context.state == GameState::interlude && redraw && al_is_event_queue_empty(queue)) {
       al_clear_to_color(al_map_rgb(0, 0, 0));
       // ***********************************************************************
       // source: https://stackoverflow.com/questions/4713131
@@ -192,9 +191,28 @@ int main(int argc, char **argv) {
           delete (*b_itr);
           b_itr = bullets.erase(b_itr);
         }
-        else b_itr++;
+        else {
+          if ((*b_itr)->x > resume.x && (*b_itr)->x < resume.x + resume.width
+              && (*b_itr)->y > resume.y && (*b_itr)->y < resume.y + resume.height) {
+            resume.fail = true;
+            break;
+          }
+          b_itr++;
+        }
       }
       // ***********************************************************************
+      if (resume.fail) {
+        context.state = GameState::interlude_fail;
+        resume.interlude = false;
+        resume.win = true;
+        resume.fail = false;
+      }
+      else if (!resume.fail && context.time_remaining <= 0) {
+        context.state = GameState::interlude_win;
+        resume.interlude = false;
+        resume.win = true;
+      }
+
       std::vector<Entity*>::iterator itr = entities.begin();
       for (itr = entities.begin(); itr < entities.end(); itr++) {
         (*itr)->update();
@@ -219,17 +237,6 @@ int main(int argc, char **argv) {
       context.time_remaining -= context.tick_rate; // has problems with tick rate consistency
       al_flip_display();
       redraw = false;
-
-      if (resume.fail) {
-        context.state = GameState::interlude_fail;
-        resume.interlude = false;
-        resume.win = true;
-      }
-      else if (!resume.fail && context.time_remaining <= 0) {
-        context.state = GameState::interlude_win;
-        resume.interlude = false;
-        resume.win = true;
-      }
     }
 
     if (context.state == GameState::normal && redraw && al_is_event_queue_empty(queue)) {
@@ -264,7 +271,7 @@ int main(int argc, char **argv) {
         context.time_remaining = 30;
         resume.reset();
         resume.interlude = true;
-        entities.push_back(new Interviewer(resolution.x/2, 75, &bullets));
+        entities.push_back(std::move(new Interviewer(resolution.x/2, 75, &bullets)));
       }
 
       if (context.state == GameState::interlude_win) {
@@ -290,6 +297,12 @@ int main(int argc, char **argv) {
 
       if (context.state == GameState::interlude_fail) {
         context.state = GameState::normal;
+        // std::vector<Bullet*>::iterator itr = bullets.begin();
+        // for (itr = bullets.begin(); itr < bullets.end(); itr++) {
+        //   delete (*itr);
+        // }
+        // bullets.clear();
+        // init_level(entities, &resume, &manager);
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
                      al_map_rgb(255, 255, 255),
@@ -315,7 +328,6 @@ int main(int argc, char **argv) {
       for (int i = 0; i < current_level; i++) {
         BlackHole* bh = new BlackHole();
         black_holes.push_back(bh);
-        //entities.push_back(bh);
       }
       resume.reset();
     }

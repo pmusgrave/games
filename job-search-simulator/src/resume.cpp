@@ -43,6 +43,9 @@ void Resume::draw() {
     reset();
   }
 
+  if (interlude)
+    angle = 0;
+
   ALLEGRO_TRANSFORM trans;
   al_identity_transform(&trans);
   al_translate_transform(&trans, -x-width/2, -y-height/2);
@@ -62,7 +65,7 @@ void Resume::draw() {
                         0  // flags
                         );
 
-  if (!launched) {
+  if (!launched && !interlude) {
     al_draw_line(
       (x + width),
       (y + (height / 2)),
@@ -184,9 +187,6 @@ void Resume::update() {
   if (!launched) {
     angle = M_PI * launch_angle / 180;
     return;
-  }
-  else if (interlude) {
-    angle = 0;
   }
   else {
     angle += 0.15;

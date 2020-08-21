@@ -16,6 +16,8 @@ class Interviewer final : public Entity {
  private:
   int bullet_timer;
   std::vector<Bullet*> *bullets;
+  float launch_angle;
+  float launch_angle_inc;
   bool spawn_bullets;
   static const int width = 50;
   static const int height = 50;
