@@ -8,7 +8,7 @@
 #include "manager.hpp"
 
 class Resume final : public Entity {
-public:
+ public:
   Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* manager);
   ~Resume();
   void draw() override;
@@ -26,7 +26,7 @@ public:
   bool win;
   int x;
   int y;
-private:
+ private:
   void move_down();
   void move_up();
   double angle;

@@ -185,6 +185,9 @@ void Resume::update() {
     angle = M_PI * launch_angle / 180;
     return;
   }
+  else if (interlude) {
+    angle = 0;
+  }
   else {
     angle += 0.15;
   }

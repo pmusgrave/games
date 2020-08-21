@@ -5,6 +5,7 @@
 
 #include <time.h>
 
+#include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <string>
@@ -14,6 +15,7 @@
 #include "black_hole.hpp"
 #include "entity.hpp"
 #include "globals.hpp"
+#include "interviewer.hpp"
 #include "manager.hpp"
 #include "resume.hpp"
 
@@ -28,8 +30,8 @@ enum GameState {
   interlude_win,
 };
 
-class GameContext {
-public:
+struct GameContext {
+ public:
   GameContext(GameState state) : state(state) {}
   GameState state;
   static constexpr float tick_rate = 1.0f / 30.0f;
@@ -81,6 +83,7 @@ int main(int argc, char **argv) {
 
   std::vector<Entity*> entities;
   std::vector<BlackHole*> black_holes;
+  std::vector<Bullet*> bullets;
   //  entities.push_back(std::move(new BlackHole(100,100)));
   srand(time(NULL));
   // srand(0);
@@ -107,7 +110,8 @@ int main(int argc, char **argv) {
   entities.push_back(&resume);
 
   //  bool show_intro_screen = true;
-  GameState state = intro_screen;
+  // GameState state = intro_screen;
+  GameState state = GameState::interlude;
   bool done = false;
   bool redraw = true;
   ALLEGRO_EVENT event;
@@ -180,10 +184,25 @@ int main(int argc, char **argv) {
 
     if (context.state == GameState::interlude) {
       al_clear_to_color(al_map_rgb(0, 0, 0));
-      std::vector<Entity*>::iterator itr;
+      // ***********************************************************************
+      // source: https://stackoverflow.com/questions/4713131
+      auto b_itr = bullets.begin();
+      while(b_itr != bullets.end()) {
+        if((*b_itr)->marked_for_removal) {
+          delete (*b_itr);
+          b_itr = bullets.erase(b_itr);
+        }
+        else b_itr++;
+      }
+      // ***********************************************************************
+      std::vector<Entity*>::iterator itr = entities.begin();
       for (itr = entities.begin(); itr < entities.end(); itr++) {
         (*itr)->update();
         (*itr)->draw();
+      }
+      for (b_itr = bullets.begin(); b_itr < bullets.end(); b_itr++) {
+        (*b_itr)->update();
+        (*b_itr)->draw();
       }
       al_draw_text(font,
                    al_map_rgb(255, 255, 255),
@@ -245,6 +264,7 @@ int main(int argc, char **argv) {
         context.time_remaining = 30;
         resume.reset();
         resume.interlude = true;
+        entities.push_back(new Interviewer(resolution.x/2, 75, &bullets));
       }
 
       if (context.state == GameState::interlude_win) {
