@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <chrono>
 #include <iostream>
+#include <random>
 #include <string>
 #include <thread>
 #include <vector>
@@ -41,10 +42,16 @@ struct GameContext {
 enum Powerup {
   rocket_boost = 0,
   gravity_reduction,
+  gravity_increase,
+  max_speed_reduction,
+  max_speed_increase,
 };
 std::vector<Powerup> powerups {
   Powerup::rocket_boost,
   Powerup::gravity_reduction,
+  Powerup::gravity_increase,
+  Powerup::max_speed_reduction,
+  Powerup::max_speed_increase,
 };
 
 void must_init(bool test, const char *description) {
@@ -54,22 +61,23 @@ void must_init(bool test, const char *description) {
   exit(1);
 }
 
+template <typename T>
+void clear_entities(typename std::vector<T*>& entities_to_clear) {
+  typename std::vector<T*>::iterator itr;
+  for (itr = entities_to_clear.begin(); itr < entities_to_clear.end(); itr++) {
+    delete (*itr);
+  }
+  entities_to_clear.clear();
+}
+
 void init_level(
   std::vector<Entity*> &entities,
   Resume* resume,
   Manager* manager)
 {
-  entities.clear();
+  clear_entities<Entity>(entities);
   entities.push_back(resume);
   entities.push_back(manager);
-}
-
-void clear_black_holes(std::vector<BlackHole*>& black_holes) {
-  std::vector<BlackHole*>::iterator itr;
-  for (itr = black_holes.begin(); itr < black_holes.end(); itr++) {
-    delete (*itr);
-  }
-  black_holes.clear();
 }
 
 int main(int argc, char **argv) {
@@ -100,9 +108,10 @@ int main(int argc, char **argv) {
   al_register_event_source(queue, al_get_display_event_source(disp));
   al_register_event_source(queue, al_get_timer_event_source(timer));
 
-  std::vector<Entity*> entities;
   std::vector<BlackHole*> black_holes;
   std::vector<Bullet*> bullets;
+  std::vector<Entity*> entities;
+  std::vector<Interviewer*> interviewers;
   srand(time(NULL));
   // srand(0);
   int current_level = 1;
@@ -228,6 +237,13 @@ int main(int argc, char **argv) {
         (*itr)->update();
         (*itr)->draw();
       }
+
+      std::vector<Interviewer*>::iterator int_itr;
+      for (int_itr = interviewers.begin(); int_itr < interviewers.end(); int_itr++) {
+        (*int_itr)->update();
+        (*int_itr)->draw();
+      }
+
       for (b_itr = bullets.begin(); b_itr < bullets.end(); b_itr++) {
         (*b_itr)->update();
         (*b_itr)->draw();
@@ -276,25 +292,27 @@ int main(int argc, char **argv) {
     }
 
     if (resume.win) {
-      if (current_level == 5) {
+      if ((current_level%5) == 0) {
         context.state = GameState::interlude;
         context.time_remaining = 30;
         resume.reset();
         resume.interlude = true;
-        entities.push_back(std::move(new Interviewer(resolution.x/2, 75, 10, &bullets)));
-      }
-
-      if (current_level == 10) {
-        context.state = GameState::interlude;
-        context.time_remaining = 30;
-        resume.reset();
-        resume.interlude = true;
-        entities.push_back(std::move(new Interviewer(resolution.x * 0.25, 75, 7, &bullets)));
-        entities.push_back(std::move(new Interviewer(resolution.x * 0.75, 75, 8, &bullets)));
+        for (int i = 0; i < current_level / 5; i++) {
+          std::random_device rd;
+          std::mt19937 gen(rd());
+          std::uniform_int_distribution<int> x_pos_distr(200, resolution.x - 200);
+          std::normal_distribution<float> y_pos_distr(resolution.y * 0.2, 20);
+          int x = ((uint)x_pos_distr(gen))%(resolution.x);
+          int y = ((uint)y_pos_distr(gen))%(resolution.y);// + (radius/2);
+          interviewers.push_back(std::move(new Interviewer(x, y, 5, &bullets)));
+        }
       }
 
       if (context.state == GameState::interlude_win) {
         context.state = GameState::normal;
+        // init_level(entities, &resume, &manager);
+        clear_entities<Bullet>(bullets);
+        clear_entities<Interviewer>(interviewers);
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
                      al_map_rgb(255, 255, 255),
@@ -328,6 +346,36 @@ int main(int argc, char **argv) {
                       ALLEGRO_ALIGN_CENTRE,
                       "Gravity is now 10% less strong.");
           break;
+        case Powerup::gravity_increase:
+          resume.v_init *= 1.10;
+          BlackHole::G *= 1.05;
+          al_draw_text(font,
+                      al_map_rgb(255, 255, 255),
+                      resolution.x/2,
+                      resolution.y/2 + 30,
+                      ALLEGRO_ALIGN_CENTRE,
+                      "Your launch velocity has increased, but gravity is now stronger.");
+          break;
+        case Powerup::max_speed_reduction:
+          resume.v_max *= 0.95;
+          resume.v_init *= 1.10;
+          al_draw_text(font,
+                      al_map_rgb(255, 255, 255),
+                      resolution.x/2,
+                      resolution.y/2 + 30,
+                      ALLEGRO_ALIGN_CENTRE,
+                      "Your launch velocity has increased, but your max velocity has decreased.");
+          break;
+        case Powerup::max_speed_increase:
+          resume.v_max *= 1.10;
+          resume.v_init *= 0.95;
+          al_draw_text(font,
+                      al_map_rgb(255, 255, 255),
+                      resolution.x/2,
+                      resolution.y/2 + 30,
+                      ALLEGRO_ALIGN_CENTRE,
+                      "Your starting velocity has decreased, but your max velocity has increased.");
+          break;
         }
 
         al_flip_display();
@@ -343,6 +391,8 @@ int main(int argc, char **argv) {
         // }
         // bullets.clear();
         // init_level(entities, &resume, &manager);
+        clear_entities<Bullet>(bullets);
+        clear_entities<Interviewer>(interviewers);
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
                      al_map_rgb(255, 255, 255),
@@ -364,7 +414,7 @@ int main(int argc, char **argv) {
       current_level++;
       level_string = "Level ";
       level_string += std::to_string(current_level);
-      clear_black_holes(black_holes);
+      clear_entities<BlackHole>(black_holes);
       for (int i = 0; i < current_level; i++) {
         black_holes.push_back(new BlackHole());
       }
@@ -377,7 +427,7 @@ int main(int argc, char **argv) {
   al_destroy_timer(timer);
   al_destroy_event_queue(queue);
 
-  clear_black_holes(black_holes);
+  clear_entities<BlackHole>(black_holes);
 
   return 0;
 }

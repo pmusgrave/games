@@ -15,6 +15,8 @@
 Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* manager)
   : interlude(false),
     fail(false),
+    v_max(35),
+    v_init(20),
     win(false),
     x(x),
     y(y),
@@ -155,8 +157,8 @@ void Resume::launch() {
   if (launched)
     return;
   launched = true;
-  vx = 20*cos(angle);
-  vy = 20*sin(angle);
+  vx = v_init*cos(angle);
+  vy = v_init*sin(angle);
 }
 
 void Resume::move_down() {
@@ -221,11 +223,11 @@ void Resume::update() {
     vy = -vy;
   }
 
-  if (vx >= vmax) {
-    vx = vmax;
+  if (vx >= v_max) {
+    vx = v_max;
   }
-  if (vy >= vmax) {
-    vy = vmax;
+  if (vy >= v_max) {
+    vy = v_max;
   }
 
   for (itr = black_holes->begin(); itr < black_holes->end(); itr++) {

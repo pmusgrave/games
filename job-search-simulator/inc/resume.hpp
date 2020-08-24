@@ -23,6 +23,8 @@ class Resume final : public Entity {
   bool fail;
   bool interlude;
   bool powerup_rocket;
+  int v_max;
+  int v_init;
   bool win;
   int x;
   int y;
@@ -39,7 +41,6 @@ class Resume final : public Entity {
   Manager* manager;
   double vx;
   double vy;
-  static const int vmax = 30;
 };
 
 #endif  // INC_RESUME_HPP_
