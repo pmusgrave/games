@@ -12,7 +12,7 @@ public:
   void draw() override;
   void show_message();
   void update() override;
-  static constexpr double G = 6.67430e-11;
+  static double G;
   unsigned long long m;
   int radius;
   int x;

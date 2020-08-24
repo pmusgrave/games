@@ -7,7 +7,7 @@
 
 class Interviewer final : public Entity {
  public:
-  Interviewer(int x, int y, std::vector<Bullet*> *bullets);
+  Interviewer(int x, int y, int bullet_timer, std::vector<Bullet*> *bullets);
   ~Interviewer();
   void draw() override;
   void update() override;

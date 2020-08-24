@@ -38,6 +38,15 @@ struct GameContext {
   float time_remaining;
 };
 
+enum Powerup {
+  rocket_boost = 0,
+  gravity_reduction,
+};
+std::vector<Powerup> powerups {
+  Powerup::rocket_boost,
+  Powerup::gravity_reduction,
+};
+
 void must_init(bool test, const char *description) {
   if(test) return;
 
@@ -97,6 +106,7 @@ int main(int argc, char **argv) {
   srand(time(NULL));
   // srand(0);
   int current_level = 1;
+  BlackHole::G = 6.67430e-11;
   for (int i = 0; i < current_level; i++) {
     BlackHole* bh = new BlackHole();
     black_holes.push_back(bh);
@@ -271,11 +281,19 @@ int main(int argc, char **argv) {
         context.time_remaining = 30;
         resume.reset();
         resume.interlude = true;
-        entities.push_back(std::move(new Interviewer(resolution.x/2, 75, &bullets)));
+        entities.push_back(std::move(new Interviewer(resolution.x/2, 75, 10, &bullets)));
+      }
+
+      if (current_level == 10) {
+        context.state = GameState::interlude;
+        context.time_remaining = 30;
+        resume.reset();
+        resume.interlude = true;
+        entities.push_back(std::move(new Interviewer(resolution.x * 0.25, 75, 7, &bullets)));
+        entities.push_back(std::move(new Interviewer(resolution.x * 0.75, 75, 8, &bullets)));
       }
 
       if (context.state == GameState::interlude_win) {
-        resume.powerup_rocket = true;
         context.state = GameState::normal;
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
@@ -284,12 +302,34 @@ int main(int argc, char **argv) {
                      resolution.y/2,
                      ALLEGRO_ALIGN_CENTRE,
                      "\"Thanks so much for your interest in this company! Unfortunately, we will not be moving forward at this time.\"");
-        al_draw_text(font,
-                     al_map_rgb(255, 255, 255),
-                     resolution.x/2,
-                     resolution.y/2 + 15,
-                     ALLEGRO_ALIGN_CENTRE,
-                     "Your persistence has rewarded you with a new ability. You gain ROCKET BOOST.");
+        unsigned int new_powerup = powerups[rand()%(powerups.size())];
+        switch (new_powerup) {
+        case Powerup::rocket_boost:
+          resume.powerup_rocket = true;
+          al_draw_text(font,
+                       al_map_rgb(255, 255, 255),
+                       resolution.x/2,
+                       resolution.y/2 + 15,
+                       ALLEGRO_ALIGN_CENTRE,
+                       "Your persistence has rewarded you with a new ability. You gain ROCKET BOOST.");
+          break;
+        case Powerup::gravity_reduction:
+          BlackHole::G *= 0.90;
+          al_draw_text(font,
+                       al_map_rgb(255, 255, 255),
+                       resolution.x/2,
+                       resolution.y/2 + 15,
+                       ALLEGRO_ALIGN_CENTRE,
+                       "Your persistence has rewarded you with a new ability. You gain GRAVITY REDUCTION.");
+          al_draw_text(font,
+                      al_map_rgb(255, 255, 255),
+                      resolution.x/2,
+                      resolution.y/2 + 30,
+                      ALLEGRO_ALIGN_CENTRE,
+                      "Gravity is now 10% less strong.");
+          break;
+        }
+
         al_flip_display();
         std::chrono::milliseconds timespan(6000);
         std::this_thread::sleep_for(timespan);

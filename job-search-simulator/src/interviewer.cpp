@@ -10,10 +10,10 @@
 #include "bullet.hpp"
 #include "globals.hpp"
 
-Interviewer::Interviewer(int x, int y, std::vector<Bullet*> *bullets)
+Interviewer::Interviewer(int x, int y, int bullet_timer, std::vector<Bullet*> *bullets)
   : x(x),
     y(y),
-    bullet_timer(10),
+    bullet_timer(bullet_timer),
     bullets(bullets),
     launch_angle(10),
     launch_angle_inc(0.5),

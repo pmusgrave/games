@@ -40,6 +40,8 @@ std::vector<std::string> rejection_phrases {
   "You applied at the wrong time of day.",
 };
 
+double BlackHole::G;
+
 BlackHole::BlackHole()
   :  message(false), message_index(0), message_timer(100)
 {
