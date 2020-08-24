@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
   std::vector<Bullet*> bullets;
   srand(time(NULL));
   // srand(0);
-  int current_level = 5;
+  int current_level = 1;
   for (int i = 0; i < current_level; i++) {
     BlackHole* bh = new BlackHole();
     black_holes.push_back(bh);
@@ -326,8 +326,7 @@ int main(int argc, char **argv) {
       level_string += std::to_string(current_level);
       clear_black_holes(black_holes);
       for (int i = 0; i < current_level; i++) {
-        BlackHole* bh = new BlackHole();
-        black_holes.push_back(bh);
+        black_holes.push_back(new BlackHole());
       }
       resume.reset();
     }
