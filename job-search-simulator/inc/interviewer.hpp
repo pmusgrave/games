@@ -16,6 +16,7 @@ class Interviewer final : public Entity {
  private:
   int bullet_timer;
   int bullet_timer_initial;
+  int bullet_timer_max;
   std::vector<Bullet*> *bullets;
   float launch_angle;
   float launch_angle_inc;

@@ -15,11 +15,16 @@ Interviewer::Interviewer(int x, int y, int bullet_timer, std::vector<Bullet*> *b
     y(y),
     bullet_timer(bullet_timer),
     bullet_timer_initial(20),
+    bullet_timer_max(bullet_timer),
     bullets(bullets),
     launch_angle(10),
     launch_angle_inc(0.5),
     spawn_bullets(false)
-{}
+{
+  if (rand()%100 > 50) {
+    launch_angle_inc = -launch_angle_inc;
+  }
+}
 
 Interviewer::~Interviewer() {}
 
@@ -36,7 +41,7 @@ void Interviewer::update() {
   }
   if (--bullet_timer <= 0) {
     spawn_bullets = true;
-    bullet_timer = 1;
+    bullet_timer = bullet_timer_max;
   }
   else spawn_bullets = false;
 

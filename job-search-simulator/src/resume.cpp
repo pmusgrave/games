@@ -143,7 +143,7 @@ void Resume::handle_s() {
 }
 
 void Resume::handle_space() {
-  if (!launched) {
+  if (!launched && !interlude) {
     launch();
   }
 }
@@ -188,6 +188,7 @@ void Resume::reset() {
   vx = 0;
   vy = 0;
   angle = 0;
+  // interlude = false;
   launched = false;
   fail = false;
   win = false;

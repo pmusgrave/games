@@ -37,6 +37,10 @@ enum GameState {
 struct GameContext {
  public:
   GameContext(GameState state) : state(state) {}
+  void reset_time() {
+    time_remaining = tick_rate * 5000;
+    reference_time_remaining = tick_rate * 5000;
+  }
   GameState state;
   static constexpr float tick_rate = 1.0f / 30.0f;
   float time_remaining;
@@ -144,8 +148,7 @@ int main(int argc, char **argv) {
   std::string level_string = "Level ";
   level_string += std::to_string(current_level);
   GameContext context(state);
-  context.time_remaining = context.tick_rate * 3000;
-  context.reference_time_remaining = context.tick_rate * 3000;
+  context.reset_time();
 
 #define KEY_SEEN     1
 #define KEY_RELEASED 2
@@ -293,7 +296,7 @@ int main(int argc, char **argv) {
         double dx = (*bh_itr)->x - resume.x;
         double dy = (*bh_itr)->y - resume.y;
         double r = sqrt(pow(dx,2) + pow(dy,2));
-        time_dilation_factor += (1 - (1 / sqrt(1 - (2*BlackHole::G*(*bh_itr)->m*5e13/(((*bh_itr)->radius + r)*c_squared)))));
+        time_dilation_factor += (1 - (1 / sqrt(1 - (2*BlackHole::G*(*bh_itr)->m*5e12/(((*bh_itr)->radius + r)*c_squared)))));
       }
 
       time_dilation_factor += (1 - (1 / sqrt(1 - resume.get_scalar_velocity_squared()/c_squared)));
@@ -329,8 +332,7 @@ int main(int argc, char **argv) {
     }
 
     if (resume.win) {
-      context.time_remaining = context.tick_rate * 3000;
-      context.reference_time_remaining = context.tick_rate * 3000;
+      context.reset_time();
 
       if ((current_level%5) == 0) {
         context.state = GameState::interlude;
@@ -342,11 +344,54 @@ int main(int argc, char **argv) {
           std::mt19937 gen(rd());
           std::uniform_int_distribution<int> x_pos_distr(200, resolution.x - 200);
           std::normal_distribution<float> y_pos_distr(resolution.y * 0.2, 20);
-          std::normal_distribution<float> fire_rate(current_level, 10);
+          std::normal_distribution<float> fire_rate(current_level%5+4, 2);
           int x = ((uint)x_pos_distr(gen))%(resolution.x);
           int y = ((uint)y_pos_distr(gen))%(resolution.y);// + (radius/2);
           interviewers.push_back(std::move(new Interviewer(x, y, abs(fire_rate(gen)), &bullets)));
         }
+      }
+
+      if (current_level%40 == 0) {
+        al_clear_to_color(al_map_rgb(0, 0, 0));
+        al_draw_text(font,
+                     al_map_rgb(255, 255, 255),
+                     resolution.x/2,
+                     resolution.y/2,
+                     ALLEGRO_ALIGN_CENTRE,
+                     "\"Thanks so much for your interest in this company! You made it to the final round of our candidate selection process.\"");
+        al_draw_text(font,
+                     al_map_rgb(255, 255, 255),
+                     resolution.x/2,
+                     resolution.y/2 + 15,
+                     ALLEGRO_ALIGN_CENTRE,
+                     "\"Unfortunately, we decided to go with another candidate.\"");
+        al_draw_text(font,
+                    al_map_rgb(255, 255, 255),
+                    resolution.x/2,
+                    resolution.y/2 + 30,
+                    ALLEGRO_ALIGN_CENTRE,
+                    "Congratulations on making it this far.");
+        al_draw_text(font,
+                    al_map_rgb(255, 255, 255),
+                    resolution.x/2,
+                    resolution.y/2 + 45,
+                    ALLEGRO_ALIGN_CENTRE,
+                    "The job hunt continues...");
+        al_flip_display();
+        std::chrono::milliseconds timespan(6000);
+        std::this_thread::sleep_for(timespan);
+        current_level = 1;
+        context.state = GameState::normal;
+        level_string = "Level ";
+        level_string += std::to_string(current_level);
+        clear_entities<Bullet>(bullets);
+        clear_entities<Interviewer>(interviewers);
+        clear_entities<BlackHole>(black_holes);
+        for (int i = 0; i < current_level; i++) {
+          black_holes.push_back(new BlackHole());
+        }
+        resume.interlude = false;
+        continue;
       }
 
       if (context.state == GameState::interlude_win) {
@@ -424,7 +469,7 @@ int main(int argc, char **argv) {
                       resolution.x/2,
                       resolution.y/2 + 30,
                       ALLEGRO_ALIGN_CENTRE,
-                      "Your launch velocity has decreased, but your max velocity has increased.");
+                      "Your max velocity has increased, but your launch velocity has decreased.");
           break;
         case Powerup::init_speed_increase:
           resume.v_init *= 1.15;
@@ -492,8 +537,7 @@ int main(int argc, char **argv) {
       black_holes.push_back(new BlackHole());
       resume.reset();
       context.state = GameState::intro_screen;
-      context.time_remaining = context.tick_rate * 3000;
-      context.reference_time_remaining = context.tick_rate * 3000;
+      context.reset_time();
       al_flip_display();
     }
   }
