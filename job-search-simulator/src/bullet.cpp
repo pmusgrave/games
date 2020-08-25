@@ -6,12 +6,17 @@ Bullet::Bullet(int x, int y, int vx, int vy)
   : marked_for_removal(false),
     x(x),
     y(y),
-    font(al_create_builtin_font()),
     vx(vx),
     vy(vy)
-{}
+{
+  al_init_font_addon();
+  al_init_ttf_addon();
+  font = al_load_font("resources/Comfortaa/Comfortaa-VariableFont_wght.ttf", 24, 0);
+}
 
-Bullet::~Bullet() {}
+Bullet::~Bullet() {
+  al_destroy_font(font);
+}
 
 void Bullet::draw() {
   al_draw_text(font,

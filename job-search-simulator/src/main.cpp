@@ -1,7 +1,8 @@
 #include <allegro5/allegro5.h>
-#include <allegro5/allegro_font.h>
 #include <allegro5/allegro_image.h>
+#include <allegro5/allegro_font.h>
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_ttf.h>
 
 #include <time.h>
 
@@ -109,8 +110,10 @@ int main(int argc, char **argv) {
   ALLEGRO_DISPLAY* disp = al_create_display(resolution.x, resolution.y);
   must_init(disp, "display");
 
-  ALLEGRO_FONT* font = al_create_builtin_font();
-  must_init(font, "font");
+  must_init(al_init_font_addon(), "init font");
+  must_init(al_init_ttf_addon(), "ttf");
+  ALLEGRO_FONT* font = al_load_font("resources/Comfortaa/static/Comfortaa-Regular.ttf", 16, 0);
+  must_init(font, "load font");
 
   must_init(al_init_primitives_addon(), "primitives");
 
