@@ -13,6 +13,7 @@ class Resume final : public Entity {
   ~Resume();
   void draw() override;
   void launch();
+  double get_scalar_velocity_squared();
   void handle_a();
   void handle_d();
   void handle_s();

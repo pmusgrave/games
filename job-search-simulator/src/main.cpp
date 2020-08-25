@@ -23,12 +23,15 @@
 // struct screen_resolution resolution { 2560, 1440 };
 struct screen_resolution resolution { 1920, 1080 };
 
+const double c_squared = 8.98755179e16;
+
 enum GameState {
   intro_screen = 0,
   normal,
   interlude,
   interlude_fail,
   interlude_win,
+  failure,
 };
 
 struct GameContext {
@@ -37,12 +40,15 @@ struct GameContext {
   GameState state;
   static constexpr float tick_rate = 1.0f / 30.0f;
   float time_remaining;
+  float reference_time_remaining;
 };
 
 enum Powerup {
   rocket_boost = 0,
   gravity_reduction,
   gravity_increase,
+  init_speed_reduction,
+  init_speed_increase,
   max_speed_reduction,
   max_speed_increase,
 };
@@ -52,6 +58,8 @@ std::vector<Powerup> powerups {
   Powerup::gravity_increase,
   Powerup::max_speed_reduction,
   Powerup::max_speed_increase,
+  init_speed_reduction,
+  init_speed_increase,
 };
 
 void must_init(bool test, const char *description) {
@@ -136,7 +144,8 @@ int main(int argc, char **argv) {
   std::string level_string = "Level ";
   level_string += std::to_string(current_level);
   GameContext context(state);
-  context.time_remaining = context.tick_rate * 30;
+  context.time_remaining = context.tick_rate * 3000;
+  context.reference_time_remaining = context.tick_rate * 3000;
 
 #define KEY_SEEN     1
 #define KEY_RELEASED 2
@@ -188,6 +197,7 @@ int main(int argc, char **argv) {
       break;
 
     if (context.state == GameState::intro_screen) {
+      al_clear_to_color(al_map_rgb(0, 0, 0));
       al_draw_text(font,
                    al_map_rgb(255, 255, 255),
                    resolution.x/2,
@@ -197,7 +207,7 @@ int main(int argc, char **argv) {
       al_flip_display();
       std::chrono::milliseconds timespan(3000);
       std::this_thread::sleep_for(timespan);
-      context.state = normal;
+      context.state = GameState::normal;
     }
 
     if (context.state == GameState::interlude && redraw && al_is_event_queue_empty(queue)) {
@@ -268,6 +278,8 @@ int main(int argc, char **argv) {
     if (context.state == GameState::normal && redraw && al_is_event_queue_empty(queue)) {
       al_clear_to_color(al_map_rgb(0, 0, 0));
 
+      double time_dilation_factor = 1;
+
       std::vector<Entity*>::iterator itr;
       for (itr = entities.begin(); itr < entities.end(); itr++) {
         (*itr)->update();
@@ -278,6 +290,18 @@ int main(int argc, char **argv) {
       for (bh_itr = black_holes.begin(); bh_itr < black_holes.end(); bh_itr++) {
         (*bh_itr)->update();
         (*bh_itr)->draw();
+        double dx = (*bh_itr)->x - resume.x;
+        double dy = (*bh_itr)->y - resume.y;
+        double r = sqrt(pow(dx,2) + pow(dy,2));
+        time_dilation_factor += (1 - (1 / sqrt(1 - (2*BlackHole::G*(*bh_itr)->m*5e13/(((*bh_itr)->radius + r)*c_squared)))));
+      }
+
+      time_dilation_factor += (1 - (1 / sqrt(1 - resume.get_scalar_velocity_squared()/c_squared)));
+      context.time_remaining -= context.tick_rate / time_dilation_factor; // has problems with tick rate consistency
+      context.reference_time_remaining -= context.tick_rate; // has problems with tick rate consistency
+
+      if (context.time_remaining <= 0 || context.reference_time_remaining <= 0) {
+        context.state = GameState::failure;
       }
 
       al_draw_text(font,
@@ -287,11 +311,27 @@ int main(int argc, char **argv) {
                    ALLEGRO_ALIGN_CENTRE,
                    level_string.c_str());
 
+      al_draw_text(font,
+                  al_map_rgb(255, 255, 255),
+                  resolution.x/2,
+                  30,
+                  ALLEGRO_ALIGN_CENTRE,
+                  std::to_string(context.time_remaining).c_str());
+      al_draw_text(font,
+                  al_map_rgb(255, 255, 255),
+                  resolution.x/2,
+                  45,
+                  ALLEGRO_ALIGN_CENTRE,
+                  std::to_string(context.reference_time_remaining).c_str());
+
       al_flip_display();
       redraw = false;
     }
 
     if (resume.win) {
+      context.time_remaining = context.tick_rate * 3000;
+      context.reference_time_remaining = context.tick_rate * 3000;
+
       if ((current_level%5) == 0) {
         context.state = GameState::interlude;
         context.time_remaining = 30;
@@ -302,9 +342,10 @@ int main(int argc, char **argv) {
           std::mt19937 gen(rd());
           std::uniform_int_distribution<int> x_pos_distr(200, resolution.x - 200);
           std::normal_distribution<float> y_pos_distr(resolution.y * 0.2, 20);
+          std::normal_distribution<float> fire_rate(current_level, 10);
           int x = ((uint)x_pos_distr(gen))%(resolution.x);
           int y = ((uint)y_pos_distr(gen))%(resolution.y);// + (radius/2);
-          interviewers.push_back(std::move(new Interviewer(x, y, 5, &bullets)));
+          interviewers.push_back(std::move(new Interviewer(x, y, abs(fire_rate(gen)), &bullets)));
         }
       }
 
@@ -367,17 +408,36 @@ int main(int argc, char **argv) {
                       "Your launch velocity has increased, but your max velocity has decreased.");
           break;
         case Powerup::max_speed_increase:
-          resume.v_max *= 1.10;
-          resume.v_init *= 0.95;
+          resume.v_max *= 1.15;
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
                       resolution.y/2 + 30,
                       ALLEGRO_ALIGN_CENTRE,
-                      "Your starting velocity has decreased, but your max velocity has increased.");
+                      "Your max velocity has increased.");
+          break;
+        case Powerup::init_speed_reduction:
+          resume.v_init *= 0.90;
+          resume.v_max *= 1.05;
+          al_draw_text(font,
+                      al_map_rgb(255, 255, 255),
+                      resolution.x/2,
+                      resolution.y/2 + 30,
+                      ALLEGRO_ALIGN_CENTRE,
+                      "Your launch velocity has decreased, but your max velocity has increased.");
+          break;
+        case Powerup::init_speed_increase:
+          resume.v_init *= 1.15;
+          al_draw_text(font,
+                      al_map_rgb(255, 255, 255),
+                      resolution.x/2,
+                      resolution.y/2 + 30,
+                      ALLEGRO_ALIGN_CENTRE,
+                      "Your launch velocity has increased.");
           break;
         }
 
+        current_level--;
         al_flip_display();
         std::chrono::milliseconds timespan(6000);
         std::this_thread::sleep_for(timespan);
@@ -406,6 +466,8 @@ int main(int argc, char **argv) {
                     resolution.y/2 + 15,
                     ALLEGRO_ALIGN_CENTRE,
                     "You do not gain any new abilities.");
+
+        current_level--;
         al_flip_display();
         std::chrono::milliseconds timespan(6000);
         std::this_thread::sleep_for(timespan);
@@ -419,6 +481,20 @@ int main(int argc, char **argv) {
         black_holes.push_back(new BlackHole());
       }
       resume.reset();
+    }
+
+    if (context.state == GameState::failure) {
+      al_clear_to_color(al_map_rgb(0, 0, 0));
+      current_level = 1;
+      level_string = "Level ";
+      level_string += std::to_string(current_level);
+      clear_entities<BlackHole>(black_holes);
+      black_holes.push_back(new BlackHole());
+      resume.reset();
+      context.state = GameState::intro_screen;
+      context.time_remaining = context.tick_rate * 3000;
+      context.reference_time_remaining = context.tick_rate * 3000;
+      al_flip_display();
     }
   }
 

@@ -99,9 +99,14 @@ void Resume::draw() {
 
 }
 
+double Resume::get_scalar_velocity_squared() {
+  return pow(vx,2) + pow(vy,2);
+}
+
 void Resume::handle_a() {
   if (interlude) {
     x -= 10;
+    if (x <= 0) x = 0;
   }
   else if (!launched) {
     launch_angle--;
@@ -114,6 +119,7 @@ void Resume::handle_a() {
 void Resume::handle_d() {
   if (interlude) {
     x += 10;
+    if (x >= resolution.x - width) x = resolution.x - width;
   }
   else if (!launched) {
     launch_angle++;
@@ -126,6 +132,7 @@ void Resume::handle_d() {
 void Resume::handle_s() {
   if (interlude) {
     y += 10;
+    if (y >= resolution.y - height) y = resolution.y - height;
   }
   else if (!launched) {
     move_down();
@@ -144,6 +151,7 @@ void Resume::handle_space() {
 void Resume::handle_w() {
   if (interlude) {
     y -= 10;
+    if (y <= 0) y = 0;
   }
   else if (!launched) {
     move_up();
