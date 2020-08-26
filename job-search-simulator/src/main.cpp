@@ -59,13 +59,13 @@ enum Powerup {
 };
 std::vector<Powerup> powerups {
   Powerup::rocket_boost,
-  // Powerup::gravity_reduction,
-  // Powerup::gravity_increase,
-  // Powerup::rocket_boost,
-  // Powerup::max_speed_reduction,
-  // Powerup::max_speed_increase,
-  // init_speed_reduction,
-  // init_speed_increase,
+  Powerup::gravity_reduction,
+  Powerup::gravity_increase,
+  Powerup::rocket_boost,
+  Powerup::max_speed_reduction,
+  Powerup::max_speed_increase,
+  init_speed_reduction,
+  init_speed_increase,
 };
 
 void must_init(bool test, const char *description) {

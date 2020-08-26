@@ -22,6 +22,8 @@ Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* mana
     win(false),
     x(x),
     y(y),
+    width(resolution.y * 0.046),
+    height(resolution.y * 0.065),
     angle(0),
     black_holes(black_holes),
     launch_angle(0),
@@ -64,7 +66,7 @@ void Resume::draw() {
   al_translate_transform(&trans, -x-width/2, -y-height/2);
   al_rotate_transform(&trans, angle);
   al_translate_transform(&trans, x+width/2, y+height/2);
-  if (!powerup_rocket || rocket_fuel == 0) {
+  if (!launched || !powerup_rocket || rocket_fuel <= 0) {
     al_use_transform(&trans);
   }
 
@@ -111,37 +113,37 @@ void Resume::draw() {
 
   al_draw_text(font,
               al_map_rgb(255, 255, 255),
-              10,
-              45,
+              resolution.y * 0.00926,
+              resolution.y * 0.0417,
               ALLEGRO_ALIGN_LEFT,
               "ROCKET FUEL");
-  al_draw_rectangle(10, 30, 10 + rocket_fuel_max, 40,
+  al_draw_rectangle(resolution.y * 0.00926, resolution.y * 0.0278, resolution.y * 0.00926 + rocket_fuel_max, resolution.y * 0.037,
                            al_map_rgba_f(1, 1, 1, 1), 2);
-  al_draw_filled_rectangle(10, 30, 10 + (int)rocket_fuel, 40,
+  al_draw_filled_rectangle(resolution.y * 0.00926, resolution.y *0.0278, 10 + (int)rocket_fuel, resolution.y * 0.037,
                            al_map_rgba_f(1, 1, 1, 1));
 
   if (draw_rocket_down) {
-    al_draw_filled_triangle(x + width/2 - 10, y + height,
-                            x + width/2 + 10, y + height,
-                            x + width/2, y + height + 30,
+    al_draw_filled_triangle(x + width/2 - resolution.y * 0.00926, y + height,
+                            x + width/2 + resolution.y * 0.00926, y + height,
+                            x + width/2, y + height + resolution.y *0.0278,
                             al_map_rgb(254, 110, 00));
   }
   if (draw_rocket_left) {
-    al_draw_filled_triangle(x, y + height/2 -10,
-                            x, y + height/2  +10,
-                            x - 30, y + height/2,
+    al_draw_filled_triangle(x, y + height/2 - resolution.y * 0.00926,
+                            x, y + height/2  + resolution.y * 0.00926,
+                            x - resolution.y *0.0278, y + height/2,
                             al_map_rgb(254, 110, 00));
   }
   if (draw_rocket_right) {
-    al_draw_filled_triangle(x + width, y + height/2 - 10,
-                            x + width, y + height/2 + 10,
-                            x + width + 30, y + height/2,
+    al_draw_filled_triangle(x + width, y + height/2 - resolution.y * 0.00926,
+                            x + width, y + height/2 + resolution.y * 0.00926,
+                            x + width + resolution.y *0.0278, y + height/2,
                             al_map_rgb(254, 110, 00));
   }
   if (draw_rocket_up) {
-    al_draw_filled_triangle(x + width/2 - 10, y,
-                            x + width/2 + 10, y,
-                            x + width/2, y - 30,
+    al_draw_filled_triangle(x + width/2 - resolution.y * 0.00926, y,
+                            x + width/2 + resolution.y * 0.00926, y,
+                            x + width/2, y - resolution.y *0.0278,
                             al_map_rgb(254, 110, 00));
   }
   draw_rocket_down = false;
