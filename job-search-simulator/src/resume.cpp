@@ -64,7 +64,9 @@ void Resume::draw() {
   al_translate_transform(&trans, -x-width/2, -y-height/2);
   al_rotate_transform(&trans, angle);
   al_translate_transform(&trans, x+width/2, y+height/2);
-  al_use_transform(&trans);
+  if (!powerup_rocket || rocket_fuel == 0) {
+    al_use_transform(&trans);
+  }
 
   // al_draw_filled_rectangle(x, y,
   //                          x + width, y + height,
@@ -117,6 +119,35 @@ void Resume::draw() {
                            al_map_rgba_f(1, 1, 1, 1), 2);
   al_draw_filled_rectangle(10, 30, 10 + (int)rocket_fuel, 40,
                            al_map_rgba_f(1, 1, 1, 1));
+
+  if (draw_rocket_down) {
+    al_draw_filled_triangle(x + width/2 - 10, y + height,
+                            x + width/2 + 10, y + height,
+                            x + width/2, y + height + 30,
+                            al_map_rgb(254, 110, 00));
+  }
+  if (draw_rocket_left) {
+    al_draw_filled_triangle(x, y + height/2 -10,
+                            x, y + height/2  +10,
+                            x - 30, y + height/2,
+                            al_map_rgb(254, 110, 00));
+  }
+  if (draw_rocket_right) {
+    al_draw_filled_triangle(x + width, y + height/2 - 10,
+                            x + width, y + height/2 + 10,
+                            x + width + 30, y + height/2,
+                            al_map_rgb(254, 110, 00));
+  }
+  if (draw_rocket_up) {
+    al_draw_filled_triangle(x + width/2 - 10, y,
+                            x + width/2 + 10, y,
+                            x + width/2, y - 30,
+                            al_map_rgb(254, 110, 00));
+  }
+  draw_rocket_down = false;
+  draw_rocket_left = false;
+  draw_rocket_right = false;
+  draw_rocket_up = false;
 }
 
 double Resume::get_scalar_velocity_squared() {
@@ -132,6 +163,7 @@ void Resume::handle_a() {
     launch_angle--;
   }
   else if (powerup_rocket && rocket_fuel > 0) {
+    draw_rocket_right = true;
     vx -= rocket_acceleration;
     rocket_fuel -= rocket_fuel_consumption;
   }
@@ -146,6 +178,7 @@ void Resume::handle_d() {
     launch_angle++;
   }
   else if (powerup_rocket  && rocket_fuel > 0) {
+    draw_rocket_left = true;
     vx += rocket_acceleration;
     rocket_fuel -= rocket_fuel_consumption;
   }
@@ -160,6 +193,7 @@ void Resume::handle_s() {
     move_down();
   }
   else if (powerup_rocket  && rocket_fuel > 0) {
+    draw_rocket_up = true;
     vy += rocket_acceleration;
     rocket_fuel -= rocket_fuel_consumption;
   }
@@ -180,6 +214,7 @@ void Resume::handle_w() {
     move_up();
   }
   else if (powerup_rocket  && rocket_fuel > 0) {
+    draw_rocket_down = true;
     vy -= rocket_acceleration;
     rocket_fuel -= rocket_fuel_consumption;
   }

@@ -43,6 +43,10 @@ class Resume final : public Entity {
   void move_up();
   double angle;
   std::vector<BlackHole*>* black_holes;
+  bool draw_rocket_down;
+  bool draw_rocket_left;
+  bool draw_rocket_right;
+  bool draw_rocket_up;
   ALLEGRO_BITMAP* img;
   ALLEGRO_FONT* font;
   int launch_angle;

@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
   std::vector<Interviewer*> interviewers;
   srand(time(NULL));
   // srand(0);
-  int current_level = 5;
+  int current_level = 1;
   BlackHole::G = 6.67430e-11;
   for (int i = 0; i < current_level; i++) {
     BlackHole* bh = new BlackHole();
