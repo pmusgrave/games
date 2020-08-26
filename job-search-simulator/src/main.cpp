@@ -22,7 +22,8 @@
 #include "resume.hpp"
 
 // struct screen_resolution resolution { 2560, 1440 };
-struct screen_resolution resolution { 1920, 1080 };
+// struct screen_resolution resolution { 1920, 1080 };
+struct screen_resolution resolution;
 
 const double c_squared = 8.98755179e16;
 
@@ -95,6 +96,8 @@ void init_level(
 }
 
 int main(int argc, char **argv) {
+
+
   must_init(al_init(), "allegro");
   must_init(al_install_keyboard(), "keyboard");
 
@@ -108,6 +111,12 @@ int main(int argc, char **argv) {
   al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
   al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
   al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
+  ALLEGRO_MONITOR_INFO info;
+  al_get_monitor_info(0, &info);
+  int w = info.x2 - info.x1;
+  int h = info.y2 - info.y1;
+  resolution.x = w;
+  resolution.y = h;
   ALLEGRO_DISPLAY* disp = al_create_display(resolution.x, resolution.y);
   must_init(disp, "display");
 
