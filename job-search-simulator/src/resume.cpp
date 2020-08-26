@@ -28,7 +28,7 @@ Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* mana
     launched(false),
     manager(manager),
     powerup_rocket(false),
-    rocket_acceleration(1),
+    rocket_acceleration(0),
     rocket_fuel(0.0),
     rocket_fuel_consumption(0.1),
     rocket_fuel_max(100.0),
@@ -131,7 +131,7 @@ void Resume::handle_a() {
   else if (!launched) {
     launch_angle--;
   }
-  else if (powerup_rocket) {
+  else if (powerup_rocket && rocket_fuel > 0) {
     vx -= rocket_acceleration;
     rocket_fuel -= rocket_fuel_consumption;
   }
@@ -145,7 +145,7 @@ void Resume::handle_d() {
   else if (!launched) {
     launch_angle++;
   }
-  else if (powerup_rocket) {
+  else if (powerup_rocket  && rocket_fuel > 0) {
     vx += rocket_acceleration;
     rocket_fuel -= rocket_fuel_consumption;
   }
@@ -159,7 +159,7 @@ void Resume::handle_s() {
   else if (!launched) {
     move_down();
   }
-  else if (powerup_rocket) {
+  else if (powerup_rocket  && rocket_fuel > 0) {
     vy += rocket_acceleration;
     rocket_fuel -= rocket_fuel_consumption;
   }
@@ -179,7 +179,7 @@ void Resume::handle_w() {
   else if (!launched) {
     move_up();
   }
-  else if (powerup_rocket) {
+  else if (powerup_rocket  && rocket_fuel > 0) {
     vy -= rocket_acceleration;
     rocket_fuel -= rocket_fuel_consumption;
   }
