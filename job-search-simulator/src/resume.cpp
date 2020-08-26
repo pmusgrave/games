@@ -113,13 +113,19 @@ void Resume::draw() {
 
   al_draw_text(font,
               al_map_rgb(255, 255, 255),
-              resolution.y * 0.00926,
-              resolution.y * 0.0417,
+              line_height,
+              line_height * 2 + resolution.y * 0.00926,
               ALLEGRO_ALIGN_LEFT,
               "ROCKET FUEL");
-  al_draw_rectangle(resolution.y * 0.00926, resolution.y * 0.0278, resolution.y * 0.00926 + rocket_fuel_max, resolution.y * 0.037,
-                           al_map_rgba_f(1, 1, 1, 1), 2);
-  al_draw_filled_rectangle(resolution.y * 0.00926, resolution.y *0.0278, 10 + (int)rocket_fuel, resolution.y * 0.037,
+  al_draw_rectangle(line_height,
+                    line_height,
+                    line_height + rocket_fuel_max,
+                    line_height*2,
+                    al_map_rgba_f(1, 1, 1, 1), resolution.y * 0.00185);
+  al_draw_filled_rectangle(line_height,
+                           line_height,
+                           line_height + rocket_fuel,
+                           line_height*2,
                            al_map_rgba_f(1, 1, 1, 1));
 
   if (draw_rocket_down) {

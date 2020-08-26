@@ -24,7 +24,7 @@
 // struct screen_resolution resolution { 2560, 1440 };
 // struct screen_resolution resolution { 1920, 1080 };
 struct screen_resolution resolution;
-
+int line_height;
 const double c_squared = 8.98755179e16;
 
 enum GameState {
@@ -124,6 +124,7 @@ int main(int argc, char **argv) {
   must_init(al_init_ttf_addon(), "ttf");
   ALLEGRO_FONT* font = al_load_font("resources/Comfortaa/static/Comfortaa-Regular.ttf", 16, 0);
   must_init(font, "load font");
+  line_height = al_get_font_line_height(font);
 
   must_init(al_init_primitives_addon(), "primitives");
 
@@ -277,13 +278,13 @@ int main(int argc, char **argv) {
       al_draw_text(font,
                    al_map_rgb(255, 255, 255),
                    resolution.x/2,
-                   15,
+                   line_height,
                    ALLEGRO_ALIGN_CENTRE,
                    "INTERVIEW");
       al_draw_text(font,
                   al_map_rgb(255, 255, 255),
                   resolution.x/2,
-                  30,
+                  line_height*2,
                   ALLEGRO_ALIGN_CENTRE,
                   std::to_string(context.time_remaining).c_str());
       context.time_remaining -= context.tick_rate; // has problems with tick rate consistency
@@ -323,20 +324,20 @@ int main(int argc, char **argv) {
       al_draw_text(font,
                    al_map_rgb(255, 255, 255),
                    resolution.x/2,
-                   15,
+                   line_height,
                    ALLEGRO_ALIGN_CENTRE,
                    level_string.c_str());
 
       al_draw_text(font,
                   al_map_rgb(255, 255, 255),
                   resolution.x/2,
-                  30,
+                  line_height*2,
                   ALLEGRO_ALIGN_CENTRE,
                   std::to_string(context.time_remaining).c_str());
       al_draw_text(font,
                   al_map_rgb(255, 255, 255),
                   resolution.x/2,
-                  45,
+                  line_height*3,
                   ALLEGRO_ALIGN_CENTRE,
                   std::to_string(context.reference_time_remaining).c_str());
 
@@ -377,19 +378,19 @@ int main(int argc, char **argv) {
         al_draw_text(font,
                      al_map_rgb(255, 255, 255),
                      resolution.x/2,
-                     resolution.y/2 + 15,
+                     resolution.y/2 + line_height,
                      ALLEGRO_ALIGN_CENTRE,
                      "\"Unfortunately, we decided to go with another candidate.\"");
         al_draw_text(font,
                     al_map_rgb(255, 255, 255),
                     resolution.x/2,
-                    resolution.y/2 + 30,
+                    resolution.y/2 + line_height*2,
                     ALLEGRO_ALIGN_CENTRE,
                     "Congratulations on making it this far.");
         al_draw_text(font,
                     al_map_rgb(255, 255, 255),
                     resolution.x/2,
-                    resolution.y/2 + 45,
+                    resolution.y/2 + line_height*3,
                     ALLEGRO_ALIGN_CENTRE,
                     "The job hunt continues...");
         al_flip_display();
@@ -435,7 +436,7 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                        al_map_rgb(255, 255, 255),
                        resolution.x/2,
-                       resolution.y/2 + 15,
+                       resolution.y/2 + line_height,
                        ALLEGRO_ALIGN_CENTRE,
                        "Your persistence has rewarded you with a new ability. You gain ROCKET BOOST.");
           break;
@@ -444,13 +445,13 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                        al_map_rgb(255, 255, 255),
                        resolution.x/2,
-                       resolution.y/2 + 15,
+                       resolution.y/2 + line_height,
                        ALLEGRO_ALIGN_CENTRE,
                        "Your persistence has rewarded you with a new ability. You gain GRAVITY REDUCTION.");
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + 30,
+                      resolution.y/2 + line_height*2,
                       ALLEGRO_ALIGN_CENTRE,
                       "Gravity is now 10% less strong.");
           break;
@@ -461,7 +462,7 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + 30,
+                      resolution.y/2 + line_height*2,
                       ALLEGRO_ALIGN_CENTRE,
                       "Your velocity has increased, but gravity is now stronger.");
           break;
@@ -471,7 +472,7 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + 30,
+                      resolution.y/2 + line_height*2,
                       ALLEGRO_ALIGN_CENTRE,
                       "Your launch velocity has increased, but your max velocity has decreased.");
           break;
@@ -480,7 +481,7 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + 30,
+                      resolution.y/2 + line_height*2,
                       ALLEGRO_ALIGN_CENTRE,
                       "Your max velocity has increased.");
           break;
@@ -490,7 +491,7 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + 30,
+                      resolution.y/2 + line_height*2,
                       ALLEGRO_ALIGN_CENTRE,
                       "Your max velocity has increased, but your launch velocity has decreased.");
           break;
@@ -499,7 +500,7 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + 30,
+                      resolution.y/2 + line_height*2,
                       ALLEGRO_ALIGN_CENTRE,
                       "Your launch velocity has increased.");
           break;
@@ -534,7 +535,7 @@ int main(int argc, char **argv) {
         al_draw_text(font,
                     al_map_rgb(255, 255, 255),
                     resolution.x/2,
-                    resolution.y/2 + 15,
+                    resolution.y/2 + line_height,
                     ALLEGRO_ALIGN_CENTRE,
                     "You do not gain any new abilities.");
 
