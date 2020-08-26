@@ -52,8 +52,8 @@ BlackHole::BlackHole()
   radius = distr(gen);
   std::uniform_int_distribution<int> x_pos_distr(radius + 200, resolution.x - radius - 200);
   std::normal_distribution<float> y_pos_distr(resolution.y/2, 130);
-  x = ((uint)x_pos_distr(gen))%(resolution.x - radius);
-  y = ((uint)y_pos_distr(gen) + resolution.y/2)%(resolution.y - radius);// + (radius/2);
+  x = ((unsigned int)x_pos_distr(gen))%(resolution.x - radius);
+  y = ((unsigned int)y_pos_distr(gen) + resolution.y/2)%(resolution.y - radius);// + (radius/2);
   m = radius * 1e13;
 }
 
