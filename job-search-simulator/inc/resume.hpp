@@ -1,6 +1,12 @@
 #ifndef INC_RESUME_HPP_
 #define INC_RESUME_HPP_
 
+#include <allegro5/allegro5.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_ttf.h>
+
 #include <vector>
 
 #include "black_hole.hpp"
@@ -20,6 +26,7 @@ class Resume final : public Entity {
   void handle_space();
   void handle_w();
   void reset();
+  void rocket_boost_enable();
   void update() override;
   bool fail;
   bool interlude;
@@ -37,9 +44,14 @@ class Resume final : public Entity {
   double angle;
   std::vector<BlackHole*>* black_holes;
   ALLEGRO_BITMAP* img;
+  ALLEGRO_FONT* font;
   int launch_angle;
   bool launched;
   Manager* manager;
+  int rocket_acceleration;
+  double rocket_fuel;
+  double rocket_fuel_consumption;
+  double rocket_fuel_max;
   double vx;
   double vy;
 };

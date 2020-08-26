@@ -2,7 +2,9 @@
 
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_image.h>
+#include <allegro5/allegro_font.h>
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_ttf.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <stdio.h>
@@ -26,6 +28,10 @@ Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* mana
     launched(false),
     manager(manager),
     powerup_rocket(false),
+    rocket_acceleration(1),
+    rocket_fuel(0.0),
+    rocket_fuel_consumption(0.1),
+    rocket_fuel_max(100.0),
     vx(0),
     vy(0)
 {
@@ -34,10 +40,15 @@ Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* mana
   if(!img){
     printf("couldn't load img\n");
   }
+
+  al_init_font_addon();
+  al_init_ttf_addon();
+  font = al_load_font("resources/Comfortaa/Comfortaa-VariableFont_wght.ttf", 14, 0);
 }
 
 Resume::~Resume() {
   al_destroy_bitmap(img);
+  al_destroy_font(font);
 }
 
 void Resume::draw() {
@@ -96,7 +107,16 @@ void Resume::draw() {
   al_identity_transform(&trans);
   al_use_transform(&trans);
 
-
+  al_draw_text(font,
+              al_map_rgb(255, 255, 255),
+              10,
+              45,
+              ALLEGRO_ALIGN_LEFT,
+              "ROCKET FUEL");
+  al_draw_rectangle(10, 30, 10 + rocket_fuel_max, 40,
+                           al_map_rgba_f(1, 1, 1, 1), 2);
+  al_draw_filled_rectangle(10, 30, 10 + (int)rocket_fuel, 40,
+                           al_map_rgba_f(1, 1, 1, 1));
 }
 
 double Resume::get_scalar_velocity_squared() {
@@ -112,7 +132,8 @@ void Resume::handle_a() {
     launch_angle--;
   }
   else if (powerup_rocket) {
-    vx -= 1;
+    vx -= rocket_acceleration;
+    rocket_fuel -= rocket_fuel_consumption;
   }
 }
 
@@ -125,7 +146,8 @@ void Resume::handle_d() {
     launch_angle++;
   }
   else if (powerup_rocket) {
-    vx += 1;
+    vx += rocket_acceleration;
+    rocket_fuel -= rocket_fuel_consumption;
   }
 }
 
@@ -138,7 +160,8 @@ void Resume::handle_s() {
     move_down();
   }
   else if (powerup_rocket) {
-    vy += 1;
+    vy += rocket_acceleration;
+    rocket_fuel -= rocket_fuel_consumption;
   }
 }
 
@@ -157,7 +180,8 @@ void Resume::handle_w() {
     move_up();
   }
   else if (powerup_rocket) {
-    vy -= 1;
+    vy -= rocket_acceleration;
+    rocket_fuel -= rocket_fuel_consumption;
   }
 }
 
@@ -183,8 +207,13 @@ void Resume::move_up() {
 }
 
 void Resume::reset() {
-  x = 0;
-  y = resolution.y / 2;
+  if (interlude) {
+    x = resolution.x/2;
+    y = resolution.y*0.8;
+  } else {
+    x = 0;
+    y = resolution.y / 2;
+  }
   vx = 0;
   vy = 0;
   angle = 0;
@@ -192,6 +221,14 @@ void Resume::reset() {
   launched = false;
   fail = false;
   win = false;
+}
+
+void Resume::rocket_boost_enable() {
+  powerup_rocket = true;
+  rocket_fuel += 100.0;
+  rocket_acceleration += 1;
+  if (rocket_fuel > rocket_fuel_max)
+    rocket_fuel = rocket_fuel_max;
 }
 
 void Resume::update() {

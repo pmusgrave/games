@@ -59,12 +59,13 @@ enum Powerup {
 };
 std::vector<Powerup> powerups {
   Powerup::rocket_boost,
-  Powerup::gravity_reduction,
-  Powerup::gravity_increase,
-  Powerup::max_speed_reduction,
-  Powerup::max_speed_increase,
-  init_speed_reduction,
-  init_speed_increase,
+  // Powerup::gravity_reduction,
+  // Powerup::gravity_increase,
+  // Powerup::rocket_boost,
+  // Powerup::max_speed_reduction,
+  // Powerup::max_speed_increase,
+  // init_speed_reduction,
+  // init_speed_increase,
 };
 
 void must_init(bool test, const char *description) {
@@ -129,7 +130,7 @@ int main(int argc, char **argv) {
   std::vector<Interviewer*> interviewers;
   srand(time(NULL));
   // srand(0);
-  int current_level = 1;
+  int current_level = 5;
   BlackHole::G = 6.67430e-11;
   for (int i = 0; i < current_level; i++) {
     BlackHole* bh = new BlackHole();
@@ -299,7 +300,7 @@ int main(int argc, char **argv) {
         double dx = (*bh_itr)->x - resume.x;
         double dy = (*bh_itr)->y - resume.y;
         double r = sqrt(pow(dx,2) + pow(dy,2));
-        time_dilation_factor += (1 - (1 / sqrt(1 - (2*BlackHole::G*(*bh_itr)->m*5e12/(((*bh_itr)->radius + r)*c_squared)))));
+        time_dilation_factor += (1 - (1 / sqrt(1 - (2*BlackHole::G*(*bh_itr)->m*(9e13/current_level)/(((*bh_itr)->radius + r)*c_squared)))));
       }
 
       time_dilation_factor += (1 - (1 / sqrt(1 - resume.get_scalar_velocity_squared()/c_squared)));
@@ -340,21 +341,23 @@ int main(int argc, char **argv) {
       if ((current_level%5) == 0) {
         context.state = GameState::interlude;
         context.time_remaining = 30;
-        resume.reset();
         resume.interlude = true;
+        resume.reset();
+        entities.clear();
+        entities.push_back(&resume);
         for (int i = 0; i < current_level / 5; i++) {
           std::random_device rd;
           std::mt19937 gen(rd());
           std::uniform_int_distribution<int> x_pos_distr(200, resolution.x - 200);
           std::normal_distribution<float> y_pos_distr(resolution.y * 0.2, 20);
           std::normal_distribution<float> fire_rate(current_level%5+4, 2);
-          int x = ((uint)x_pos_distr(gen))%(resolution.x);
-          int y = ((uint)y_pos_distr(gen))%(resolution.y);// + (radius/2);
+          int x = ((unsigned int)x_pos_distr(gen))%(resolution.x);
+          int y = ((unsigned int)y_pos_distr(gen))%(resolution.y);// + (radius/2);
           interviewers.push_back(std::move(new Interviewer(x, y, abs(fire_rate(gen)), &bullets)));
         }
       }
 
-      if (current_level%40 == 0) {
+      if (current_level%35 == 0) {
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
                      al_map_rgb(255, 255, 255),
@@ -402,6 +405,9 @@ int main(int argc, char **argv) {
         // init_level(entities, &resume, &manager);
         clear_entities<Bullet>(bullets);
         clear_entities<Interviewer>(interviewers);
+        entities.clear();
+        entities.push_back(&manager);
+        entities.push_back(&resume);
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
                      al_map_rgb(255, 255, 255),
@@ -409,10 +415,14 @@ int main(int argc, char **argv) {
                      resolution.y/2,
                      ALLEGRO_ALIGN_CENTRE,
                      "\"Thanks so much for your interest in this company! Unfortunately, we will not be moving forward at this time.\"");
-        unsigned int new_powerup = powerups[rand()%(powerups.size())];
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<unsigned int> powerup_dist(0, powerups.size());
+        unsigned int new_powerup = powerup_dist(gen) % powerups.size();
+        //unsigned int new_powerup = powerups[rand()%(powerups.size())];
         switch (new_powerup) {
         case Powerup::rocket_boost:
-          resume.powerup_rocket = true;
+          resume.rocket_boost_enable();
           al_draw_text(font,
                        al_map_rgb(255, 255, 255),
                        resolution.x/2,
@@ -436,14 +446,15 @@ int main(int argc, char **argv) {
                       "Gravity is now 10% less strong.");
           break;
         case Powerup::gravity_increase:
-          resume.v_init *= 1.10;
+          resume.v_init *= 1.15;
+          resume.v_max *= 1.10;
           BlackHole::G *= 1.05;
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
                       resolution.y/2 + 30,
                       ALLEGRO_ALIGN_CENTRE,
-                      "Your launch velocity has increased, but gravity is now stronger.");
+                      "Your velocity has increased, but gravity is now stronger.");
           break;
         case Powerup::max_speed_reduction:
           resume.v_max *= 0.95;
@@ -501,6 +512,9 @@ int main(int argc, char **argv) {
         // init_level(entities, &resume, &manager);
         clear_entities<Bullet>(bullets);
         clear_entities<Interviewer>(interviewers);
+        entities.clear();
+        entities.push_back(&manager);
+        entities.push_back(&resume);
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
                      al_map_rgb(255, 255, 255),
@@ -537,6 +551,9 @@ int main(int argc, char **argv) {
       level_string = "Level ";
       level_string += std::to_string(current_level);
       clear_entities<BlackHole>(black_holes);
+      entities.clear();
+      entities.push_back(&manager);
+      entities.push_back(&resume);
       black_holes.push_back(new BlackHole());
       resume.reset();
       context.state = GameState::intro_screen;
