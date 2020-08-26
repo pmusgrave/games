@@ -12,11 +12,12 @@ public:
   Manager(int x, int y);
   ~Manager();
   void draw() override;
+  void respawn();
   void update() override;
   int x;
   int y;
-  static const int width = 130;
-  static const int height = 140;
+  int width;
+  int height;
 private:
   ALLEGRO_BITMAP* img;
 };

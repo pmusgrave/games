@@ -48,7 +48,7 @@ BlackHole::BlackHole()
   // source: https://stackoverflow.com/questions/7560114
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_int_distribution<int> distr(10, 100);
+  std::uniform_int_distribution<int> distr(resolution.y*0.00694, resolution.y*0.0694);
   radius = distr(gen);
   std::uniform_int_distribution<int> x_pos_distr(radius + 200, resolution.x - radius - 200);
   std::normal_distribution<float> y_pos_distr(resolution.y/2, 130);

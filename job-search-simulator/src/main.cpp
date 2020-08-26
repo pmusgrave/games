@@ -8,8 +8,10 @@
 
 #include <algorithm>
 #include <chrono>
+#include <iomanip>
 #include <iostream>
 #include <random>
+#include <sstream>
 #include <string>
 #include <thread>
 #include <vector>
@@ -40,8 +42,8 @@ struct GameContext {
  public:
   GameContext(GameState state) : state(state) {}
   void reset_time() {
-    time_remaining = tick_rate * 5000;
-    reference_time_remaining = tick_rate * 5000;
+    time_remaining = tick_rate * 3000;
+    reference_time_remaining = tick_rate * 3000;
   }
   GameState state;
   static constexpr float tick_rate = 1.0f / 30.0f;
@@ -147,7 +149,7 @@ int main(int argc, char **argv) {
     black_holes.push_back(bh);
   }
 
-  Manager manager(resolution.x - 130, resolution.y / 2);
+  Manager manager(resolution.x - resolution.x*0.0508, resolution.y / 2);
   entities.push_back(&manager);
 
   Resume resume(0, resolution.y / 2, &black_holes, &manager);
@@ -281,12 +283,16 @@ int main(int argc, char **argv) {
                    line_height,
                    ALLEGRO_ALIGN_CENTRE,
                    "INTERVIEW");
+      int text_width = al_get_text_width(font, "INTERVIEW");
+      std::stringstream ss;
+      ss << "Time remaining: " << std::setprecision(4) << context.time_remaining;
+      std::string time_str = ss.str();
       al_draw_text(font,
                   al_map_rgb(255, 255, 255),
-                  resolution.x/2,
+                  resolution.x/2 - text_width/2,
                   line_height*2,
-                  ALLEGRO_ALIGN_CENTRE,
-                  std::to_string(context.time_remaining).c_str());
+                  ALLEGRO_ALIGN_LEFT,
+                  time_str.c_str());
       context.time_remaining -= context.tick_rate; // has problems with tick rate consistency
       al_flip_display();
       redraw = false;
@@ -310,7 +316,7 @@ int main(int argc, char **argv) {
         double dx = (*bh_itr)->x - resume.x;
         double dy = (*bh_itr)->y - resume.y;
         double r = sqrt(pow(dx,2) + pow(dy,2));
-        time_dilation_factor += (1 - (1 / sqrt(1 - (2*BlackHole::G*(*bh_itr)->m*(9e13/current_level)/(((*bh_itr)->radius + r)*c_squared)))));
+        time_dilation_factor += (1 - (1 / sqrt(1 - (2*BlackHole::G*(*bh_itr)->m*(2e14/current_level)/(((*bh_itr)->radius + r)*c_squared)))));
       }
 
       time_dilation_factor += (1 - (1 / sqrt(1 - resume.get_scalar_velocity_squared()/c_squared)));
@@ -328,18 +334,25 @@ int main(int argc, char **argv) {
                    ALLEGRO_ALIGN_CENTRE,
                    level_string.c_str());
 
+      int text_width = al_get_text_width(font,level_string.c_str());
+      std::stringstream ss;
+      ss << "Time remaining: " << std::setprecision(4) << context.time_remaining;
+      std::string time_str = ss.str();
       al_draw_text(font,
                   al_map_rgb(255, 255, 255),
-                  resolution.x/2,
+                  resolution.x/2 - text_width/2,
                   line_height*2,
-                  ALLEGRO_ALIGN_CENTRE,
-                  std::to_string(context.time_remaining).c_str());
+                  ALLEGRO_ALIGN_LEFT,
+                  time_str.c_str());
+      ss.str("");
+      ss << "Reference time: " << std::setprecision(4) << context.reference_time_remaining;
+      time_str = ss.str();
       al_draw_text(font,
                   al_map_rgb(255, 255, 255),
-                  resolution.x/2,
+                  resolution.x/2 - text_width/2,
                   line_height*3,
-                  ALLEGRO_ALIGN_CENTRE,
-                  std::to_string(context.reference_time_remaining).c_str());
+                  ALLEGRO_ALIGN_LEFT,
+                  time_str.c_str());
 
       al_flip_display();
       redraw = false;
@@ -349,6 +362,23 @@ int main(int argc, char **argv) {
       context.reset_time();
 
       if ((current_level%5) == 0) {
+        al_clear_to_color(al_map_rgb(0, 0, 0));
+        al_draw_text(font,
+                     al_map_rgb(255, 255, 255),
+                     resolution.x/2,
+                     resolution.y/2,
+                     ALLEGRO_ALIGN_CENTRE,
+                     "\"Hi! We'd like to bring you in for an interview to tell you about");
+        al_draw_text(font,
+                    al_map_rgb(255, 255, 255),
+                    resolution.x/2,
+                    resolution.y/2 + line_height,
+                    ALLEGRO_ALIGN_CENTRE,
+                    "the company and learn a little more about your background.\"");
+        al_flip_display();
+        std::chrono::milliseconds timespan(6000);
+        std::this_thread::sleep_for(timespan);
+
         context.state = GameState::interlude;
         context.time_remaining = 30;
         resume.interlude = true;
@@ -403,6 +433,10 @@ int main(int argc, char **argv) {
         clear_entities<Bullet>(bullets);
         clear_entities<Interviewer>(interviewers);
         clear_entities<BlackHole>(black_holes);
+        entities.clear();
+        entities.push_back(&manager);
+        entities.push_back(&resume);
+        resume.reset();
         for (int i = 0; i < current_level; i++) {
           black_holes.push_back(new BlackHole());
         }
@@ -548,6 +582,7 @@ int main(int argc, char **argv) {
       current_level++;
       level_string = "Level ";
       level_string += std::to_string(current_level);
+      manager.respawn();
       clear_entities<BlackHole>(black_holes);
       for (int i = 0; i < current_level; i++) {
         black_holes.push_back(new BlackHole());
