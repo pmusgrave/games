@@ -73,11 +73,13 @@
     <Allegro_AddonImage>true</Allegro_AddonImage>
     <Allegro_AddonPrimitives>true</Allegro_AddonPrimitives>
     <Allegro_AddonFont>true</Allegro_AddonFont>
+    <Allegro_AddonTTF>true</Allegro_AddonTTF>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Allegro_AddonImage>true</Allegro_AddonImage>
     <Allegro_AddonPrimitives>true</Allegro_AddonPrimitives>
     <Allegro_AddonFont>true</Allegro_AddonFont>
+    <Allegro_AddonTTF>true</Allegro_AddonTTF>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -138,6 +140,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\black_hole.cpp" />
+    <ClCompile Include="..\..\..\src\bullet.cpp" />
+    <ClCompile Include="..\..\..\src\interviewer.cpp" />
     <ClCompile Include="..\..\..\src\main.cpp" />
     <ClCompile Include="..\..\..\src\manager.cpp" />
     <ClCompile Include="..\..\..\src\resume.cpp" />
@@ -148,7 +152,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\inc\black_hole.hpp" />
+    <ClInclude Include="..\..\..\inc\bullet.hpp" />
     <ClInclude Include="..\..\..\inc\entity.hpp" />
+    <ClInclude Include="..\..\..\inc\globals.hpp" />
+    <ClInclude Include="..\..\..\inc\interviewer.hpp" />
     <ClInclude Include="..\..\..\inc\manager.hpp" />
     <ClInclude Include="..\..\..\inc\resume.hpp" />
   </ItemGroup>
