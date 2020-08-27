@@ -361,7 +361,7 @@ int main(int argc, char **argv) {
     if (resume.win) {
       context.reset_time();
 
-      if ((current_level%5) == 0) {
+      if ((current_level%5) == 0 && current_level != 35) {
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
                      al_map_rgb(255, 255, 255),

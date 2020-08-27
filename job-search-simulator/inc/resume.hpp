@@ -56,6 +56,7 @@ class Resume final : public Entity {
   double rocket_fuel;
   double rocket_fuel_consumption;
   double rocket_fuel_max;
+  double rocket_fuel_max_initial;
   double vx;
   double vy;
 };
