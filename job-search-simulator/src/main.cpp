@@ -593,6 +593,8 @@ int main(int argc, char **argv) {
         al_flip_display();
         std::chrono::milliseconds timespan(6000);
         std::this_thread::sleep_for(timespan);
+        al_stop_samples();
+        al_play_sample(level_music, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
       }
 
       current_level++;
@@ -604,9 +606,6 @@ int main(int argc, char **argv) {
         black_holes.push_back(new BlackHole());
       }
       resume.reset();
-      
-      al_stop_samples();
-      al_play_sample(level_music, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
     }
 
     if (context.state == GameState::failure) {
