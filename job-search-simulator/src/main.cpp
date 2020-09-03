@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
   std::vector<Interviewer*> interviewers;
   srand(time(NULL));
   // srand(0);
-  int current_level = 1;
+  int current_level = 5;
   BlackHole::G = 6.67430e-11;
   for (int i = 0; i < current_level; i++) {
     BlackHole* bh = new BlackHole();
@@ -165,9 +165,7 @@ int main(int argc, char **argv) {
   Resume resume(0, resolution.y / 2, &black_holes, &manager);
   entities.push_back(&resume);
 
-  //  bool show_intro_screen = true;
   GameState state = intro_screen;
-  // GameState state = GameState::interlude;
   bool done = false;
   bool redraw = true;
   ALLEGRO_EVENT event;

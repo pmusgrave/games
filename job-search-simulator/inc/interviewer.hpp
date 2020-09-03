@@ -1,9 +1,18 @@
 #ifndef INC_INTERVIEWER_HPP_
 #define INC_INTERVIEWER_HPP_
 
+#include <allegro5/allegro5.h>
+#include <allegro5/allegro_image.h>
+
 #include <vector>
 
 #include "bullet.hpp"
+
+struct Color {
+  int r;
+  int g;
+  int b;
+};
 
 class Interviewer final : public Entity {
  public:
@@ -18,6 +27,8 @@ class Interviewer final : public Entity {
   int bullet_timer_initial;
   int bullet_timer_max;
   std::vector<Bullet*> *bullets;
+  struct Color color;
+  ALLEGRO_BITMAP* img;
   float launch_angle;
   float launch_angle_inc;
   bool spawn_bullets;

@@ -1,8 +1,11 @@
 #include "black_hole.hpp"
 
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_image.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_primitives.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <time.h>
 
 #include <random>
@@ -45,6 +48,16 @@ double BlackHole::G;
 BlackHole::BlackHole()
   :  message(false), message_index(0), message_timer(100)
 {
+  al_init_image_addon();
+  flip = rand()%100 > 50;
+  if (flip) {
+    img = al_load_bitmap("resources/black-hole-mirrored.png");
+  } else {
+    img = al_load_bitmap("resources/black-hole.png");
+  }
+  if(!img){
+    printf("couldn't load img\n");
+  }
   // source: https://stackoverflow.com/questions/7560114
   std::random_device rd;
   std::mt19937 gen(rd());
@@ -55,11 +68,46 @@ BlackHole::BlackHole()
   x = ((unsigned int)x_pos_distr(gen))%(resolution.x - radius);
   y = ((unsigned int)y_pos_distr(gen) + resolution.y/2)%(resolution.y - radius);// + (radius/2);
   m = radius * 1e13;
+
+  std::normal_distribution<float> rotation_dist(0, 360);
+  std::normal_distribution<float> rotation_rate_dist(0.001, 1);
+  rotation = rotation_dist(gen);
+  rotation_rate = rotation_rate_dist(gen);
+  if (flip) {
+    rotation_rate = abs(rotation_rate);
+  }
+  else {
+    rotation_rate = -abs(rotation_rate);
+  }
+
+}
+
+BlackHole::~BlackHole() {
+  al_destroy_bitmap(img);
 }
 
 void BlackHole::draw() {
-  al_draw_circle(x, y, radius, al_map_rgb_f(1, 1, 1), 2);
-  al_draw_filled_circle(x, y, radius * 0.9, al_map_rgb_f(0, 0, 0));
+  if (radius > resolution.y*0.0694/3) {
+    al_draw_circle(x, y, radius, al_map_rgb_f(1, 1, 1), 2);
+    al_draw_filled_circle(x, y, radius * 0.9, al_map_rgb_f(0, 0, 0));
+  } else {
+    ALLEGRO_TRANSFORM trans;
+    al_identity_transform(&trans);
+    // al_rotate_transform(&trans, rotation * M_PI/180);
+    // if (flip) al_rotate_transform(&trans, );
+    al_use_transform(&trans);
+    al_draw_scaled_rotated_bitmap(img,
+      al_get_bitmap_width(img)/2, al_get_bitmap_height(img)/2, // center
+      x, y,  // destination origin
+      radius/(3*resolution.y*0.00694), radius/(3*resolution.y*0.00694),  // destination scale factor
+      (int)rotation * M_PI/180, // angle
+      0  // flags
+    );
+
+    al_identity_transform(&trans);
+    al_use_transform(&trans);
+  }
+
   if (message) {
     if (--message_timer <= 0) {
       message = false;
@@ -83,4 +131,7 @@ void BlackHole::show_message() {
   message_timer = 100;
 }
 
-void BlackHole::update() {}
+void BlackHole::update() {
+  rotation += rotation_rate;
+  if (rotation > 360) rotation = 360;
+}
