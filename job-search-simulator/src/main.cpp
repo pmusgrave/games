@@ -1,4 +1,6 @@
 #include <allegro5/allegro5.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_primitives.h>
@@ -98,8 +100,6 @@ void init_level(
 }
 
 int main(int argc, char **argv) {
-
-
   must_init(al_init(), "allegro");
   must_init(al_install_keyboard(), "keyboard");
 
@@ -129,8 +129,31 @@ int main(int argc, char **argv) {
   line_height = al_get_font_line_height(font);
 
   must_init(al_init_primitives_addon(), "primitives");
-
   must_init(al_init_image_addon(), "image addon");
+
+  // AUDIO INITIALIZATION
+  must_init(al_install_audio(), "install audio addon");
+  must_init(al_init_acodec_addon(), "audio codec addon");
+  must_init(al_reserve_samples(10), "reserve audio samples");
+  ALLEGRO_VOICE* voice = al_create_voice(44100, ALLEGRO_AUDIO_DEPTH_FLOAT32,
+    ALLEGRO_CHANNEL_CONF_2);
+  ALLEGRO_MIXER* audio_mixer = al_create_mixer(44100, ALLEGRO_AUDIO_DEPTH_FLOAT32,
+    ALLEGRO_CHANNEL_CONF_2);
+  ALLEGRO_AUDIO_STREAM* audio_stream = al_load_audio_stream("resources/soundtrack/intro.ogg", 4, 2048);
+  // ALLEGRO_SAMPLE* intro_music = al_load_sample("resources/soundtrack/intro.flac");
+  // ALLEGRO_SAMPLE_INSTANCE* instance_1 = al_create_sample_instance(intro_music);
+  // ALLEGRO_SAMPLE_INSTANCE* instance_2 = al_create_sample_instance(intro_music);
+  al_attach_mixer_to_voice(audio_mixer, voice);
+  al_attach_audio_stream_to_mixer(audio_stream, audio_mixer);
+  // al_attach_sample_instance_to_mixer(instance_1, audio_mixer);
+  // al_attach_sample_instance_to_mixer(instance_2, audio_mixer);
+  // al_set_sample_instance_playing(instance_1, true);
+  // al_set_sample_instance_playing(instance_2, true);
+
+  // ALLEGRO_SAMPLE_ID* intro_sample_handler;
+  // ALLEGRO_SAMPLE* intro_music = al_load_sample("resources/soundtrack/intro.flac");
+  // ALLEGRO_SAMPLE* level_music = al_load_sample("resources/soundtrack/level.flac");
+  // al_stop_samples();
 
   al_register_event_source(queue, al_get_keyboard_event_source());
   al_register_event_source(queue, al_get_display_event_source(disp));
@@ -216,6 +239,14 @@ int main(int argc, char **argv) {
       break;
 
     if (context.state == GameState::intro_screen) {
+      // if(intro_music == nullptr) {
+      //   std::cout << "error loading intro music file" << std::endl;
+      // } else {
+      //   al_play_sample(intro_music, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, intro_sample_handler);
+      // }
+      al_attach_mixer_to_voice(audio_mixer, voice);
+      al_attach_audio_stream_to_mixer(audio_stream, audio_mixer);
+
       al_clear_to_color(al_map_rgb(0, 0, 0));
       al_draw_text(font,
                    al_map_rgb(255, 255, 255),
@@ -611,6 +642,9 @@ int main(int argc, char **argv) {
   al_destroy_display(disp);
   al_destroy_timer(timer);
   al_destroy_event_queue(queue);
+  al_stop_samples();
+  // al_destroy_sample(intro_music);
+  // al_destroy_sample(level_music);
 
   clear_entities<BlackHole>(black_holes);
 

@@ -1,5 +1,5 @@
 CC=g++
-OPT=-O3 -std=c++14
+OPT=-Og -std=c++14
 BUILD_DIR=build
 
 CPP_SOURCES= \
@@ -12,7 +12,7 @@ inc/*.hpp \
 CPP_INCLUDES= \
 -Iinc \
 
-LIBS= -lallegro -lallegro_main -lallegro_font -lallegro_ttf -lallegro_image -lallegro_primitives
+LIBS= -lallegro -lallegro_main -lallegro_font -lallegro_ttf -lallegro_image -lallegro_primitives -lallegro_audio -lallegro_acodec
 CFLAGS = $(OPT) $(CPP_INCLUDES) $(LIBS) -Wall
 
 all: build/main
