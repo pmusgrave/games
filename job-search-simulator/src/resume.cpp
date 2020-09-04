@@ -34,7 +34,7 @@ Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* mana
     rocket_fuel(0.0),
     rocket_fuel_consumption(0.1),
     rocket_fuel_max(0.0),
-    rocket_fuel_max_initial(100.0),
+    rocket_fuel_max_initial(150.0),
     vx(0),
     vy(0)
 {

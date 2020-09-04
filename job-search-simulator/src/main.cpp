@@ -24,6 +24,7 @@
 #include "interviewer.hpp"
 #include "manager.hpp"
 #include "resume.hpp"
+#include "star.hpp"
 
 // struct screen_resolution resolution { 2560, 1440 };
 // struct screen_resolution resolution { 1920, 1080 };
@@ -150,9 +151,10 @@ int main(int argc, char **argv) {
   std::vector<Bullet*> bullets;
   std::vector<Entity*> entities;
   std::vector<Interviewer*> interviewers;
+  std::vector<Star*> stars;
   srand(time(NULL));
   // srand(0);
-  int current_level = 5;
+  int current_level = 1;
   BlackHole::G = 6.67430e-11;
   for (int i = 0; i < current_level; i++) {
     BlackHole* bh = new BlackHole();
@@ -165,6 +167,10 @@ int main(int argc, char **argv) {
   Resume resume(0, resolution.y / 2, &black_holes, &manager);
   entities.push_back(&resume);
 
+  for (int i = 0; i < 100; i++) {
+    entities.push_back(new Star());
+  }
+  
   GameState state = intro_screen;
   bool done = false;
   bool redraw = true;
@@ -224,8 +230,6 @@ int main(int argc, char **argv) {
       break;
 
     if (context.state == GameState::intro_screen) {
-      al_stop_samples();
-      al_play_sample(intro_music, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
 
       al_clear_to_color(al_map_rgb(0, 0, 0));
       al_draw_text(font,
@@ -238,6 +242,8 @@ int main(int argc, char **argv) {
       std::chrono::milliseconds timespan(3000);
       std::this_thread::sleep_for(timespan);
       context.state = GameState::normal;
+      al_stop_samples();
+      al_play_sample(intro_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
     }
 
     if (context.state == GameState::interlude && redraw && al_is_event_queue_empty(queue)) {
@@ -444,9 +450,13 @@ int main(int argc, char **argv) {
         clear_entities<Bullet>(bullets);
         clear_entities<Interviewer>(interviewers);
         clear_entities<BlackHole>(black_holes);
+        clear_entities<Star>(stars);
         entities.clear();
         entities.push_back(&manager);
         entities.push_back(&resume);
+        for (int i = 0; i < 100; i++) {
+          entities.push_back(new Star());
+        }
         resume.reset();
         for (int i = 0; i < current_level; i++) {
           black_holes.push_back(new BlackHole());
@@ -557,7 +567,7 @@ int main(int argc, char **argv) {
         std::this_thread::sleep_for(timespan);
 
         al_stop_samples();
-        al_play_sample(level_music, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+        al_play_sample(level_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
       }
 
       if (context.state == GameState::interlude_fail) {
@@ -592,7 +602,7 @@ int main(int argc, char **argv) {
         std::chrono::milliseconds timespan(6000);
         std::this_thread::sleep_for(timespan);
         al_stop_samples();
-        al_play_sample(level_music, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+        al_play_sample(level_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
       }
 
       current_level++;
@@ -600,8 +610,12 @@ int main(int argc, char **argv) {
       level_string += std::to_string(current_level);
       manager.respawn();
       clear_entities<BlackHole>(black_holes);
+      clear_entities<Star>(stars);
       for (int i = 0; i < current_level; i++) {
         black_holes.push_back(new BlackHole());
+      }
+      for (int i = 0; i < 100; i++) {
+        entities.push_back(new Star());
       }
       resume.reset();
     }
@@ -612,10 +626,14 @@ int main(int argc, char **argv) {
       level_string = "Level ";
       level_string += std::to_string(current_level);
       clear_entities<BlackHole>(black_holes);
+      clear_entities<Star>(stars);
       entities.clear();
       entities.push_back(&manager);
       entities.push_back(&resume);
       black_holes.push_back(new BlackHole());
+      for (int i = 0; i < 100; i++) {
+        entities.push_back(new Star());
+      }
       resume.reset();
       context.state = GameState::intro_screen;
       context.reset_time();
@@ -632,6 +650,7 @@ int main(int argc, char **argv) {
   al_destroy_sample(level_music);
 
   clear_entities<BlackHole>(black_holes);
+  clear_entities<Star>(stars);
 
   return 0;
 }

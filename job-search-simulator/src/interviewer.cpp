@@ -22,12 +22,12 @@ Interviewer::Interviewer(int x, int y, int bullet_timer, std::vector<Bullet*> *b
     spawn_bullets(false)
 {
   al_init_image_addon();
-  img = al_load_bitmap("resources/interviewer.png");
-  if(!img){
-    //printf("couldn't load img\n");
-  }
   if (rand()%100 > 50) {
     launch_angle_inc = -launch_angle_inc;
+    img = al_load_bitmap("resources/interviewer_mirrored.png");
+  }
+  else {
+    img = al_load_bitmap("resources/interviewer.png");
   }
   int r = rand()%255;
   int g = rand()%255;
