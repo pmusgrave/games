@@ -170,7 +170,7 @@ int main(int argc, char **argv) {
   for (int i = 0; i < 100; i++) {
     entities.push_back(new Star());
   }
-  
+
   GameState state = intro_screen;
   bool done = false;
   bool redraw = true;
@@ -480,6 +480,12 @@ int main(int argc, char **argv) {
                      resolution.y/2,
                      ALLEGRO_ALIGN_CENTRE,
                      "\"Thanks so much for your interest in this company! Unfortunately, we will not be moving forward at this time.\"");
+        al_draw_text(font,
+                    al_map_rgb(255, 255, 255),
+                    resolution.x/2,
+                    resolution.y/2 + line_height,
+                    ALLEGRO_ALIGN_CENTRE,
+                    "Your persistence has rewarded you with a new ability.");
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<unsigned int> powerup_dist(0, powerups.size());
@@ -491,22 +497,22 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                        al_map_rgb(255, 255, 255),
                        resolution.x/2,
-                       resolution.y/2 + line_height,
+                       resolution.y/2 + line_height * 2,
                        ALLEGRO_ALIGN_CENTRE,
-                       "Your persistence has rewarded you with a new ability. You gain ROCKET BOOST.");
+                       "You gain ROCKET BOOST.");
           break;
         case Powerup::gravity_reduction:
           BlackHole::G *= 0.90;
           al_draw_text(font,
                        al_map_rgb(255, 255, 255),
                        resolution.x/2,
-                       resolution.y/2 + line_height,
+                       resolution.y/2 + line_height * 2,
                        ALLEGRO_ALIGN_CENTRE,
-                       "Your persistence has rewarded you with a new ability. You gain GRAVITY REDUCTION.");
+                       "You gain GRAVITY REDUCTION.");
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + line_height*2,
+                      resolution.y/2 + line_height*3,
                       ALLEGRO_ALIGN_CENTRE,
                       "Gravity is now 10% less strong.");
           break;
@@ -517,7 +523,7 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + line_height*2,
+                      resolution.y/2 + line_height*3,
                       ALLEGRO_ALIGN_CENTRE,
                       "Your velocity has increased, but gravity is now stronger.");
           break;
@@ -527,7 +533,7 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + line_height*2,
+                      resolution.y/2 + line_height*3,
                       ALLEGRO_ALIGN_CENTRE,
                       "Your launch velocity has increased, but your max velocity has decreased.");
           break;
@@ -536,7 +542,7 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + line_height*2,
+                      resolution.y/2 + line_height*3,
                       ALLEGRO_ALIGN_CENTRE,
                       "Your max velocity has increased.");
           break;
@@ -546,7 +552,7 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + line_height*2,
+                      resolution.y/2 + line_height*3,
                       ALLEGRO_ALIGN_CENTRE,
                       "Your max velocity has increased, but your launch velocity has decreased.");
           break;
@@ -555,9 +561,18 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + line_height*2,
+                      resolution.y/2 + line_height*3,
                       ALLEGRO_ALIGN_CENTRE,
                       "Your launch velocity has increased.");
+          break;
+        default:
+          resume.rocket_boost_enable();
+          al_draw_text(font,
+                       al_map_rgb(255, 255, 255),
+                       resolution.x/2,
+                       resolution.y/2 + line_height * 2,
+                       ALLEGRO_ALIGN_CENTRE,
+                       "You gain ROCKET BOOST.");
           break;
         }
 
