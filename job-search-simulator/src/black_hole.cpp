@@ -4,6 +4,7 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_ttf.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <time.h>
@@ -80,10 +81,12 @@ BlackHole::BlackHole()
     rotation_rate = -abs(rotation_rate);
   }
 
+  font = al_load_font("resources/Comfortaa/Comfortaa-VariableFont_wght.ttf", resolution.y*0.014, 0);
 }
 
 BlackHole::~BlackHole() {
   al_destroy_bitmap(img);
+  al_destroy_font(font);
 }
 
 void BlackHole::draw() {
@@ -114,14 +117,29 @@ void BlackHole::draw() {
       message_timer = 100;
     }
     else message = true;
-    ALLEGRO_FONT* font = al_create_builtin_font();
 
+    int text_width = al_get_text_width(font, rejection_phrases[message_index].c_str());
+    int text_height = al_get_font_line_height(font);
+    int text_x = x;
+    int text_y = y + radius + 15;
+    if (text_x - text_width/2 < 0) {
+      text_x = text_width/2 + 15;
+    }
+    if (text_x + text_width/2 > resolution.x) {
+      text_x = resolution.x - text_width/2 - 15;
+    }
+    if (text_y - text_height/2 < 0) {
+      text_y = text_height + 15;
+    }
+    if (text_y + text_height/2 > resolution.y) {
+      text_y = resolution.y - text_height - 15;
+    }
     al_draw_text(font,
-                 al_map_rgb(255, 255, 255),
-                 x,
-                 y + radius + 15,
-                 ALLEGRO_ALIGN_CENTRE,
-                 rejection_phrases[message_index].c_str());
+                al_map_rgb(255, 255, 255),
+                text_x,
+                text_y,
+                ALLEGRO_ALIGN_CENTRE,
+                rejection_phrases[message_index].c_str());
   }
 }
 

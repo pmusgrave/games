@@ -1,5 +1,5 @@
 CC=g++
-OPT=-Og -std=c++14
+OPT=-O3 -std=c++14
 BUILD_DIR=build
 
 CPP_SOURCES= \

@@ -3,6 +3,8 @@
 
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_image.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 #include <stdio.h>
 
 #include "entity.hpp"
@@ -21,6 +23,7 @@ public:
   int y;
 private:
   ALLEGRO_BITMAP* img;
+  ALLEGRO_FONT* font;
   bool flip;
   bool message;
   size_t message_index;

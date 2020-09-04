@@ -43,11 +43,12 @@ enum GameState {
 
 struct GameContext {
  public:
-  GameContext(GameState state) : state(state) {}
+  GameContext(GameState state) : show_menu(false), state(state) {}
   void reset_time() {
     time_remaining = tick_rate * 3000;
     reference_time_remaining = tick_rate * 3000;
   }
+  bool show_menu;
   GameState state;
   static constexpr float tick_rate = 1.0f / 30.0f;
   float time_remaining;
@@ -205,8 +206,10 @@ int main(int argc, char **argv) {
       if(key[ALLEGRO_KEY_SPACE])
         resume.handle_space();
 
-      if(key[ALLEGRO_KEY_ESCAPE])
+      if(key[ALLEGRO_KEY_ESCAPE]) {
         done = true;
+        break;
+      }
 
       for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
         key[i] &= KEY_SEEN;
