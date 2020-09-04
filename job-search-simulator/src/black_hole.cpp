@@ -89,7 +89,7 @@ BlackHole::~BlackHole() {
 void BlackHole::draw() {
   if (radius > resolution.y*0.0694/3) {
     al_draw_circle(x, y, radius, al_map_rgb_f(1, 1, 1), 2);
-    al_draw_filled_circle(x, y, radius * 0.9, al_map_rgb_f(0, 0, 0));
+    al_draw_filled_circle(x, y, radius * 0.98, al_map_rgb_f(0, 0, 0));
   } else {
     ALLEGRO_TRANSFORM trans;
     al_identity_transform(&trans);
