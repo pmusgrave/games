@@ -151,5 +151,5 @@ void BlackHole::show_message() {
 
 void BlackHole::update() {
   rotation += rotation_rate;
-  if (rotation > 360) rotation = 360;
+  if (rotation > 360) rotation = 0;
 }
