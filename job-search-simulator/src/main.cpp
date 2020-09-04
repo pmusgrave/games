@@ -125,7 +125,7 @@ int main(int argc, char **argv) {
 
   must_init(al_init_font_addon(), "init font");
   must_init(al_init_ttf_addon(), "ttf");
-  ALLEGRO_FONT* font = al_load_font("resources/Comfortaa/static/Comfortaa-Regular.ttf", 16, 0);
+  ALLEGRO_FONT* font = al_load_font("resources/Comfortaa/static/Comfortaa-Regular.ttf", resolution.y*0.02, 0);
   must_init(font, "load font");
   line_height = al_get_font_line_height(font);
 
@@ -509,12 +509,6 @@ int main(int argc, char **argv) {
                        resolution.y/2 + line_height * 2,
                        ALLEGRO_ALIGN_CENTRE,
                        "You gain GRAVITY REDUCTION.");
-          al_draw_text(font,
-                      al_map_rgb(255, 255, 255),
-                      resolution.x/2,
-                      resolution.y/2 + line_height*3,
-                      ALLEGRO_ALIGN_CENTRE,
-                      "Gravity is now 10% less strong.");
           break;
         case Powerup::gravity_increase:
           resume.v_init *= 1.15;
@@ -523,7 +517,7 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + line_height*3,
+                      resolution.y/2 + line_height*2,
                       ALLEGRO_ALIGN_CENTRE,
                       "Your velocity has increased, but gravity is now stronger.");
           break;
@@ -533,7 +527,7 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + line_height*3,
+                      resolution.y/2 + line_height*2,
                       ALLEGRO_ALIGN_CENTRE,
                       "Your launch velocity has increased, but your max velocity has decreased.");
           break;
@@ -542,7 +536,7 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + line_height*3,
+                      resolution.y/2 + line_height*2,
                       ALLEGRO_ALIGN_CENTRE,
                       "Your max velocity has increased.");
           break;
@@ -552,7 +546,7 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + line_height*3,
+                      resolution.y/2 + line_height*2,
                       ALLEGRO_ALIGN_CENTRE,
                       "Your max velocity has increased, but your launch velocity has decreased.");
           break;
@@ -561,7 +555,7 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
-                      resolution.y/2 + line_height*3,
+                      resolution.y/2 + line_height*2,
                       ALLEGRO_ALIGN_CENTRE,
                       "Your launch velocity has increased.");
           break;
@@ -570,7 +564,7 @@ int main(int argc, char **argv) {
           al_draw_text(font,
                        al_map_rgb(255, 255, 255),
                        resolution.x/2,
-                       resolution.y/2 + line_height * 2,
+                       resolution.y/2 + line_height*2,
                        ALLEGRO_ALIGN_CENTRE,
                        "You gain ROCKET BOOST.");
           break;

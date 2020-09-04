@@ -46,7 +46,7 @@ Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* mana
 
   al_init_font_addon();
   al_init_ttf_addon();
-  font = al_load_font("resources/Comfortaa/Comfortaa-VariableFont_wght.ttf", 14, 0);
+  font = al_load_font("resources/Comfortaa/Comfortaa-VariableFont_wght.ttf", resolution.y*0.015, 0);
 }
 
 Resume::~Resume() {

@@ -11,7 +11,7 @@ Bullet::Bullet(int x, int y, int vx, int vy)
 {
   al_init_font_addon();
   al_init_ttf_addon();
-  font = al_load_font("resources/Comfortaa/Comfortaa-VariableFont_wght.ttf", 24, 0);
+  font = al_load_font("resources/Comfortaa/Comfortaa-VariableFont_wght.ttf", resolution.y*0.02, 0);
 }
 
 Bullet::~Bullet() {
