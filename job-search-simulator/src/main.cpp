@@ -206,11 +206,6 @@ int main(int argc, char **argv) {
       if(key[ALLEGRO_KEY_SPACE])
         resume.handle_space();
 
-      if(key[ALLEGRO_KEY_ESCAPE]) {
-        done = true;
-        break;
-      }
-
       for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
         key[i] &= KEY_SEEN;
 
@@ -219,6 +214,10 @@ int main(int argc, char **argv) {
 
     case ALLEGRO_EVENT_KEY_DOWN:
       key[event.keyboard.keycode] = KEY_SEEN | KEY_RELEASED;
+      if(key[ALLEGRO_KEY_ESCAPE]) {
+        context.show_menu = !context.show_menu;
+        // done = true;
+      }
       break;
     case ALLEGRO_EVENT_KEY_UP:
       key[event.keyboard.keycode] &= KEY_RELEASED;
@@ -232,8 +231,32 @@ int main(int argc, char **argv) {
     if(done)
       break;
 
-    if (context.state == GameState::intro_screen) {
+    if (context.show_menu) {
+      al_draw_rectangle(
+        resolution.x/2 - resolution.x/10,
+        resolution.y/2 - resolution.y/10,
+        resolution.x/2 + resolution.x/10,
+        resolution.y/2 + resolution.y/10,
+        al_map_rgb(255,255,255),
+        resolution.y*0.01
+      );
+      al_draw_filled_rectangle(
+        resolution.x/2 - resolution.x/10,
+        resolution.y/2 - resolution.y/10,
+        resolution.x/2 + resolution.x/10,
+        resolution.y/2 + resolution.y/10,
+        al_map_rgb(0,0,0)
+      );
+      al_draw_text(font,
+                   al_map_rgb(255, 255, 255),
+                   resolution.x/2,
+                   resolution.y/2,
+                   ALLEGRO_ALIGN_CENTRE,
+                   "Paused");
+      al_flip_display();
+    }
 
+    if (!context.show_menu && context.state == GameState::intro_screen) {
       al_clear_to_color(al_map_rgb(0, 0, 0));
       al_draw_text(font,
                    al_map_rgb(255, 255, 255),
@@ -249,7 +272,7 @@ int main(int argc, char **argv) {
       al_play_sample(intro_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
     }
 
-    if (context.state == GameState::interlude && redraw && al_is_event_queue_empty(queue)) {
+    if (!context.show_menu && context.state == GameState::interlude && redraw && al_is_event_queue_empty(queue)) {
       al_clear_to_color(al_map_rgb(0, 0, 0));
       // ***********************************************************************
       // source: https://stackoverflow.com/questions/4713131
@@ -318,7 +341,7 @@ int main(int argc, char **argv) {
       redraw = false;
     }
 
-    if (context.state == GameState::normal && redraw && al_is_event_queue_empty(queue)) {
+    if (!context.show_menu && context.state == GameState::normal && redraw && al_is_event_queue_empty(queue)) {
       al_clear_to_color(al_map_rgb(0, 0, 0));
 
       double time_dilation_factor = 1;
@@ -468,7 +491,7 @@ int main(int argc, char **argv) {
         continue;
       }
 
-      if (context.state == GameState::interlude_win) {
+      if (!context.show_menu && context.state == GameState::interlude_win) {
         context.state = GameState::normal;
         // init_level(entities, &resume, &manager);
         clear_entities<Bullet>(bullets);
@@ -582,7 +605,7 @@ int main(int argc, char **argv) {
         al_play_sample(level_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
       }
 
-      if (context.state == GameState::interlude_fail) {
+      if (!context.show_menu && context.state == GameState::interlude_fail) {
         context.state = GameState::normal;
         // std::vector<Bullet*>::iterator itr = bullets.begin();
         // for (itr = bullets.begin(); itr < bullets.end(); itr++) {
@@ -632,7 +655,7 @@ int main(int argc, char **argv) {
       resume.reset();
     }
 
-    if (context.state == GameState::failure) {
+    if (!context.show_menu && context.state == GameState::failure) {
       al_clear_to_color(al_map_rgb(0, 0, 0));
       current_level = 1;
       level_string = "Level ";
