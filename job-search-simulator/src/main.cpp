@@ -783,7 +783,7 @@ int main(int argc, char **argv) {
       clear_entities<BlackHole>(black_holes);
       clear_entities<Star>(stars);
       entities.clear();
-      resume.reinitialize();
+      score = 0;
       entities.push_back(&manager);
       entities.push_back(&resume);
       entities.push_back(&rocket_fuel_gauge);
@@ -793,6 +793,7 @@ int main(int argc, char **argv) {
       for (int i = 0; i < 100; i++) {
         entities.push_back(new Star());
       }
+      resume.reinitialize();
       resume.reset();
       context.state = GameState::intro_screen;
       context.reset_time();
