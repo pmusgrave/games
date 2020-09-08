@@ -5,6 +5,7 @@
 #include <allegro5/allegro_image.h>
 
 #include "entity.hpp"
+#include "vec2.hpp"
 
 class Star final : public Entity {
 public:
@@ -18,10 +19,9 @@ private:
   int frame;
   int frame_index;
   int frame_rate;
+  Vec2 position;
   float rotation;
   float rotation_rate;
-  int x;
-  int y;
 };
 
 #endif  // INC_STAR_HPP

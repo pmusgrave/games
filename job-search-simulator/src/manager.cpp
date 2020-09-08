@@ -7,7 +7,7 @@
 #include <random>
 
 Manager::Manager(int x, int y)
-  : x(x), y(y), width(resolution.x*0.0508), height(resolution.y*0.0972)
+  : x(x), y(y), width(resolution.x*0.0608), height(resolution.y*0.0972)
 {
   al_init_image_addon();
   img = al_load_bitmap("resources/manager_desk.png");

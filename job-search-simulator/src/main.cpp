@@ -162,7 +162,7 @@ int main(int argc, char **argv) {
     black_holes.push_back(bh);
   }
 
-  Manager manager(resolution.x - resolution.x*0.0508, resolution.y / 2);
+  Manager manager(resolution.x - resolution.x*0.0608, resolution.y / 2);
   entities.push_back(&manager);
 
   Resume resume(0, resolution.y / 2, &black_holes, &manager);
