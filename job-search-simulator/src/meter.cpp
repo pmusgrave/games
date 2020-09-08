@@ -34,7 +34,7 @@ void Meter::draw() {
                     al_map_rgba_f(1, 1, 1, 1), resolution.y * 0.00185);
   al_draw_filled_rectangle(position.x,
                            position.y,
-                           position.x + line_height + width*percentage,
+                           position.x + width*percentage,
                            position.y + line_height,
                            al_map_rgba_f(1, 1, 1, 1));
 }

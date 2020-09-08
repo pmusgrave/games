@@ -27,6 +27,7 @@ class Resume final : public Entity {
   void handle_space();
   void handle_w();
   void reset();
+  void reinitialize();
   void rocket_boost_enable();
   void update() override;
   bool fail;

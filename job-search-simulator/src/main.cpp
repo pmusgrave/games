@@ -40,6 +40,7 @@ enum GameState {
   interlude_fail,
   interlude_win,
   failure,
+  game_win,
 };
 
 struct GameContext {
@@ -49,6 +50,7 @@ struct GameContext {
     time_remaining = tick_rate * 3000;
     reference_time_remaining = tick_rate * 3000;
   }
+  unsigned int prestige_level;
   bool show_menu;
   GameState state;
   static constexpr float tick_rate = 1.0f / 30.0f;
@@ -173,11 +175,14 @@ int main(int argc, char **argv) {
     entities.push_back(new Star());
   }
 
-  resume.rocket_boost_enable();
+  unsigned long long int score = 0;
+
   Meter rocket_fuel_gauge("ROCKET FUEL", line_height, line_height, resume.rocket_fuel/resume.rocket_fuel_max);
-  entities.push_back(&rocket_fuel_gauge);
   Meter launch_velocity_gauge("LAUNCH VELOCITY", line_height, line_height*4, (float)(resume.v_init/resume.v_max));
+  Meter time_dilation_gauge("TIME DILATION FACTOR", line_height, line_height*8, 0);
+  entities.push_back(&rocket_fuel_gauge);
   entities.push_back(&launch_velocity_gauge);
+  entities.push_back(&time_dilation_gauge);
 
   GameState state = intro_screen;
   bool done = false;
@@ -187,6 +192,7 @@ int main(int argc, char **argv) {
   level_string += std::to_string(current_level);
   GameContext context(state);
   context.reset_time();
+  context.prestige_level = 1;
 
 #define KEY_SEEN     1
 #define KEY_RELEASED 2
@@ -257,7 +263,7 @@ int main(int argc, char **argv) {
       al_draw_text(font,
                    al_map_rgb(255, 255, 255),
                    resolution.x/2,
-                   resolution.y/2,
+                   resolution.y/2 - resolution.y/10,
                    ALLEGRO_ALIGN_CENTRE,
                    "Paused");
       al_flip_display();
@@ -354,7 +360,7 @@ int main(int argc, char **argv) {
       double time_dilation_factor = 1;
 
       rocket_fuel_gauge.percentage = resume.rocket_fuel/resume.rocket_fuel_max;
-      launch_velocity_gauge.percentage = resume.v_init/resume.v_max;
+      launch_velocity_gauge.percentage = (float)resume.v_init/resume.v_max;
 
       std::vector<Entity*>::iterator itr;
       for (itr = entities.begin(); itr < entities.end(); itr++) {
@@ -375,6 +381,8 @@ int main(int argc, char **argv) {
       time_dilation_factor += (1 - (1 / sqrt(1 - resume.get_scalar_velocity_squared()/c_squared)));
       context.time_remaining -= context.tick_rate / time_dilation_factor; // has problems with tick rate consistency
       context.reference_time_remaining -= context.tick_rate; // has problems with tick rate consistency
+      time_dilation_gauge.percentage = 1 - time_dilation_factor;
+      if (time_dilation_gauge.percentage > 1) time_dilation_gauge.percentage = 1;
 
       if (context.time_remaining <= 0 || context.reference_time_remaining <= 0) {
         context.state = GameState::failure;
@@ -389,12 +397,22 @@ int main(int argc, char **argv) {
 
       int text_width = al_get_text_width(font,level_string.c_str());
       std::stringstream ss;
+      ss << "Score: " << score;
+      std::string score_str = ss.str();
+      al_draw_text(font,
+                  al_map_rgb(255, 255, 255),
+                  resolution.x/2 - text_width/2,
+                  line_height*2,
+                  ALLEGRO_ALIGN_LEFT,
+                  score_str.c_str());
+
+      ss.str("");
       ss << "Time remaining: " << std::setprecision(4) << context.time_remaining;
       std::string time_str = ss.str();
       al_draw_text(font,
                   al_map_rgb(255, 255, 255),
                   resolution.x/2 - text_width/2,
-                  line_height*2,
+                  line_height*3,
                   ALLEGRO_ALIGN_LEFT,
                   time_str.c_str());
       ss.str("");
@@ -403,7 +421,7 @@ int main(int argc, char **argv) {
       al_draw_text(font,
                   al_map_rgb(255, 255, 255),
                   resolution.x/2 - text_width/2,
-                  line_height*3,
+                  line_height*4,
                   ALLEGRO_ALIGN_LEFT,
                   time_str.c_str());
 
@@ -412,9 +430,10 @@ int main(int argc, char **argv) {
     }
 
     if (resume.win) {
+      score += context.time_remaining * current_level * context.prestige_level;
       context.reset_time();
 
-      if ((current_level%5) == 0 && current_level != 35) {
+      if ((current_level%5) == 0) {
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
                      al_map_rgb(255, 255, 255),
@@ -438,7 +457,6 @@ int main(int argc, char **argv) {
         resume.reset();
         entities.clear();
         entities.push_back(&resume);
-        entities.push_back(&rocket_fuel_gauge);
         for (int i = 0; i < current_level / 5; i++) {
           std::random_device rd;
           std::mt19937 gen(rd());
@@ -451,7 +469,7 @@ int main(int argc, char **argv) {
         }
       }
 
-      if (current_level%35 == 0) {
+      if (!context.show_menu && context.state == GameState::interlude_win && current_level%36 == 0) {
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
                      al_map_rgb(255, 255, 255),
@@ -480,8 +498,26 @@ int main(int argc, char **argv) {
         al_flip_display();
         std::chrono::milliseconds timespan(6000);
         std::this_thread::sleep_for(timespan);
+
+        al_clear_to_color(al_map_rgb(0, 0, 0));
+        al_draw_text(font,
+                     al_map_rgb(255, 255, 255),
+                     resolution.x/2,
+                     resolution.y/2,
+                     ALLEGRO_ALIGN_CENTRE,
+                     "You will return to Level 1.");
+        al_draw_text(font,
+                     al_map_rgb(255, 255, 255),
+                     resolution.x/2,
+                     resolution.y/2 + line_height,
+                     ALLEGRO_ALIGN_CENTRE,
+                     "Your powerups remain intact.");
+        al_flip_display();
+        std::this_thread::sleep_for(timespan);
+
         current_level = 1;
         context.state = GameState::normal;
+        context.prestige_level++;
         level_string = "Level ";
         level_string += std::to_string(current_level);
         clear_entities<Bullet>(bullets);
@@ -492,6 +528,8 @@ int main(int argc, char **argv) {
         entities.push_back(&manager);
         entities.push_back(&resume);
         entities.push_back(&rocket_fuel_gauge);
+        entities.push_back(&launch_velocity_gauge);
+        entities.push_back(&time_dilation_gauge);
         for (int i = 0; i < 100; i++) {
           entities.push_back(new Star());
         }
@@ -503,7 +541,67 @@ int main(int argc, char **argv) {
         continue;
       }
 
-      if (!context.show_menu && context.state == GameState::interlude_win) {
+      if (!context.show_menu && context.state == GameState::interlude_fail && current_level%36 == 0) {
+        // final level
+        al_clear_to_color(al_map_rgb(0, 0, 0));
+        al_draw_text(font,
+                     al_map_rgb(255, 255, 255),
+                     resolution.x/2,
+                     resolution.y/2,
+                     ALLEGRO_ALIGN_CENTRE,
+                     "\"Thanks so much for your interest in this company! You made it to the final round of our candidate selection process.\"");
+        al_draw_text(font,
+                     al_map_rgb(255, 255, 255),
+                     resolution.x/2,
+                     resolution.y/2 + line_height,
+                     ALLEGRO_ALIGN_CENTRE,
+                     "\"Unfortunately, we decided to go with another candidate.\"");
+        al_flip_display();
+        std::chrono::milliseconds timespan(6000);
+        std::this_thread::sleep_for(timespan);
+
+        al_clear_to_color(al_map_rgb(0, 0, 0));
+        al_draw_text(font,
+                     al_map_rgb(255, 255, 255),
+                     resolution.x/2,
+                     resolution.y/2,
+                     ALLEGRO_ALIGN_CENTRE,
+                     "You will return to Level 1.");
+        al_draw_text(font,
+                     al_map_rgb(255, 255, 255),
+                     resolution.x/2,
+                     resolution.y/2 + line_height,
+                     ALLEGRO_ALIGN_CENTRE,
+                     "Your progress has been reset.");
+        al_flip_display();
+        std::this_thread::sleep_for(timespan);
+        current_level = 1;
+        context.state = GameState::normal;
+        level_string = "Level ";
+        level_string += std::to_string(current_level);
+        score = 0;
+        clear_entities<Bullet>(bullets);
+        clear_entities<Interviewer>(interviewers);
+        clear_entities<BlackHole>(black_holes);
+        clear_entities<Star>(stars);
+        entities.clear();
+        entities.push_back(&manager);
+        entities.push_back(&resume);
+        entities.push_back(&rocket_fuel_gauge);
+        entities.push_back(&launch_velocity_gauge);
+        entities.push_back(&time_dilation_gauge);
+        for (int i = 0; i < 100; i++) {
+          entities.push_back(new Star());
+        }
+        resume.reset();
+        for (int i = 0; i < current_level; i++) {
+          black_holes.push_back(new BlackHole());
+        }
+        resume.interlude = false;
+        continue;
+      }
+
+      if (!context.show_menu && context.state == GameState::interlude_win && current_level%36 != 0) {
         context.state = GameState::normal;
         // init_level(entities, &resume, &manager);
         clear_entities<Bullet>(bullets);
@@ -512,6 +610,8 @@ int main(int argc, char **argv) {
         entities.push_back(&manager);
         entities.push_back(&resume);
         entities.push_back(&rocket_fuel_gauge);
+        entities.push_back(&launch_velocity_gauge);
+        entities.push_back(&time_dilation_gauge);
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
                      al_map_rgb(255, 255, 255),
@@ -525,6 +625,7 @@ int main(int argc, char **argv) {
                     resolution.y/2 + line_height,
                     ALLEGRO_ALIGN_CENTRE,
                     "Your persistence has rewarded you with a new ability.");
+        score += current_level/5 * context.prestige_level * 100;
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<unsigned int> powerup_dist(0, powerups.size());
@@ -551,7 +652,8 @@ int main(int argc, char **argv) {
           break;
         case Powerup::gravity_increase:
           resume.v_init *= 1.15;
-          resume.v_max *= 1.10;
+          resume.v_max *= 1.20;
+          if (resume.v_init > resume.v_max) resume.v_init = resume.v_max;
           BlackHole::G *= 1.05;
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
@@ -562,7 +664,8 @@ int main(int argc, char **argv) {
           break;
         case Powerup::max_speed_reduction:
           resume.v_max *= 0.95;
-          resume.v_init *= 1.10;
+          resume.v_init *= 1.20;
+          if (resume.v_init > resume.v_max) resume.v_init = resume.v_max;
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
@@ -581,7 +684,7 @@ int main(int argc, char **argv) {
           break;
         case Powerup::init_speed_reduction:
           resume.v_init *= 0.90;
-          resume.v_max *= 1.05;
+          resume.v_max *= 1.20;
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
@@ -590,7 +693,8 @@ int main(int argc, char **argv) {
                       "Your max velocity has increased, but your launch velocity has decreased.");
           break;
         case Powerup::init_speed_increase:
-          resume.v_init *= 1.15;
+          resume.v_init *= 1.20;
+          if (resume.v_init > resume.v_max) resume.v_init = resume.v_max;
           al_draw_text(font,
                       al_map_rgb(255, 255, 255),
                       resolution.x/2,
@@ -632,6 +736,8 @@ int main(int argc, char **argv) {
         entities.push_back(&manager);
         entities.push_back(&resume);
         entities.push_back(&rocket_fuel_gauge);
+        entities.push_back(&launch_velocity_gauge);
+        entities.push_back(&time_dilation_gauge);
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
                      al_map_rgb(255, 255, 255),
@@ -677,9 +783,12 @@ int main(int argc, char **argv) {
       clear_entities<BlackHole>(black_holes);
       clear_entities<Star>(stars);
       entities.clear();
+      resume.reinitialize();
       entities.push_back(&manager);
       entities.push_back(&resume);
       entities.push_back(&rocket_fuel_gauge);
+      entities.push_back(&launch_velocity_gauge);
+      entities.push_back(&time_dilation_gauge);
       black_holes.push_back(new BlackHole());
       for (int i = 0; i < 100; i++) {
         entities.push_back(new Star());

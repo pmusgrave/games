@@ -251,6 +251,30 @@ void Resume::reset() {
   win = false;
 }
 
+void Resume::reinitialize() {
+  reset();
+  interlude = false;
+  fail = false;
+  v_max = 35;
+  v_init = 20;
+  win = false;
+  x = x;
+  y = y;
+  angle = 0;
+  black_holes = black_holes;
+  launch_angle = 0;
+  launched = false;
+  manager = manager;
+  powerup_rocket = false;
+  rocket_acceleration = 0;
+  rocket_fuel = 0.0;
+  rocket_fuel_consumption = 0.1;
+  rocket_fuel_max = 0.0;
+  rocket_fuel_max_initial = 150.0;
+  vx = 0;
+  vy = 0;
+}
+
 void Resume::rocket_boost_enable() {
   powerup_rocket = true;
   rocket_fuel_max += rocket_fuel_max_initial/2;
