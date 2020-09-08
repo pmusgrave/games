@@ -23,6 +23,7 @@
 #include "globals.hpp"
 #include "interviewer.hpp"
 #include "manager.hpp"
+#include "meter.hpp"
 #include "resume.hpp"
 #include "star.hpp"
 
@@ -171,6 +172,12 @@ int main(int argc, char **argv) {
   for (int i = 0; i < 100; i++) {
     entities.push_back(new Star());
   }
+
+  resume.rocket_boost_enable();
+  Meter rocket_fuel_gauge("ROCKET FUEL", line_height, line_height, resume.rocket_fuel/resume.rocket_fuel_max);
+  entities.push_back(&rocket_fuel_gauge);
+  Meter launch_velocity_gauge("LAUNCH VELOCITY", line_height, line_height*4, (float)(resume.v_init/resume.v_max));
+  entities.push_back(&launch_velocity_gauge);
 
   GameState state = intro_screen;
   bool done = false;
@@ -346,6 +353,9 @@ int main(int argc, char **argv) {
 
       double time_dilation_factor = 1;
 
+      rocket_fuel_gauge.percentage = resume.rocket_fuel/resume.rocket_fuel_max;
+      launch_velocity_gauge.percentage = resume.v_init/resume.v_max;
+
       std::vector<Entity*>::iterator itr;
       for (itr = entities.begin(); itr < entities.end(); itr++) {
         (*itr)->update();
@@ -428,6 +438,7 @@ int main(int argc, char **argv) {
         resume.reset();
         entities.clear();
         entities.push_back(&resume);
+        entities.push_back(&rocket_fuel_gauge);
         for (int i = 0; i < current_level / 5; i++) {
           std::random_device rd;
           std::mt19937 gen(rd());
@@ -480,6 +491,7 @@ int main(int argc, char **argv) {
         entities.clear();
         entities.push_back(&manager);
         entities.push_back(&resume);
+        entities.push_back(&rocket_fuel_gauge);
         for (int i = 0; i < 100; i++) {
           entities.push_back(new Star());
         }
@@ -499,6 +511,7 @@ int main(int argc, char **argv) {
         entities.clear();
         entities.push_back(&manager);
         entities.push_back(&resume);
+        entities.push_back(&rocket_fuel_gauge);
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
                      al_map_rgb(255, 255, 255),
@@ -618,6 +631,7 @@ int main(int argc, char **argv) {
         entities.clear();
         entities.push_back(&manager);
         entities.push_back(&resume);
+        entities.push_back(&rocket_fuel_gauge);
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
                      al_map_rgb(255, 255, 255),
@@ -665,6 +679,7 @@ int main(int argc, char **argv) {
       entities.clear();
       entities.push_back(&manager);
       entities.push_back(&resume);
+      entities.push_back(&rocket_fuel_gauge);
       black_holes.push_back(new BlackHole());
       for (int i = 0; i < 100; i++) {
         entities.push_back(new Star());

@@ -12,6 +12,7 @@
 #include "black_hole.hpp"
 #include "entity.hpp"
 #include "manager.hpp"
+#include "vec2.hpp"
 
 class Resume final : public Entity {
  public:
@@ -31,6 +32,8 @@ class Resume final : public Entity {
   bool fail;
   bool interlude;
   bool powerup_rocket;
+  double rocket_fuel;
+  double rocket_fuel_max;
   int v_max;
   int v_init;
   bool win;
@@ -53,9 +56,7 @@ class Resume final : public Entity {
   bool launched;
   Manager* manager;
   int rocket_acceleration;
-  double rocket_fuel;
   double rocket_fuel_consumption;
-  double rocket_fuel_max;
   double rocket_fuel_max_initial;
   double vx;
   double vy;

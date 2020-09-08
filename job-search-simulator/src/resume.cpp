@@ -13,6 +13,7 @@
 #include <iostream>
 
 #include "globals.hpp"
+#include "vec2.hpp"
 
 Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* manager)
   : interlude(false),
@@ -111,25 +112,6 @@ void Resume::draw() {
   }
   al_identity_transform(&trans);
   al_use_transform(&trans);
-
-  if (powerup_rocket) {
-    al_draw_text(font,
-                al_map_rgb(255, 255, 255),
-                line_height,
-                line_height * 2 + resolution.y * 0.00926,
-                ALLEGRO_ALIGN_LEFT,
-                "ROCKET FUEL");
-    al_draw_rectangle(line_height,
-                      line_height,
-                      line_height + rocket_fuel_max,
-                      line_height*2,
-                      al_map_rgba_f(1, 1, 1, 1), resolution.y * 0.00185);
-    al_draw_filled_rectangle(line_height,
-                             line_height,
-                             line_height + rocket_fuel,
-                             line_height*2,
-                             al_map_rgba_f(1, 1, 1, 1));
-  }
 
   if (draw_rocket_down) {
     al_draw_filled_triangle(x + width/2 - resolution.y * 0.00926, y + height,
