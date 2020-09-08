@@ -33,7 +33,7 @@ void Star::draw() {
                         al_get_bitmap_width(img[frame_index]),  // source width
                         al_get_bitmap_height(img[frame_index]),  // source height
                         position.x, position.y,  // target origin
-                        30, 30,  // target dimensions
+                        resolution.x*0.02, resolution.y*0.02,  // target dimensions
                         0  // flags
                         );
   al_identity_transform(&trans);
