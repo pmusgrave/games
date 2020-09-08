@@ -179,7 +179,7 @@ int main(int argc, char **argv) {
 
   Meter rocket_fuel_gauge("ROCKET FUEL", line_height, line_height, resume.rocket_fuel/resume.rocket_fuel_max);
   Meter launch_velocity_gauge("LAUNCH VELOCITY", line_height, line_height*4, (float)(resume.v_init/resume.v_max));
-  Meter time_dilation_gauge("TIME DILATION FACTOR", line_height, line_height*8, 0);
+  Meter time_dilation_gauge("TIME DILATION FACTOR", line_height, line_height*7  , 0);
   entities.push_back(&rocket_fuel_gauge);
   entities.push_back(&launch_velocity_gauge);
   entities.push_back(&time_dilation_gauge);
@@ -379,7 +379,9 @@ int main(int argc, char **argv) {
       }
 
       time_dilation_factor += (1 - (1 / sqrt(1 - resume.get_scalar_velocity_squared()/c_squared)));
-      context.time_remaining -= context.tick_rate / time_dilation_factor; // has problems with tick rate consistency
+      if (time_dilation_factor != 0 && time_dilation_factor == time_dilation_factor) {
+        context.time_remaining -= context.tick_rate / time_dilation_factor; // has problems with tick rate consistency
+      }
       context.reference_time_remaining -= context.tick_rate; // has problems with tick rate consistency
       time_dilation_gauge.percentage = 1 - time_dilation_factor;
       if (time_dilation_gauge.percentage > 1) time_dilation_gauge.percentage = 1;

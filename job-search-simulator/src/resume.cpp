@@ -75,14 +75,28 @@ void Resume::draw() {
   // al_draw_filled_rectangle(x, y,
   //                          x + width, y + height,
   //                          al_map_rgba_f(1, 1, 1, 1));
-  al_draw_scaled_bitmap(img,
-                        0, 0,  // source origin
-                        al_get_bitmap_width(img),  // source width
-                        al_get_bitmap_height(img),  // source height
-                        x, y,  // target origin
-                        width, height,  // target dimensions
-                        0  // flags
-                        );
+  if (rocket_fuel > 0) {
+    al_draw_tinted_scaled_bitmap(img,
+      al_map_rgb(255,0,0),
+      0, 0,  // source origin
+      al_get_bitmap_width(img),  // source width
+      al_get_bitmap_height(img),  // source height
+      x, y,  // target origin
+      width, height,  // target dimensions
+      0  // flags
+    );
+  }
+  else {
+    al_draw_scaled_bitmap(img,
+      0, 0,  // source origin
+      al_get_bitmap_width(img),  // source width
+      al_get_bitmap_height(img),  // source height
+      x, y,  // target origin
+      width, height,  // target dimensions
+      0  // flags
+    );
+
+  }
 
   if (!launched && !interlude) {
     al_draw_line(
