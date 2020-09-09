@@ -80,15 +80,21 @@ struct GameContext {
     menu[menu_selected_index].action();
   }
   void menu_item_left() {
-    if (menu[menu_selected_index].label == "Volume") {
-      audio_volume -= 0.01;
+    if (menu[menu_selected_index].label.substr(0,6) == "Volume") {
+      audio_volume -= 0.05;
       if (audio_volume < 0) audio_volume = 0;
+      std::stringstream ss;
+      ss << "Volume < " << round(audio_volume*100) << " >";
+      menu[menu_selected_index].label = ss.str();
     }
   }
   void menu_item_right() {
-    if (menu[menu_selected_index].label == "Volume") {
-      audio_volume += 0.01;
+    if (menu[menu_selected_index].label.substr(0,6) == "Volume") {
+      audio_volume += 0.05;
       if (audio_volume > 1) audio_volume = 1;
+      std::stringstream ss;
+      ss << "Volume < " << round(audio_volume*100) << " >";
+      menu[menu_selected_index].label = ss.str();
     }
   }
   void menu_item_up() {
@@ -267,6 +273,9 @@ int main(int argc, char **argv) {
   level_string += std::to_string(current_level);
   GameContext context(state);
   context.reset_time();
+  std::stringstream vol_ss;
+  vol_ss << "Volume " << " < " << round(context.audio_volume*100) << " >";
+  std::string vol_str = vol_ss.str();
   std::vector<MenuItem> menu {
     MenuItem("Continue", true, [&context, &audio_mixer, &intro_music, &level_music, &intro_music_playing, &level_music_playing]() {
       al_set_audio_stream_playing(level_music, false);
@@ -278,7 +287,7 @@ int main(int argc, char **argv) {
         al_set_audio_stream_playing(level_music, level_music_playing);
       }
     }),
-    MenuItem("Volume", false, [&context]() { return; }),
+    MenuItem(vol_str.c_str(), false, []() { return; }),
     MenuItem("Quit", false, [&done]() { done = true; }),
   };
   context.menu = menu;
@@ -385,17 +394,17 @@ int main(int argc, char **argv) {
         if ((*menu_itr).selected) {
           al_draw_text(font,
             al_map_rgb(255, 10, 10),
-            resolution.x/2,
+            resolution.x/2 - resolution.x/12,
             resolution.y/2 - resolution.y/10 + line_height*(++i),
-            ALLEGRO_ALIGN_CENTRE,
+            ALLEGRO_ALIGN_LEFT,
             (*menu_itr).label.c_str());
 
         } else {
           al_draw_text(font,
             al_map_rgb(255, 255, 255),
-            resolution.x/2,
+            resolution.x/2 - resolution.x/12,
             resolution.y/2 - resolution.y/10 + line_height*(++i),
-            ALLEGRO_ALIGN_CENTRE,
+            ALLEGRO_ALIGN_LEFT,
             (*menu_itr).label.c_str());
         }
       }
