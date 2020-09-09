@@ -153,13 +153,14 @@ int main(int argc, char **argv) {
   ALLEGRO_AUDIO_STREAM* level_music = al_load_audio_stream("resources/soundtrack/level.ogg", 4, 2048);
   al_set_audio_stream_playmode(intro_music, ALLEGRO_PLAYMODE_LOOP);
   al_set_audio_stream_playmode(level_music, ALLEGRO_PLAYMODE_LOOP);
+  bool intro_music_playing, level_music_playing = false;
   // al_set_mixer_gain(audio_mixer, 1);
 
   al_attach_mixer_to_voice(audio_mixer, voice);
   al_attach_audio_stream_to_mixer(intro_music, audio_mixer);
   al_attach_audio_stream_to_mixer(level_music, audio_mixer);
-  al_set_audio_stream_playing(intro_music, false);
-  al_set_audio_stream_playing(level_music, false);
+  al_set_audio_stream_playing(intro_music, intro_music_playing);
+  al_set_audio_stream_playing(level_music, level_music_playing);
 
   al_register_event_source(queue, al_get_keyboard_event_source());
   al_register_event_source(queue, al_get_display_event_source(disp));
@@ -242,7 +243,13 @@ int main(int argc, char **argv) {
     case ALLEGRO_EVENT_KEY_DOWN:
       key[event.keyboard.keycode] = KEY_SEEN | KEY_RELEASED;
       if(key[ALLEGRO_KEY_ESCAPE]) {
+        al_set_audio_stream_playing(level_music, false);
+        al_set_audio_stream_playing(intro_music, false);
         context.show_menu = !context.show_menu;
+        if (!context.show_menu) {
+          al_set_audio_stream_playing(intro_music, intro_music_playing);
+          al_set_audio_stream_playing(level_music, level_music_playing);
+        }
         // done = true;
       }
       break;
@@ -296,8 +303,10 @@ int main(int argc, char **argv) {
       std::this_thread::sleep_for(timespan);
       context.state = GameState::normal;
       al_stop_samples();
-      al_set_audio_stream_playing(level_music, false);
-      al_set_audio_stream_playing(intro_music, true);
+      intro_music_playing = true;
+      level_music_playing = false;
+      al_set_audio_stream_playing(level_music, level_music_playing);
+      al_set_audio_stream_playing(intro_music, intro_music_playing);
       // al_play_sample(intro_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
     }
 
@@ -737,8 +746,10 @@ int main(int argc, char **argv) {
         std::this_thread::sleep_for(timespan);
 
         al_stop_samples();
-        al_set_audio_stream_playing(intro_music, false);
-        al_set_audio_stream_playing(level_music, true);
+        intro_music_playing = false;
+        level_music_playing = true;
+        al_set_audio_stream_playing(intro_music, intro_music_playing);
+        al_set_audio_stream_playing(level_music, level_music_playing);
         // al_play_sample(level_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
       }
 
@@ -777,8 +788,10 @@ int main(int argc, char **argv) {
         std::chrono::milliseconds timespan(6000);
         std::this_thread::sleep_for(timespan);
         al_stop_samples();
-        al_set_audio_stream_playing(intro_music, false);
-        al_set_audio_stream_playing(level_music, true);
+        intro_music_playing = false;
+        level_music_playing = true;
+        al_set_audio_stream_playing(intro_music, intro_music_playing);
+        al_set_audio_stream_playing(level_music, level_music_playing);
         // al_play_sample(level_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
       }
 
