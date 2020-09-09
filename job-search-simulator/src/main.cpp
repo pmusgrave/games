@@ -320,6 +320,12 @@ int main(int argc, char **argv) {
     case ALLEGRO_EVENT_KEY_DOWN:
       key[event.keyboard.keycode] = KEY_SEEN | KEY_RELEASED;
       if(key[ALLEGRO_KEY_ESCAPE]) {
+        context.menu_selected_index = 0;
+        std::vector<MenuItem>::iterator menu_itr;
+        for (menu_itr = context.menu.begin(); menu_itr < context.menu.end(); menu_itr++) {
+          (*menu_itr).selected = false;
+        }
+        context.menu[context.menu_selected_index].selected = true;
         al_set_audio_stream_playing(level_music, false);
         al_set_audio_stream_playing(intro_music, false);
         al_set_mixer_gain(audio_mixer, context.audio_volume);
