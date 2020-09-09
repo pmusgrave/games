@@ -28,12 +28,6 @@
 #include "resume.hpp"
 #include "star.hpp"
 
-// struct screen_resolution resolution { 2560, 1440 };
-// struct screen_resolution resolution { 1920, 1080 };
-struct screen_resolution resolution;
-int line_height;
-const double c_squared = 8.98755179e16;
-
 enum GameState {
   intro_screen = 0,
   normal,
@@ -43,6 +37,50 @@ enum GameState {
   failure,
   game_win,
 };
+
+enum ScreenResolutions {
+  autodetect = 0,
+  x640x480,
+  x800x600,
+  x1024x768,
+  x1280x720,
+  x1280x800,
+  x1280x1024,
+  x1360x768,
+  x1366x768,
+  x1440x900,
+  x1600x900,
+  x1680x1050,
+  x1920x1080,
+  x1920x1200,
+  x2560x1080,
+  x2560x1440,
+  x3440x1440,
+  x3840x2160,
+};
+std::vector<ScreenResolutions> resolution_settings {
+  ScreenResolutions::autodetect,
+  ScreenResolutions::x640x480,
+  ScreenResolutions::x800x600,
+  ScreenResolutions::x1024x768,
+  ScreenResolutions::x1280x720,
+  ScreenResolutions::x1280x800,
+  ScreenResolutions::x1280x1024,
+  ScreenResolutions::x1360x768,
+  ScreenResolutions::x1366x768,
+  ScreenResolutions::x1440x900,
+  ScreenResolutions::x1600x900,
+  ScreenResolutions::x1680x1050,
+  ScreenResolutions::x1920x1080,
+  ScreenResolutions::x1920x1200,
+  ScreenResolutions::x2560x1080,
+  ScreenResolutions::x2560x1440,
+  ScreenResolutions::x3440x1440,
+  ScreenResolutions::x3840x2160,
+};
+struct screen_resolution resolution;
+int line_height;
+const double c_squared = 8.98755179e16;
 
 class MenuItem {
  public:
@@ -65,6 +103,7 @@ struct GameContext {
       show_menu(false),
       state(state)
   {}
+
   void menu_item_down() {
     menu_selected_index++;
     if (menu_selected_index >= menu.size()) {
@@ -76,9 +115,11 @@ struct GameContext {
     }
     menu[menu_selected_index].selected = true;
   }
+
   void menu_action() {
     menu[menu_selected_index].action();
   }
+
   void menu_item_left() {
     if (menu[menu_selected_index].label.substr(0,6) == "Volume") {
       audio_volume -= 0.05;
@@ -87,7 +128,12 @@ struct GameContext {
       ss << "Volume < " << round(audio_volume*100) << " >";
       menu[menu_selected_index].label = ss.str();
     }
+
+    if (menu[menu_selected_index].label.substr(0,17) == "Screen Resolution") {
+
+    }
   }
+
   void menu_item_right() {
     if (menu[menu_selected_index].label.substr(0,6) == "Volume") {
       audio_volume += 0.05;
@@ -97,6 +143,7 @@ struct GameContext {
       menu[menu_selected_index].label = ss.str();
     }
   }
+
   void menu_item_up() {
     menu_selected_index--;
     if (menu_selected_index < 0) {
@@ -108,6 +155,7 @@ struct GameContext {
     }
     menu[menu_selected_index].selected = true;
   }
+
   void reset_time() {
     time_remaining = tick_rate * 3000;
     reference_time_remaining = tick_rate * 3000;
@@ -180,6 +228,7 @@ int main(int argc, char **argv) {
   ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
   must_init(queue, "queue");
 
+  al_set_new_display_option(ALLEGRO_AUX_BUFFERS, 1, ALLEGRO_SUGGEST);
   al_set_new_display_option(ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
   al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
   al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
@@ -273,9 +322,17 @@ int main(int argc, char **argv) {
   level_string += std::to_string(current_level);
   GameContext context(state);
   context.reset_time();
+  // context.resolution = ScreenResolutions::auto;
+  context.prestige_level = 1;
+
   std::stringstream vol_ss;
   vol_ss << "Volume " << " < " << round(context.audio_volume*100) << " >";
   std::string vol_str = vol_ss.str();
+
+  // std::stringstream res_ss;
+  // res_ss << "Screen Resolution " << " < " << resolution << " >";
+  // std::string res_str = res_ss.str();
+
   std::vector<MenuItem> menu {
     MenuItem("Continue", true, [&context, &audio_mixer, &intro_music, &level_music, &intro_music_playing, &level_music_playing]() {
       al_set_audio_stream_playing(level_music, false);
@@ -288,10 +345,11 @@ int main(int argc, char **argv) {
       }
     }),
     MenuItem(vol_str.c_str(), false, []() { return; }),
+    // MenuItem(res_str.c_str(), false, []() { return; }),
     MenuItem("Quit", false, [&done]() { done = true; }),
   };
+
   context.menu = menu;
-  context.prestige_level = 1;
 
 #define KEY_SEEN     1
 #define KEY_RELEASED 2
@@ -714,6 +772,10 @@ int main(int argc, char **argv) {
         std::chrono::milliseconds timespan(6000);
         std::this_thread::sleep_for(timespan);
 
+        std::stringstream final_score_ss;
+        final_score_ss << "Your final score was " << score << ".";
+        std::string final_score_str = final_score_ss.str();
+
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_text(font,
                      al_map_rgb(255, 255, 255),
@@ -727,6 +789,12 @@ int main(int argc, char **argv) {
                      resolution.y/2 + line_height,
                      ALLEGRO_ALIGN_CENTRE,
                      "Your progress has been reset.");
+        al_draw_text(font,
+                    al_map_rgb(255, 255, 255),
+                    resolution.x/2,
+                    resolution.y/2 + line_height,
+                    ALLEGRO_ALIGN_CENTRE,
+                    final_score_str.c_str());
         al_flip_display();
         std::this_thread::sleep_for(timespan);
         current_level = 1;
@@ -939,6 +1007,20 @@ int main(int argc, char **argv) {
 
     if (!context.show_menu && context.state == GameState::failure) {
       al_clear_to_color(al_map_rgb(0, 0, 0));
+
+      std::stringstream final_score_ss;
+      final_score_ss << "Your final score was " << score << ".";
+      std::string final_score_str = final_score_ss.str();
+      al_draw_text(font,
+                  al_map_rgb(255, 255, 255),
+                  resolution.x/2,
+                  resolution.y/2,
+                  ALLEGRO_ALIGN_CENTRE,
+                  final_score_str.c_str());
+      al_flip_display();
+      std::chrono::milliseconds timespan(6000);
+      std::this_thread::sleep_for(timespan);
+
       current_level = 1;
       level_string = "Level ";
       level_string += std::to_string(current_level);
