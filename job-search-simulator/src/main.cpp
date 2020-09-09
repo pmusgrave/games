@@ -60,7 +60,8 @@ class MenuItem {
 struct GameContext {
  public:
   GameContext(GameState state)
-    : menu_selected_index(0),
+    : audio_volume(1),
+      menu_selected_index(0),
       show_menu(false),
       state(state)
   {}
@@ -78,8 +79,18 @@ struct GameContext {
   void menu_action() {
     menu[menu_selected_index].action();
   }
-  void menu_item_left() {}
-  void menu_item_right() {}
+  void menu_item_left() {
+    if (menu[menu_selected_index].label == "Volume") {
+      audio_volume -= 0.01;
+      if (audio_volume < 0) audio_volume = 0;
+    }
+  }
+  void menu_item_right() {
+    if (menu[menu_selected_index].label == "Volume") {
+      audio_volume += 0.01;
+      if (audio_volume > 1) audio_volume = 1;
+    }
+  }
   void menu_item_up() {
     menu_selected_index--;
     if (menu_selected_index < 0) {
@@ -95,6 +106,8 @@ struct GameContext {
     time_remaining = tick_rate * 3000;
     reference_time_remaining = tick_rate * 3000;
   }
+
+  float audio_volume;
   std::vector<MenuItem> menu;
   int menu_selected_index;
   unsigned int prestige_level;
@@ -255,9 +268,10 @@ int main(int argc, char **argv) {
   GameContext context(state);
   context.reset_time();
   std::vector<MenuItem> menu {
-    MenuItem("Continue", true, [&context, &intro_music, &level_music, &intro_music_playing, &level_music_playing]() {
+    MenuItem("Continue", true, [&context, &audio_mixer, &intro_music, &level_music, &intro_music_playing, &level_music_playing]() {
       al_set_audio_stream_playing(level_music, false);
       al_set_audio_stream_playing(intro_music, false);
+      al_set_mixer_gain(audio_mixer, context.audio_volume);
       context.show_menu = !context.show_menu;
       if (!context.show_menu) {
         al_set_audio_stream_playing(intro_music, intro_music_playing);
@@ -308,6 +322,7 @@ int main(int argc, char **argv) {
       if(key[ALLEGRO_KEY_ESCAPE]) {
         al_set_audio_stream_playing(level_music, false);
         al_set_audio_stream_playing(intro_music, false);
+        al_set_mixer_gain(audio_mixer, context.audio_volume);
         context.show_menu = !context.show_menu;
         if (!context.show_menu) {
           al_set_audio_stream_playing(intro_music, intro_music_playing);
