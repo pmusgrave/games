@@ -12,6 +12,7 @@
 #include <chrono>
 #include <iomanip>
 #include <iostream>
+#include <functional>
 #include <random>
 #include <sstream>
 #include <string>
@@ -43,13 +44,59 @@ enum GameState {
   game_win,
 };
 
+class MenuItem {
+ public:
+  MenuItem(const char* label, bool selected, std::function<void()>action)
+    : action(action),
+      label(label),
+      selected(selected)
+  {}
+  ~MenuItem() {}
+  std::function<void()> action;
+  std::string label;
+  bool selected;
+};
+
 struct GameContext {
  public:
-  GameContext(GameState state) : show_menu(false), state(state) {}
+  GameContext(GameState state)
+    : menu_selected_index(0),
+      show_menu(false),
+      state(state)
+  {}
+  void menu_item_down() {
+    menu_selected_index++;
+    if (menu_selected_index >= menu.size()) {
+      menu_selected_index = 0;
+    }
+    std::vector<MenuItem>::iterator menu_itr;
+    for (menu_itr = menu.begin(); menu_itr < menu.end(); menu_itr++) {
+      (*menu_itr).selected = false;
+    }
+    menu[menu_selected_index].selected = true;
+  }
+  void menu_action() {
+    menu[menu_selected_index].action();
+  }
+  void menu_item_left() {}
+  void menu_item_right() {}
+  void menu_item_up() {
+    menu_selected_index--;
+    if (menu_selected_index < 0) {
+      menu_selected_index = menu.size()-1;
+    }
+    std::vector<MenuItem>::iterator menu_itr;
+    for (menu_itr = menu.begin(); menu_itr < menu.end(); menu_itr++) {
+      (*menu_itr).selected = false;
+    }
+    menu[menu_selected_index].selected = true;
+  }
   void reset_time() {
     time_remaining = tick_rate * 3000;
     reference_time_remaining = tick_rate * 3000;
   }
+  std::vector<MenuItem> menu;
+  int menu_selected_index;
   unsigned int prestige_level;
   bool show_menu;
   GameState state;
@@ -74,8 +121,8 @@ std::vector<Powerup> powerups {
   Powerup::rocket_boost,
   Powerup::max_speed_reduction,
   Powerup::max_speed_increase,
-  init_speed_reduction,
-  init_speed_increase,
+  Powerup::init_speed_reduction,
+  Powerup::init_speed_increase,
 };
 
 void must_init(bool test, const char *description) {
@@ -207,6 +254,20 @@ int main(int argc, char **argv) {
   level_string += std::to_string(current_level);
   GameContext context(state);
   context.reset_time();
+  std::vector<MenuItem> menu {
+    MenuItem("Continue", true, [&context, &intro_music, &level_music, &intro_music_playing, &level_music_playing]() {
+      al_set_audio_stream_playing(level_music, false);
+      al_set_audio_stream_playing(intro_music, false);
+      context.show_menu = !context.show_menu;
+      if (!context.show_menu) {
+        al_set_audio_stream_playing(intro_music, intro_music_playing);
+        al_set_audio_stream_playing(level_music, level_music_playing);
+      }
+    }),
+    MenuItem("Volume", false, [&context]() { return; }),
+    MenuItem("Quit", false, [&done]() { done = true; }),
+  };
+  context.menu = menu;
   context.prestige_level = 1;
 
 #define KEY_SEEN     1
@@ -221,23 +282,25 @@ int main(int argc, char **argv) {
 
     switch(event.type) {
     case ALLEGRO_EVENT_TIMER:
-      if(key[ALLEGRO_KEY_W])
-        resume.handle_w();
-      if(key[ALLEGRO_KEY_S])
-        resume.handle_s();
-      if(key[ALLEGRO_KEY_A])
-        resume.handle_a();
-      if(key[ALLEGRO_KEY_D])
-        resume.handle_d();
-      if(key[ALLEGRO_KEY_R])
-        resume.reset();
-      if(key[ALLEGRO_KEY_SPACE])
-        resume.handle_space();
+      if (!context.show_menu) {
+        if(key[ALLEGRO_KEY_W] || key[ALLEGRO_KEY_UP])
+          resume.handle_w();
+        if(key[ALLEGRO_KEY_S] || key[ALLEGRO_KEY_DOWN])
+          resume.handle_s();
+        if(key[ALLEGRO_KEY_A] || key[ALLEGRO_KEY_LEFT])
+          resume.handle_a();
+        if(key[ALLEGRO_KEY_D] || key[ALLEGRO_KEY_RIGHT])
+          resume.handle_d();
+        if(key[ALLEGRO_KEY_R])
+          resume.reset();
+        if(key[ALLEGRO_KEY_SPACE])
+          resume.handle_space();
 
-      for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
-        key[i] &= KEY_SEEN;
+        for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
+          key[i] &= KEY_SEEN;
 
-      redraw = true;
+        redraw = true;
+      }
       break;
 
     case ALLEGRO_EVENT_KEY_DOWN:
@@ -251,6 +314,20 @@ int main(int argc, char **argv) {
           al_set_audio_stream_playing(level_music, level_music_playing);
         }
         // done = true;
+      }
+      if (context.show_menu) {
+        if(key[ALLEGRO_KEY_W] || key[ALLEGRO_KEY_UP])
+          context.menu_item_up();
+        if(key[ALLEGRO_KEY_S] || key[ALLEGRO_KEY_DOWN])
+          context.menu_item_down();
+        if(key[ALLEGRO_KEY_A] || key[ALLEGRO_KEY_LEFT])
+          context.menu_item_left();
+        if(key[ALLEGRO_KEY_D] || key[ALLEGRO_KEY_RIGHT])
+          context.menu_item_right();
+        if(key[ALLEGRO_KEY_ENTER])
+          context.menu_action();
+        for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
+          key[i] &= KEY_SEEN;
       }
       break;
     case ALLEGRO_EVENT_KEY_UP:
@@ -281,6 +358,26 @@ int main(int argc, char **argv) {
         resolution.y/2 + resolution.y/10,
         al_map_rgb(0,0,0)
       );
+      std::vector<MenuItem>::iterator menu_itr;
+      int i = 1;
+      for (menu_itr = context.menu.begin(); menu_itr < context.menu.end(); menu_itr++) {
+        if ((*menu_itr).selected) {
+          al_draw_text(font,
+            al_map_rgb(255, 10, 10),
+            resolution.x/2,
+            resolution.y/2 - resolution.y/10 + line_height*(++i),
+            ALLEGRO_ALIGN_CENTRE,
+            (*menu_itr).label.c_str());
+
+        } else {
+          al_draw_text(font,
+            al_map_rgb(255, 255, 255),
+            resolution.x/2,
+            resolution.y/2 - resolution.y/10 + line_height*(++i),
+            ALLEGRO_ALIGN_CENTRE,
+            (*menu_itr).label.c_str());
+        }
+      }
       al_draw_text(font,
                    al_map_rgb(255, 255, 255),
                    resolution.x/2,
