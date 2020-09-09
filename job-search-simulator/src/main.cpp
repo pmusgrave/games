@@ -140,12 +140,26 @@ int main(int argc, char **argv) {
   must_init(al_install_audio(), "install audio addon");
   must_init(al_init_acodec_addon(), "audio codec addon");
   must_init(al_reserve_samples(10), "reserve audio samples");
-  ALLEGRO_SAMPLE* intro_music = al_load_sample("resources/soundtrack/intro.ogg");
-  ALLEGRO_SAMPLE* level_music = al_load_sample("resources/soundtrack/level.ogg");
-  if(intro_music == nullptr || level_music == nullptr) {
-    std::cout << "error loading music file" << std::endl;
-  }
-  al_stop_samples();
+  // ALLEGRO_SAMPLE* intro_music = al_load_sample("resources/soundtrack/intro.ogg");
+  // ALLEGRO_SAMPLE* level_music = al_load_sample("resources/soundtrack/level.ogg");
+  // if(intro_music == nullptr || level_music == nullptr) {
+  //   std::cout << "error loading music file" << std::endl;
+  // }
+  ALLEGRO_VOICE* voice = al_create_voice(44100, ALLEGRO_AUDIO_DEPTH_FLOAT32,
+    ALLEGRO_CHANNEL_CONF_2);
+  ALLEGRO_MIXER* audio_mixer = al_create_mixer(44100, ALLEGRO_AUDIO_DEPTH_FLOAT32,
+    ALLEGRO_CHANNEL_CONF_2);
+  ALLEGRO_AUDIO_STREAM* intro_music = al_load_audio_stream("resources/soundtrack/intro.ogg", 4, 2048);
+  ALLEGRO_AUDIO_STREAM* level_music = al_load_audio_stream("resources/soundtrack/level.ogg", 4, 2048);
+  al_set_audio_stream_playmode(intro_music, ALLEGRO_PLAYMODE_LOOP);
+  al_set_audio_stream_playmode(level_music, ALLEGRO_PLAYMODE_LOOP);
+  // al_set_mixer_gain(audio_mixer, 1);
+
+  al_attach_mixer_to_voice(audio_mixer, voice);
+  al_attach_audio_stream_to_mixer(intro_music, audio_mixer);
+  al_attach_audio_stream_to_mixer(level_music, audio_mixer);
+  al_set_audio_stream_playing(intro_music, false);
+  al_set_audio_stream_playing(level_music, false);
 
   al_register_event_source(queue, al_get_keyboard_event_source());
   al_register_event_source(queue, al_get_display_event_source(disp));
@@ -282,7 +296,9 @@ int main(int argc, char **argv) {
       std::this_thread::sleep_for(timespan);
       context.state = GameState::normal;
       al_stop_samples();
-      al_play_sample(intro_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
+      al_set_audio_stream_playing(level_music, false);
+      al_set_audio_stream_playing(intro_music, true);
+      // al_play_sample(intro_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
     }
 
     if (!context.show_menu && context.state == GameState::interlude && redraw && al_is_event_queue_empty(queue)) {
@@ -721,7 +737,9 @@ int main(int argc, char **argv) {
         std::this_thread::sleep_for(timespan);
 
         al_stop_samples();
-        al_play_sample(level_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
+        al_set_audio_stream_playing(intro_music, false);
+        al_set_audio_stream_playing(level_music, true);
+        // al_play_sample(level_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
       }
 
       if (!context.show_menu && context.state == GameState::interlude_fail) {
@@ -759,7 +777,9 @@ int main(int argc, char **argv) {
         std::chrono::milliseconds timespan(6000);
         std::this_thread::sleep_for(timespan);
         al_stop_samples();
-        al_play_sample(level_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
+        al_set_audio_stream_playing(intro_music, false);
+        al_set_audio_stream_playing(level_music, true);
+        // al_play_sample(level_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
       }
 
       current_level++;
@@ -808,8 +828,14 @@ int main(int argc, char **argv) {
   al_destroy_timer(timer);
   al_destroy_event_queue(queue);
   al_stop_samples();
-  al_destroy_sample(intro_music);
-  al_destroy_sample(level_music);
+  al_set_audio_stream_playing(intro_music, false);
+  al_set_audio_stream_playing(level_music, false);
+  al_destroy_voice(voice);
+  al_destroy_mixer(audio_mixer);
+  al_destroy_audio_stream(intro_music);
+  al_destroy_audio_stream(level_music);
+  // al_destroy_sample(intro_music);
+  // al_destroy_sample(level_music);
 
   clear_entities<BlackHole>(black_holes);
   clear_entities<Star>(stars);
