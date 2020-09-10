@@ -515,6 +515,18 @@ int main(int argc, char **argv) {
     0
   );
   al_flip_display();
+  std::chrono::milliseconds timespan(3000);
+  std::this_thread::sleep_for(timespan);
+
+  al_clear_to_color(al_map_rgb(0, 0, 0));
+  al_draw_text(font,
+	  al_map_rgb(255, 255, 255),
+	  resolution.x / 2,
+	  resolution.y / 2,
+	  ALLEGRO_ALIGN_CENTRE,
+	  "Made by Paul Musgrave");
+  al_flip_display();
+  std::this_thread::sleep_for(timespan);
 
   al_start_timer(timer);
   while(1) {
@@ -706,9 +718,6 @@ int main(int argc, char **argv) {
     }
 
     if (!context.show_menu && context.state == GameState::intro_screen) {
-      std::chrono::milliseconds timespan(3000);
-      std::this_thread::sleep_for(timespan);
-
       al_clear_to_color(al_map_rgb(0, 0, 0));
       al_draw_text(font,
                    al_map_rgb(255, 255, 255),
@@ -717,6 +726,7 @@ int main(int argc, char **argv) {
                    ALLEGRO_ALIGN_CENTRE,
                    "Get a job");
       al_flip_display();
+	  std::chrono::milliseconds timespan(3000);
       std::this_thread::sleep_for(timespan);
       context.state = GameState::normal;
       al_stop_samples();
