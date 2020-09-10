@@ -14,6 +14,7 @@
 #include <chrono>
 #include <iomanip>
 #include <iostream>
+#include <fstream>
 #include <functional>
 #include <random>
 #include <sstream>
@@ -249,13 +250,56 @@ int main(int argc, char **argv) {
   al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
   al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
   al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
-  ALLEGRO_MONITOR_INFO info;
-  al_get_monitor_info(0, &info);
-  int w = info.x2 - info.x1;
-  int h = info.y2 - info.y1;
-  resolution.x = w;
-  resolution.y = h;
-  resolution.display_string = std::string("auto");
+
+  float user_setting_audio_volume = 1.0f;
+  char* user_settings_filename = "resources/user_settings";
+  std::fstream user_settings_file;
+  user_settings_file.open(user_settings_filename, std::fstream::in | std::fstream::out | std::fstream::app);
+  if (!user_settings_file) {
+    std::cout << "User settings file does not exist. Creating a new one.";
+    user_settings_file.open(user_settings_filename,  std::fstream::in | std::fstream::out | std::fstream::trunc);
+
+    ALLEGRO_MONITOR_INFO info;
+    al_get_monitor_info(0, &info);
+    int w = info.x2 - info.x1;
+    int h = info.y2 - info.y1;
+    resolution.x = w;
+    resolution.y = h;
+    resolution.display_string = std::string("auto");
+
+    user_settings_file << resolution.x << std::endl;
+    user_settings_file << resolution.y << std::endl;
+    user_settings_file << resolution.display_string << std::endl;
+    user_settings_file << user_setting_audio_volume << std::endl;
+    user_settings_file << std::endl;
+    user_settings_file.close();
+  }
+  else {
+    int line_num = 0;
+    std::cout << "successfully opened "<< user_settings_filename << std::endl;
+    std::string val;
+    while (user_settings_file >> val) {
+      switch(line_num) {
+      case 0:
+        resolution.x = std::stoi(val);
+        break;
+      case 1:
+        resolution.y = std::stoi(val);
+        break;
+      case 2:
+        resolution.display_string = std::string(val);
+        break;
+      case 3:
+        user_setting_audio_volume = std::stof(val);
+        break;
+      default:
+        break;
+      }
+      line_num++;
+    }
+    user_settings_file.close();
+  }
+
   ALLEGRO_DISPLAY* disp = al_create_display(resolution.x, resolution.y);
   must_init(disp, "display");
 
@@ -272,11 +316,6 @@ int main(int argc, char **argv) {
   must_init(al_install_audio(), "install audio addon");
   must_init(al_init_acodec_addon(), "audio codec addon");
   must_init(al_reserve_samples(10), "reserve audio samples");
-  // ALLEGRO_SAMPLE* intro_music = al_load_sample("resources/soundtrack/intro.ogg");
-  // ALLEGRO_SAMPLE* level_music = al_load_sample("resources/soundtrack/level.ogg");
-  // if(intro_music == nullptr || level_music == nullptr) {
-  //   std::cout << "error loading music file" << std::endl;
-  // }
   ALLEGRO_VOICE* voice = al_create_voice(44100, ALLEGRO_AUDIO_DEPTH_FLOAT32,
     ALLEGRO_CHANNEL_CONF_2);
   ALLEGRO_MIXER* audio_mixer = al_create_mixer(44100, ALLEGRO_AUDIO_DEPTH_FLOAT32,
@@ -286,7 +325,7 @@ int main(int argc, char **argv) {
   al_set_audio_stream_playmode(intro_music, ALLEGRO_PLAYMODE_LOOP);
   al_set_audio_stream_playmode(level_music, ALLEGRO_PLAYMODE_LOOP);
   bool intro_music_playing, level_music_playing = false;
-  // al_set_mixer_gain(audio_mixer, 1);
+  al_set_mixer_gain(audio_mixer, user_setting_audio_volume);
 
   al_attach_mixer_to_voice(audio_mixer, voice);
   al_attach_audio_stream_to_mixer(intro_music, audio_mixer);
@@ -341,6 +380,7 @@ int main(int argc, char **argv) {
   context.reset_time();
   context.resolution = resolution;
   context.prestige_level = 1;
+  context.audio_volume = user_setting_audio_volume;
 
   std::stringstream vol_ss;
   vol_ss << "Volume " << " < " << round(context.audio_volume*100) << " >";
@@ -375,6 +415,15 @@ int main(int argc, char **argv) {
   memset(key, 0, sizeof(key));
 
   context.menu_confirm_action = [&]() {
+    user_settings_file.open(user_settings_filename, std::fstream::in | std::fstream::out | std::fstream::trunc);
+    if (user_settings_file) {
+      user_settings_file << resolution.x << std::endl;
+      user_settings_file << resolution.y << std::endl;
+      user_settings_file << resolution.display_string << std::endl;
+      user_settings_file << context.audio_volume << std::endl;
+      user_settings_file.close();
+    }
+
     if (resolution.x != context.resolution.x && resolution.y != context.resolution.y) {
       int button = al_show_native_message_box(
         disp,
@@ -388,6 +437,14 @@ int main(int argc, char **argv) {
         resolution.x = context.resolution.x;
         resolution.y = context.resolution.y;
         resolution.display_string = context.resolution.display_string;
+
+        user_settings_file.open(user_settings_filename,  std::fstream::in | std::fstream::out | std::fstream::trunc);
+        user_settings_file << resolution.x << std::endl;
+        user_settings_file << resolution.y << std::endl;
+        user_settings_file << resolution.display_string << std::endl;
+        user_settings_file << context.audio_volume << std::endl;
+        user_settings_file.close();
+
         font = al_load_font("resources/Comfortaa/static/Comfortaa-Regular.ttf", resolution.y*0.02, 0);
         must_init(font, "load font");
         line_height = al_get_font_line_height(font);
@@ -431,8 +488,7 @@ int main(int argc, char **argv) {
           (*menu_itr).selected = false;
         }
         context.menu[context.menu_selected_index].selected = true;
-        for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
-          key[i] &= KEY_SEEN;
+        memset(key, 0, sizeof(key));
         al_flip_display();
       }
     }
@@ -496,7 +552,6 @@ int main(int argc, char **argv) {
           context.menu_item_right();
         }
         if(key[ALLEGRO_KEY_ENTER]) {
-          std::cout << "here" << std::endl;
           context.menu_action();
         }
         if(key[ALLEGRO_KEY_ESCAPE]) {
@@ -507,8 +562,6 @@ int main(int argc, char **argv) {
             (*menu_itr).selected = false;
           }
           context.menu[context.menu_selected_index].selected = true;
-          al_set_audio_stream_playing(level_music, false);
-          al_set_audio_stream_playing(intro_music, false);
           al_set_mixer_gain(audio_mixer, context.audio_volume);
           al_set_audio_stream_playing(intro_music, intro_music_playing);
           al_set_audio_stream_playing(level_music, level_music_playing);
@@ -520,6 +573,8 @@ int main(int argc, char **argv) {
       else if(key[ALLEGRO_KEY_ESCAPE]) {
         // context.show_menu = !context.show_menu;
         context.show_menu = true;
+        al_set_audio_stream_playing(level_music, false);
+        al_set_audio_stream_playing(intro_music, false);
         for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
           key[i] &= KEY_SEEN;
         // done = true;
@@ -1171,6 +1226,15 @@ int main(int argc, char **argv) {
 
   clear_entities<BlackHole>(black_holes);
   clear_entities<Star>(stars);
+
+  user_settings_file.open(user_settings_filename, std::fstream::in | std::fstream::out | std::fstream::trunc);
+  if (user_settings_file) {
+    user_settings_file << resolution.x << std::endl;
+    user_settings_file << resolution.y << std::endl;
+    user_settings_file << resolution.display_string << std::endl;
+    user_settings_file << context.audio_volume << std::endl;
+    user_settings_file.close();
+  }
 
   return 0;
 }
