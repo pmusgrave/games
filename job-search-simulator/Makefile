@@ -21,7 +21,8 @@ LIBS= \
 -lallegro_image \
 -lallegro_primitives \
 -lallegro_audio \
--lallegro_acodec
+-lallegro_acodec \
+-lallegro_dialog \
 
 CFLAGS = $(OPT) $(CPP_INCLUDES) $(LIBS) -Wall
 

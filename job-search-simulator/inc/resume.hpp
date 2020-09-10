@@ -40,8 +40,8 @@ class Resume final : public Entity {
   bool win;
   int x;
   int y;
-  const int width;
-  const int height;
+  int width;
+  int height;
  private:
   void move_down();
   void move_up();

@@ -18,11 +18,12 @@ public:
   ~Meter();
   void draw() override;
   void update() override;
+  void reinitialize();
   float percentage;
+  Vec2 position;
 private:
   ALLEGRO_FONT* font;
   std::string label;
-  Vec2 position;
   float width;
 };
 

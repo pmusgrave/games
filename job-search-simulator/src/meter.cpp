@@ -9,7 +9,7 @@ Meter::Meter(const char* label, int x, int y, float percentage)
 : percentage(percentage),
   label(std::string(label)),
   position(Vec2(x,y)),
-  width(150.0f)
+  width(resolution.y*0.2)
 {
   al_init_font_addon();
   al_init_ttf_addon();
@@ -40,3 +40,8 @@ void Meter::draw() {
 }
 
 void Meter::update() {}
+
+void Meter::reinitialize() {
+  font = al_load_font("resources/Comfortaa/Comfortaa-VariableFont_wght.ttf", resolution.y*0.015, 0);
+  width = resolution.y*0.2;
+}

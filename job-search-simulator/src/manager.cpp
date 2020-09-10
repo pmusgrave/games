@@ -21,10 +21,10 @@ Manager::~Manager() {
 }
 
 void Manager::draw() {
-  al_draw_scaled_bitmap(img,
+  al_draw_scaled_bitmap(this->img,
                         0, 0,  // source origin
-                        al_get_bitmap_width(img),  // source width
-                        al_get_bitmap_height(img),  // source height
+                        al_get_bitmap_width(this->img),  // source width
+                        al_get_bitmap_height(this->img),  // source height
                         x, y,  // target origin
                         width, height,  // target dimensions
                         0  // flags
@@ -32,6 +32,9 @@ void Manager::draw() {
 }
 
 void Manager::respawn() {
+  width = resolution.x*0.0608;
+  height = resolution.y*0.0972;
+  x = resolution.x - resolution.x*0.0608;
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution<unsigned int> y_pos_dist(resolution.y*0.3, resolution.y*0.7);

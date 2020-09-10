@@ -3,12 +3,14 @@
 #include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_font.h>
+#include <allegro5/allegro_native_dialog.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_ttf.h>
 
 #include <time.h>
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <iomanip>
 #include <iostream>
@@ -38,45 +40,25 @@ enum GameState {
   game_win,
 };
 
-enum ScreenResolutions {
-  autodetect = 0,
-  x640x480,
-  x800x600,
-  x1024x768,
-  x1280x720,
-  x1280x800,
-  x1280x1024,
-  x1360x768,
-  x1366x768,
-  x1440x900,
-  x1600x900,
-  x1680x1050,
-  x1920x1080,
-  x1920x1200,
-  x2560x1080,
-  x2560x1440,
-  x3440x1440,
-  x3840x2160,
-};
-std::vector<ScreenResolutions> resolution_settings {
-  ScreenResolutions::autodetect,
-  ScreenResolutions::x640x480,
-  ScreenResolutions::x800x600,
-  ScreenResolutions::x1024x768,
-  ScreenResolutions::x1280x720,
-  ScreenResolutions::x1280x800,
-  ScreenResolutions::x1280x1024,
-  ScreenResolutions::x1360x768,
-  ScreenResolutions::x1366x768,
-  ScreenResolutions::x1440x900,
-  ScreenResolutions::x1600x900,
-  ScreenResolutions::x1680x1050,
-  ScreenResolutions::x1920x1080,
-  ScreenResolutions::x1920x1200,
-  ScreenResolutions::x2560x1080,
-  ScreenResolutions::x2560x1440,
-  ScreenResolutions::x3440x1440,
-  ScreenResolutions::x3840x2160,
+std::array<screen_resolution,18> resolution_settings {
+  screen_resolution(1920,1080, "auto"),
+  screen_resolution(640,480, "640x480"),
+  screen_resolution(800,600, "800x600"),
+  screen_resolution(1024,768, "1024x768"),
+  screen_resolution(1280,720, "1280x720"),
+  screen_resolution(1280,800, "1280x800"),
+  screen_resolution(1280,1024, "1280x1024"),
+  screen_resolution(1360,768, "1360x768"),
+  screen_resolution(1366,768, "1366x768"),
+  screen_resolution(1440,900, "1440x900"),
+  screen_resolution(1600,900, "1600x900"),
+  screen_resolution(1680,1050, "1680x1050"),
+  screen_resolution(1920,1080, "1920x1080"),
+  screen_resolution(1920,1200, "1920x1200"),
+  screen_resolution(2560,1080, "2560x1080"),
+  screen_resolution(2560,1440, "2560x1440"),
+  screen_resolution(3440,1440, "3440x1440"),
+  screen_resolution(3840,2160, "3840x2160"),
 };
 struct screen_resolution resolution;
 int line_height;
@@ -100,6 +82,8 @@ struct GameContext {
   GameContext(GameState state)
     : audio_volume(1),
       menu_selected_index(0),
+      resolution(screen_resolution()),
+      screen_resolution_index(0),
       show_menu(false),
       state(state)
   {}
@@ -130,7 +114,19 @@ struct GameContext {
     }
 
     if (menu[menu_selected_index].label.substr(0,17) == "Screen Resolution") {
+      screen_resolution_index--;
+      if (screen_resolution_index < 0) screen_resolution_index = resolution_settings.size() - 1;
+      std::array<screen_resolution,18>::iterator scr_res_itr;
+      for (scr_res_itr = resolution_settings.begin(); scr_res_itr < resolution_settings.end(); scr_res_itr++) {
+        (*scr_res_itr).selected = false;
+      }
+      resolution_settings[screen_resolution_index].selected = true;
+      resolution = resolution_settings[screen_resolution_index];
 
+      std::stringstream res_ss;
+      res_ss << "Screen Resolution < " << resolution.display_string << " >";
+      std::string res_str = res_ss.str();
+      menu[menu_selected_index].label = res_str;
     }
   }
 
@@ -141,6 +137,22 @@ struct GameContext {
       std::stringstream ss;
       ss << "Volume < " << round(audio_volume*100) << " >";
       menu[menu_selected_index].label = ss.str();
+    }
+
+    if (menu[menu_selected_index].label.substr(0,17) == "Screen Resolution") {
+      screen_resolution_index++;
+      if (screen_resolution_index >= resolution_settings.size()) screen_resolution_index = 0;
+      std::array<screen_resolution,18>::iterator scr_res_itr;
+      for (scr_res_itr = resolution_settings.begin(); scr_res_itr < resolution_settings.end(); scr_res_itr++) {
+        (*scr_res_itr).selected = false;
+      }
+      resolution_settings[screen_resolution_index].selected = true;
+      resolution = resolution_settings[screen_resolution_index];
+
+      std::stringstream res_ss;
+      res_ss << "Screen Resolution < " << resolution.display_string << " >";
+      std::string res_str = res_ss.str();
+      menu[menu_selected_index].label = res_str;
     }
   }
 
@@ -161,10 +173,14 @@ struct GameContext {
     reference_time_remaining = tick_rate * 3000;
   }
 
+  std::function<void()> menu_confirm_action;
+
   float audio_volume;
   std::vector<MenuItem> menu;
   int menu_selected_index;
   unsigned int prestige_level;
+  screen_resolution resolution;
+  int screen_resolution_index;
   bool show_menu;
   GameState state;
   static constexpr float tick_rate = 1.0f / 30.0f;
@@ -239,6 +255,7 @@ int main(int argc, char **argv) {
   int h = info.y2 - info.y1;
   resolution.x = w;
   resolution.y = h;
+  resolution.display_string = std::string("auto");
   ALLEGRO_DISPLAY* disp = al_create_display(resolution.x, resolution.y);
   must_init(disp, "display");
 
@@ -322,16 +339,16 @@ int main(int argc, char **argv) {
   level_string += std::to_string(current_level);
   GameContext context(state);
   context.reset_time();
-  // context.resolution = ScreenResolutions::auto;
+  context.resolution = resolution;
   context.prestige_level = 1;
 
   std::stringstream vol_ss;
   vol_ss << "Volume " << " < " << round(context.audio_volume*100) << " >";
   std::string vol_str = vol_ss.str();
 
-  // std::stringstream res_ss;
-  // res_ss << "Screen Resolution " << " < " << resolution << " >";
-  // std::string res_str = res_ss.str();
+  std::stringstream res_ss;
+  res_ss << "Screen Resolution " << " < " << resolution.display_string << " >";
+  std::string res_str = res_ss.str();
 
   std::vector<MenuItem> menu {
     MenuItem("Continue", true, [&context, &audio_mixer, &intro_music, &level_music, &intro_music_playing, &level_music_playing]() {
@@ -342,10 +359,11 @@ int main(int argc, char **argv) {
       if (!context.show_menu) {
         al_set_audio_stream_playing(intro_music, intro_music_playing);
         al_set_audio_stream_playing(level_music, level_music_playing);
+        context.menu_confirm_action();
       }
     }),
     MenuItem(vol_str.c_str(), false, []() { return; }),
-    // MenuItem(res_str.c_str(), false, []() { return; }),
+    MenuItem(res_str.c_str(), false, []() { return; }),
     MenuItem("Quit", false, [&done]() { done = true; }),
   };
 
@@ -353,9 +371,87 @@ int main(int argc, char **argv) {
 
 #define KEY_SEEN     1
 #define KEY_RELEASED 2
-
   unsigned char key[ALLEGRO_KEY_MAX];
   memset(key, 0, sizeof(key));
+
+  context.menu_confirm_action = [&]() {
+    if (resolution.x != context.resolution.x && resolution.y != context.resolution.y) {
+      int button = al_show_native_message_box(
+        disp,
+        "Warning",
+        "Are you sure?",
+        "The game must be reset to change the screen resolution.",
+        NULL,
+        ALLEGRO_MESSAGEBOX_OK_CANCEL
+      );
+      if (button == 1) {
+        resolution.x = context.resolution.x;
+        resolution.y = context.resolution.y;
+        resolution.display_string = context.resolution.display_string;
+        font = al_load_font("resources/Comfortaa/static/Comfortaa-Regular.ttf", resolution.y*0.02, 0);
+        must_init(font, "load font");
+        line_height = al_get_font_line_height(font);
+
+        al_resize_display(disp, resolution.x, resolution.y);
+        al_clear_to_color(al_map_rgb(0, 0, 0));
+        current_level = 1;
+        level_string = "Level ";
+        level_string += std::to_string(current_level);
+        clear_entities<BlackHole>(black_holes);
+        clear_entities<Star>(stars);
+        entities.clear();
+        score = 0;
+        manager.respawn();
+        resume.reinitialize();
+        rocket_fuel_gauge.reinitialize();
+        rocket_fuel_gauge.position.x = line_height;
+        rocket_fuel_gauge.position.y = line_height;
+        launch_velocity_gauge.reinitialize();
+        launch_velocity_gauge.position.x = line_height;
+        launch_velocity_gauge.position.y = line_height * 4;
+        time_dilation_gauge.reinitialize();
+        time_dilation_gauge.position.x = line_height;
+        time_dilation_gauge.position.y = line_height * 7;
+        entities.push_back(&manager);
+        entities.push_back(&resume);
+        entities.push_back(&rocket_fuel_gauge);
+        entities.push_back(&launch_velocity_gauge);
+        entities.push_back(&time_dilation_gauge);
+        black_holes.push_back(new BlackHole());
+        for (int i = 0; i < 100; i++) {
+          entities.push_back(new Star());
+        }
+        resume.reset();
+        context.state = GameState::intro_screen;
+        context.reset_time();
+        context.prestige_level = 1;
+        context.menu_selected_index = 0;
+        std::vector<MenuItem>::iterator menu_itr;
+        for (menu_itr = context.menu.begin(); menu_itr < context.menu.end(); menu_itr++) {
+          (*menu_itr).selected = false;
+        }
+        context.menu[context.menu_selected_index].selected = true;
+        for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
+          key[i] &= KEY_SEEN;
+        al_flip_display();
+      }
+    }
+  };
+
+  al_clear_to_color(al_map_rgb(0, 0, 0));
+  ALLEGRO_BITMAP* logo_img = al_load_bitmap("resources/JSS-cover-img.png");
+  must_init(logo_img, "logo image");
+  al_draw_scaled_bitmap(logo_img,
+    0, 0,
+    al_get_bitmap_width(logo_img),
+    al_get_bitmap_height(logo_img),
+    resolution.x/2 - resolution.x/20,
+    resolution.y/2 - resolution.x/20,
+    resolution.x/10,
+    resolution.x/10,
+    0
+  );
+  al_flip_display();
 
   al_start_timer(timer);
   while(1) {
@@ -386,37 +482,49 @@ int main(int argc, char **argv) {
 
     case ALLEGRO_EVENT_KEY_DOWN:
       key[event.keyboard.keycode] = KEY_SEEN | KEY_RELEASED;
-      if(key[ALLEGRO_KEY_ESCAPE]) {
-        context.menu_selected_index = 0;
-        std::vector<MenuItem>::iterator menu_itr;
-        for (menu_itr = context.menu.begin(); menu_itr < context.menu.end(); menu_itr++) {
-          (*menu_itr).selected = false;
+      if (context.show_menu) {
+        if(key[ALLEGRO_KEY_W] || key[ALLEGRO_KEY_UP]) {
+          context.menu_item_up();
         }
-        context.menu[context.menu_selected_index].selected = true;
-        al_set_audio_stream_playing(level_music, false);
-        al_set_audio_stream_playing(intro_music, false);
-        al_set_mixer_gain(audio_mixer, context.audio_volume);
-        context.show_menu = !context.show_menu;
-        if (!context.show_menu) {
+        if(key[ALLEGRO_KEY_S] || key[ALLEGRO_KEY_DOWN]) {
+          context.menu_item_down();
+        }
+        if(key[ALLEGRO_KEY_A] || key[ALLEGRO_KEY_LEFT]) {
+          context.menu_item_left();
+        }
+        if(key[ALLEGRO_KEY_D] || key[ALLEGRO_KEY_RIGHT]) {
+          context.menu_item_right();
+        }
+        if(key[ALLEGRO_KEY_ENTER]) {
+          std::cout << "here" << std::endl;
+          context.menu_action();
+        }
+        if(key[ALLEGRO_KEY_ESCAPE]) {
+          context.show_menu = false;
+          context.menu_selected_index = 0;
+          std::vector<MenuItem>::iterator menu_itr;
+          for (menu_itr = context.menu.begin(); menu_itr < context.menu.end(); menu_itr++) {
+            (*menu_itr).selected = false;
+          }
+          context.menu[context.menu_selected_index].selected = true;
+          al_set_audio_stream_playing(level_music, false);
+          al_set_audio_stream_playing(intro_music, false);
+          al_set_mixer_gain(audio_mixer, context.audio_volume);
           al_set_audio_stream_playing(intro_music, intro_music_playing);
           al_set_audio_stream_playing(level_music, level_music_playing);
+          context.menu_confirm_action();
         }
-        // done = true;
-      }
-      if (context.show_menu) {
-        if(key[ALLEGRO_KEY_W] || key[ALLEGRO_KEY_UP])
-          context.menu_item_up();
-        if(key[ALLEGRO_KEY_S] || key[ALLEGRO_KEY_DOWN])
-          context.menu_item_down();
-        if(key[ALLEGRO_KEY_A] || key[ALLEGRO_KEY_LEFT])
-          context.menu_item_left();
-        if(key[ALLEGRO_KEY_D] || key[ALLEGRO_KEY_RIGHT])
-          context.menu_item_right();
-        if(key[ALLEGRO_KEY_ENTER])
-          context.menu_action();
         for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
           key[i] &= KEY_SEEN;
       }
+      else if(key[ALLEGRO_KEY_ESCAPE]) {
+        // context.show_menu = !context.show_menu;
+        context.show_menu = true;
+        for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
+          key[i] &= KEY_SEEN;
+        // done = true;
+      }
+
       break;
     case ALLEGRO_EVENT_KEY_UP:
       key[event.keyboard.keycode] &= KEY_RELEASED;
@@ -476,6 +584,9 @@ int main(int argc, char **argv) {
     }
 
     if (!context.show_menu && context.state == GameState::intro_screen) {
+      std::chrono::milliseconds timespan(3000);
+      std::this_thread::sleep_for(timespan);
+
       al_clear_to_color(al_map_rgb(0, 0, 0));
       al_draw_text(font,
                    al_map_rgb(255, 255, 255),
@@ -484,7 +595,6 @@ int main(int argc, char **argv) {
                    ALLEGRO_ALIGN_CENTRE,
                    "Get a job");
       al_flip_display();
-      std::chrono::milliseconds timespan(3000);
       std::this_thread::sleep_for(timespan);
       context.state = GameState::normal;
       al_stop_samples();

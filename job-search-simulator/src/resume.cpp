@@ -287,6 +287,9 @@ void Resume::reinitialize() {
   rocket_fuel_max_initial = 150.0;
   vx = 0;
   vy = 0;
+  width = resolution.y * 0.046;
+  height = resolution.y * 0.065;
+  font = al_load_font("resources/Comfortaa/Comfortaa-VariableFont_wght.ttf", resolution.y*0.015, 0);
 }
 
 void Resume::rocket_boost_enable() {
@@ -319,8 +322,8 @@ void Resume::update() {
     //std::cout << "a:" << a << std::endl;
     //std::cout << "vx:" << vx << " vy: " << vy << " r:" << r << std::endl;
   }
-  x = (int)(x+vx);
-  y = (int)(y+vy);
+  x = (int)(x+vx);//*resolution.x*0.00052);
+  y = (int)(y+vy);//*resolution.y*0.00092);
   if (x <= 0) {
     vx = -vx;
     x = 0;
