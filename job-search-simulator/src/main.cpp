@@ -85,6 +85,7 @@ struct GameContext {
       menu_selected_index(0),
       resolution(screen_resolution()),
       screen_resolution_index(0),
+      show_controls(false),
       show_menu(false),
       state(state)
   {}
@@ -182,6 +183,7 @@ struct GameContext {
   unsigned int prestige_level;
   screen_resolution resolution;
   int screen_resolution_index;
+  bool show_controls;
   bool show_menu;
   GameState state;
   static constexpr float tick_rate = 1.0f / 30.0f;
@@ -256,7 +258,7 @@ int main(int argc, char **argv) {
   std::fstream user_settings_file;
   user_settings_file.open(user_settings_filename, std::fstream::in | std::fstream::out | std::fstream::app);
   if (!user_settings_file) {
-    std::cout << "User settings file does not exist. Creating a new one.";
+    // std::cout << "User settings file does not exist. Creating a new one.";
     user_settings_file.open(user_settings_filename,  std::fstream::in | std::fstream::out | std::fstream::trunc);
 
     ALLEGRO_MONITOR_INFO info;
@@ -276,7 +278,7 @@ int main(int argc, char **argv) {
   }
   else {
     int line_num = 0;
-    std::cout << "successfully opened "<< user_settings_filename << std::endl;
+    // std::cout << "successfully opened "<< user_settings_filename << std::endl;
     std::string val;
     while (user_settings_file >> val) {
       switch(line_num) {
@@ -404,6 +406,7 @@ int main(int argc, char **argv) {
     }),
     MenuItem(vol_str.c_str(), false, []() { return; }),
     MenuItem(res_str.c_str(), false, []() { return; }),
+    MenuItem("How to play", false, [&context]() { context.show_controls = true; }),
     MenuItem("Quit", false, [&done]() { done = true; }),
   };
 
@@ -516,6 +519,7 @@ int main(int argc, char **argv) {
     switch(event.type) {
     case ALLEGRO_EVENT_TIMER:
       if (!context.show_menu) {
+        context.show_controls = false;
         if(key[ALLEGRO_KEY_W] || key[ALLEGRO_KEY_UP])
           resume.handle_w();
         if(key[ALLEGRO_KEY_S] || key[ALLEGRO_KEY_DOWN])
@@ -539,6 +543,7 @@ int main(int argc, char **argv) {
     case ALLEGRO_EVENT_KEY_DOWN:
       key[event.keyboard.keycode] = KEY_SEEN | KEY_RELEASED;
       if (context.show_menu) {
+        context.show_controls = false;
         if(key[ALLEGRO_KEY_W] || key[ALLEGRO_KEY_UP]) {
           context.menu_item_up();
         }
@@ -556,6 +561,7 @@ int main(int argc, char **argv) {
         }
         if(key[ALLEGRO_KEY_ESCAPE]) {
           context.show_menu = false;
+          context.show_controls = false;
           context.menu_selected_index = 0;
           std::vector<MenuItem>::iterator menu_itr;
           for (menu_itr = context.menu.begin(); menu_itr < context.menu.end(); menu_itr++) {
@@ -593,20 +599,21 @@ int main(int argc, char **argv) {
     if(done)
       break;
 
-    if (context.show_menu) {
+    if (context.show_menu && !context.show_controls) {
+      al_clear_to_color(al_map_rgb(0, 0, 0));
       al_draw_rectangle(
-        resolution.x/2 - resolution.x/10,
-        resolution.y/2 - resolution.y/10,
-        resolution.x/2 + resolution.x/10,
-        resolution.y/2 + resolution.y/10,
+        resolution.x/2 - resolution.x/5,
+        resolution.y/2 - resolution.y/5,
+        resolution.x/2 + resolution.x/5,
+        resolution.y/2 + resolution.y/5,
         al_map_rgb(255,255,255),
         resolution.y*0.01
       );
       al_draw_filled_rectangle(
-        resolution.x/2 - resolution.x/10,
-        resolution.y/2 - resolution.y/10,
-        resolution.x/2 + resolution.x/10,
-        resolution.y/2 + resolution.y/10,
+        resolution.x/2 - resolution.x/5,
+        resolution.y/2 - resolution.y/5,
+        resolution.x/2 + resolution.x/5,
+        resolution.y/2 + resolution.y/5,
         al_map_rgb(0,0,0)
       );
       std::vector<MenuItem>::iterator menu_itr;
@@ -615,7 +622,7 @@ int main(int argc, char **argv) {
         if ((*menu_itr).selected) {
           al_draw_text(font,
             al_map_rgb(255, 10, 10),
-            resolution.x/2 - resolution.x/12,
+            resolution.x/2 - resolution.x/10,
             resolution.y/2 - resolution.y/10 + line_height*(++i),
             ALLEGRO_ALIGN_LEFT,
             (*menu_itr).label.c_str());
@@ -623,7 +630,7 @@ int main(int argc, char **argv) {
         } else {
           al_draw_text(font,
             al_map_rgb(255, 255, 255),
-            resolution.x/2 - resolution.x/12,
+            resolution.x/2 - resolution.x/10,
             resolution.y/2 - resolution.y/10 + line_height*(++i),
             ALLEGRO_ALIGN_LEFT,
             (*menu_itr).label.c_str());
@@ -632,9 +639,65 @@ int main(int argc, char **argv) {
       al_draw_text(font,
                    al_map_rgb(255, 255, 255),
                    resolution.x/2,
-                   resolution.y/2 - resolution.y/10,
+                   resolution.y/2 - resolution.y/5,
                    ALLEGRO_ALIGN_CENTRE,
                    "Paused");
+      al_flip_display();
+    }
+
+    if (context.show_controls) {
+      al_clear_to_color(al_map_rgb(0, 0, 0));
+      al_draw_rectangle(
+        resolution.x/2 - resolution.x/5,
+        resolution.y/2 - resolution.y/5,
+        resolution.x/2 + resolution.x/5,
+        resolution.y/2 + resolution.y/5,
+        al_map_rgb(255,255,255),
+        resolution.y*0.01
+      );
+      al_draw_filled_rectangle(
+        resolution.x/2 - resolution.x/5,
+        resolution.y/2 - resolution.y/5,
+        resolution.x/2 + resolution.x/5,
+        resolution.y/2 + resolution.y/5,
+        al_map_rgb(0,0,0)
+      );
+      al_draw_text(font,
+        al_map_rgb(255, 255, 255),
+        resolution.x/2 - resolution.x/8,
+        resolution.y/2 - resolution.y/10,
+        ALLEGRO_ALIGN_LEFT,
+        "W/Up arrow: UP");
+      al_draw_text(font,
+        al_map_rgb(255, 255, 255),
+        resolution.x/2 - resolution.x/8,
+        resolution.y/2 - resolution.y/10 + line_height,
+        ALLEGRO_ALIGN_LEFT,
+        "A/Left arrow: ANGLE COUNTERCLOCKWISE");
+      al_draw_text(font,
+        al_map_rgb(255, 255, 255),
+        resolution.x/2 - resolution.x/8,
+        resolution.y/2 - resolution.y/10 + line_height*2,
+        ALLEGRO_ALIGN_LEFT,
+        "S/Down arrow: DOWN");
+      al_draw_text(font,
+        al_map_rgb(255, 255, 255),
+        resolution.x/2 - resolution.x/8,
+        resolution.y/2 - resolution.y/10 + line_height*3,
+        ALLEGRO_ALIGN_LEFT,
+        "D/Right arrow: ANGLE CLOCKWISE");
+      al_draw_text(font,
+        al_map_rgb(255, 255, 255),
+        resolution.x/2 - resolution.x/8,
+        resolution.y/2 - resolution.y/10 + line_height*4,
+        ALLEGRO_ALIGN_LEFT,
+        "Spacebar: LAUNCH");
+      al_draw_text(font,
+        al_map_rgb(255, 255, 255),
+        resolution.x/2 - resolution.x/8,
+        resolution.y/2 - resolution.y/10 + line_height*5,
+        ALLEGRO_ALIGN_LEFT,
+        "R: Reset");
       al_flip_display();
     }
 
