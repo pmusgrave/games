@@ -51,6 +51,11 @@ class Resume final : public Entity {
   bool draw_rocket_left;
   bool draw_rocket_right;
   bool draw_rocket_up;
+  static constexpr int frame_max = 5;
+  ALLEGRO_BITMAP* rocket_boost_sprite[frame_max];
+  int rocket_frame[4];
+  int rocket_frame_index[4];
+  int rocket_frame_rate[4];
   ALLEGRO_BITMAP* img;
   ALLEGRO_FONT* font;
   int launch_angle;

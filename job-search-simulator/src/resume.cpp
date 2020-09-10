@@ -41,9 +41,31 @@ Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* mana
 {
   al_init_image_addon();
   img = al_load_bitmap("resources/resume.png");
-  if(!img){
+  rocket_boost_sprite[0] = al_load_bitmap("resources/rocket-boost-frame-0.png");
+  rocket_boost_sprite[1] = al_load_bitmap("resources/rocket-boost-frame-1.png");
+  rocket_boost_sprite[2] = al_load_bitmap("resources/rocket-boost-frame-2.png");
+  rocket_boost_sprite[3] = al_load_bitmap("resources/rocket-boost-frame-3.png");
+  rocket_boost_sprite[4] = al_load_bitmap("resources/rocket-boost-frame-4.png");
+  if(!img
+    || !rocket_boost_sprite[0]
+    || !rocket_boost_sprite[1]
+    || !rocket_boost_sprite[2]
+    || !rocket_boost_sprite[3])
+  {
     printf("couldn't load img\n");
   }
+  rocket_frame[0] = 0;
+  rocket_frame[1] = 0;
+  rocket_frame[2] = 0;
+  rocket_frame[3] = 0;
+  rocket_frame_index[0] = 0;
+  rocket_frame_index[1] = 0;
+  rocket_frame_index[2] = 0;
+  rocket_frame_index[3] = 0;
+  rocket_frame_rate[0] = rand()%3;
+  rocket_frame_rate[1] = rand()%3;
+  rocket_frame_rate[2] = rand()%3;
+  rocket_frame_rate[3] = rand()%3;
 
   al_init_font_addon();
   al_init_ttf_addon();
@@ -60,8 +82,91 @@ void Resume::draw() {
     reset();
   }
 
-  if (interlude)
+  if (interlude) {
     angle = 0;
+  }
+
+  if (draw_rocket_down) {
+    rocket_frame[0] += rand();
+    if (rocket_frame[0] >= rocket_frame_rate[0]) {
+      rocket_frame_index[0] = (++rocket_frame_index[0])%frame_max;
+      rocket_frame[0] = 0;
+    }
+
+    al_draw_scaled_rotated_bitmap(rocket_boost_sprite[rocket_frame_index[0]],
+      al_get_bitmap_width(rocket_boost_sprite[rocket_frame_index[0]])/2,
+      0,
+      x+width/2, y+height,
+      0.35,0.35,
+      0,
+      0);
+    // al_draw_filled_triangle(x + width/2 - resolution.y * 0.00926, y + height,
+    //                         x + width/2 + resolution.y * 0.00926, y + height,
+    //                         x + width/2, y + height + resolution.y *0.0278,
+    //                         al_map_rgb(254, 110, 00));
+  }
+  if (draw_rocket_left) {
+    rocket_frame[1] += rand();
+    if (rocket_frame[1] >= rocket_frame_rate[1]) {
+      rocket_frame_index[1] = (++rocket_frame_index[1])%frame_max;
+      rocket_frame[1] = 0;
+    }
+
+    al_draw_scaled_rotated_bitmap(rocket_boost_sprite[rocket_frame_index[1]],
+      al_get_bitmap_width(rocket_boost_sprite[rocket_frame_index[1]])/2,
+      0,
+      x, y+height/2,
+      0.35,0.35,
+      M_PI/2,
+      0);
+    // al_draw_filled_triangle(x, y + height/2 - resolution.y * 0.00926,
+    //                         x, y + height/2  + resolution.y * 0.00926,
+    //                         x - resolution.y *0.0278, y + height/2,
+    //                         al_map_rgb(254, 110, 00));
+  }
+  if (draw_rocket_right) {
+    rocket_frame[2] += rand();
+    if (rocket_frame[2] >= rocket_frame_rate[2]) {
+      rocket_frame_index[2] = (++rocket_frame_index[2])%frame_max;
+      rocket_frame[2] = 0;
+    }
+
+    al_draw_scaled_rotated_bitmap(rocket_boost_sprite[rocket_frame_index[2]],
+      al_get_bitmap_width(rocket_boost_sprite[rocket_frame_index[2]])/2,
+      0,
+      x+width, y+height/2,
+      0.35,0.35,
+      -M_PI/2,
+      0);
+    // al_draw_filled_triangle(x + width, y + height/2 - resolution.y * 0.00926,
+    //                         x + width, y + height/2 + resolution.y * 0.00926,
+    //                         x + width + resolution.y *0.0278, y + height/2,
+    //                         al_map_rgb(254, 110, 00));
+  }
+  if (draw_rocket_up) {
+    rocket_frame[3] += rand();
+    if (rocket_frame[3] >= rocket_frame_rate[3]) {
+      rocket_frame_index[3] = (++rocket_frame_index[3])%frame_max;
+      rocket_frame[3] = 0;
+    }
+
+    al_draw_scaled_rotated_bitmap(rocket_boost_sprite[rocket_frame_index[3]],
+      al_get_bitmap_width(rocket_boost_sprite[rocket_frame_index[3]])/2,
+      0,
+      x+width/2, y,
+      0.35,0.35,
+      M_PI,
+      0);
+  //   al_draw_filled_triangle(x + width/2 - resolution.y * 0.00926, y,
+  //                           x + width/2 + resolution.y * 0.00926, y,
+  //                           x + width/2, y - resolution.y *0.0278,
+  //                           al_map_rgb(254, 110, 00));
+  // }
+  }
+  draw_rocket_down = false;
+  draw_rocket_left = false;
+  draw_rocket_right = false;
+  draw_rocket_up = false;
 
   ALLEGRO_TRANSFORM trans;
   al_identity_transform(&trans);
@@ -77,7 +182,7 @@ void Resume::draw() {
   //                          al_map_rgba_f(1, 1, 1, 1));
   if (rocket_fuel > 0) {
     al_draw_tinted_scaled_bitmap(img,
-      al_map_rgb(255,0,0),
+      al_map_rgb(255,200,200),
       0, 0,  // source origin
       al_get_bitmap_width(img),  // source width
       al_get_bitmap_height(img),  // source height
@@ -95,7 +200,6 @@ void Resume::draw() {
       width, height,  // target dimensions
       0  // flags
     );
-
   }
 
   if (!launched && !interlude) {
@@ -126,35 +230,6 @@ void Resume::draw() {
   }
   al_identity_transform(&trans);
   al_use_transform(&trans);
-
-  if (draw_rocket_down) {
-    al_draw_filled_triangle(x + width/2 - resolution.y * 0.00926, y + height,
-                            x + width/2 + resolution.y * 0.00926, y + height,
-                            x + width/2, y + height + resolution.y *0.0278,
-                            al_map_rgb(254, 110, 00));
-  }
-  if (draw_rocket_left) {
-    al_draw_filled_triangle(x, y + height/2 - resolution.y * 0.00926,
-                            x, y + height/2  + resolution.y * 0.00926,
-                            x - resolution.y *0.0278, y + height/2,
-                            al_map_rgb(254, 110, 00));
-  }
-  if (draw_rocket_right) {
-    al_draw_filled_triangle(x + width, y + height/2 - resolution.y * 0.00926,
-                            x + width, y + height/2 + resolution.y * 0.00926,
-                            x + width + resolution.y *0.0278, y + height/2,
-                            al_map_rgb(254, 110, 00));
-  }
-  if (draw_rocket_up) {
-    al_draw_filled_triangle(x + width/2 - resolution.y * 0.00926, y,
-                            x + width/2 + resolution.y * 0.00926, y,
-                            x + width/2, y - resolution.y *0.0278,
-                            al_map_rgb(254, 110, 00));
-  }
-  draw_rocket_down = false;
-  draw_rocket_left = false;
-  draw_rocket_right = false;
-  draw_rocket_up = false;
 }
 
 double Resume::get_scalar_velocity_squared() {
