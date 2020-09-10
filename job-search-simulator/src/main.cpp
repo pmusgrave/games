@@ -6,7 +6,6 @@
 #include <allegro5/allegro_native_dialog.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_ttf.h>
-
 #include <time.h>
 
 #include <algorithm>
@@ -215,6 +214,7 @@ void must_init(bool test, const char *description) {
   if(test) return;
 
   printf("couldn't initialize %s\n", description);
+  std::cin.get();
   exit(1);
 }
 
@@ -254,7 +254,7 @@ int main(int argc, char **argv) {
   al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
 
   float user_setting_audio_volume = 1.0f;
-  char* user_settings_filename = "resources/user_settings";
+  char user_settings_filename[] = "resources/user_settings";
   std::fstream user_settings_file;
   user_settings_file.open(user_settings_filename, std::fstream::in | std::fstream::out | std::fstream::app);
   if (!user_settings_file) {
@@ -307,7 +307,7 @@ int main(int argc, char **argv) {
 
   must_init(al_init_font_addon(), "init font");
   must_init(al_init_ttf_addon(), "ttf");
-  ALLEGRO_FONT* font = al_load_font("resources/Comfortaa/static/Comfortaa-Regular.ttf", resolution.y*0.02, 0);
+  ALLEGRO_FONT* font = al_load_font("resources/Comfortaa/Comfortaa-VariableFont_wght.ttf", resolution.y*0.02, 0);
   must_init(font, "load font");
   line_height = al_get_font_line_height(font);
 
@@ -318,15 +318,19 @@ int main(int argc, char **argv) {
   must_init(al_install_audio(), "install audio addon");
   must_init(al_init_acodec_addon(), "audio codec addon");
   must_init(al_reserve_samples(10), "reserve audio samples");
-  ALLEGRO_VOICE* voice = al_create_voice(44100, ALLEGRO_AUDIO_DEPTH_FLOAT32,
+  ALLEGRO_VOICE* voice = al_create_voice(44100, ALLEGRO_AUDIO_DEPTH_INT16,
     ALLEGRO_CHANNEL_CONF_2);
+  must_init(voice, "create voice");
   ALLEGRO_MIXER* audio_mixer = al_create_mixer(44100, ALLEGRO_AUDIO_DEPTH_FLOAT32,
     ALLEGRO_CHANNEL_CONF_2);
+  must_init(audio_mixer, "create audio mixer");
   ALLEGRO_AUDIO_STREAM* intro_music = al_load_audio_stream("resources/soundtrack/intro.ogg", 4, 2048);
   ALLEGRO_AUDIO_STREAM* level_music = al_load_audio_stream("resources/soundtrack/level.ogg", 4, 2048);
+  must_init(intro_music, "load intro music stream");
+  must_init(level_music, "load level music stream");
   al_set_audio_stream_playmode(intro_music, ALLEGRO_PLAYMODE_LOOP);
   al_set_audio_stream_playmode(level_music, ALLEGRO_PLAYMODE_LOOP);
-  bool intro_music_playing, level_music_playing = false;
+  bool intro_music_playing = false, level_music_playing = false;
   al_set_mixer_gain(audio_mixer, user_setting_audio_volume);
 
   al_attach_mixer_to_voice(audio_mixer, voice);
@@ -1020,7 +1024,7 @@ int main(int argc, char **argv) {
         al_draw_text(font,
                     al_map_rgb(255, 255, 255),
                     resolution.x/2,
-                    resolution.y/2 + line_height,
+                    resolution.y/2 + line_height*2,
                     ALLEGRO_ALIGN_CENTRE,
                     final_score_str.c_str());
         al_flip_display();
@@ -1078,8 +1082,8 @@ int main(int argc, char **argv) {
         score += current_level/5 * context.prestige_level * 100;
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::uniform_int_distribution<unsigned int> powerup_dist(0, powerups.size());
-        unsigned int new_powerup = powerup_dist(gen) % powerups.size();
+        std::uniform_int_distribution<size_t> powerup_dist(0, powerups.size());
+        size_t new_powerup = powerup_dist(gen) % powerups.size();
         //unsigned int new_powerup = powerups[rand()%(powerups.size())];
         switch (new_powerup) {
         case Powerup::rocket_boost:

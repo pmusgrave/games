@@ -74,12 +74,36 @@
     <Allegro_AddonPrimitives>true</Allegro_AddonPrimitives>
     <Allegro_AddonFont>true</Allegro_AddonFont>
     <Allegro_AddonTTF>true</Allegro_AddonTTF>
+    <Allegro_AddonAudio>true</Allegro_AddonAudio>
+    <Allegro_AddonAcodec>true</Allegro_AddonAcodec>
+    <Allegro_AddonDialog>true</Allegro_AddonDialog>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Allegro_AddonImage>true</Allegro_AddonImage>
     <Allegro_AddonPrimitives>true</Allegro_AddonPrimitives>
     <Allegro_AddonFont>true</Allegro_AddonFont>
     <Allegro_AddonTTF>true</Allegro_AddonTTF>
+    <Allegro_AddonAudio>true</Allegro_AddonAudio>
+    <Allegro_AddonAcodec>true</Allegro_AddonAcodec>
+    <Allegro_AddonDialog>true</Allegro_AddonDialog>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Allegro_AddonImage>true</Allegro_AddonImage>
+    <Allegro_AddonTTF>true</Allegro_AddonTTF>
+    <Allegro_AddonPrimitives>true</Allegro_AddonPrimitives>
+    <Allegro_AddonAudio>true</Allegro_AddonAudio>
+    <Allegro_AddonAcodec>true</Allegro_AddonAcodec>
+    <Allegro_AddonDialog>true</Allegro_AddonDialog>
+    <Allegro_AddonFont>true</Allegro_AddonFont>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Allegro_AddonImage>true</Allegro_AddonImage>
+    <Allegro_AddonTTF>true</Allegro_AddonTTF>
+    <Allegro_AddonPrimitives>true</Allegro_AddonPrimitives>
+    <Allegro_AddonAudio>true</Allegro_AddonAudio>
+    <Allegro_AddonAcodec>true</Allegro_AddonAcodec>
+    <Allegro_AddonDialog>true</Allegro_AddonDialog>
+    <Allegro_AddonFont>true</Allegro_AddonFont>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -116,6 +140,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>../../../inc;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,6 +157,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>../../../inc;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,9 +172,27 @@
     <ClCompile Include="..\..\..\src\interviewer.cpp" />
     <ClCompile Include="..\..\..\src\main.cpp" />
     <ClCompile Include="..\..\..\src\manager.cpp" />
+    <ClCompile Include="..\..\..\src\meter.cpp" />
     <ClCompile Include="..\..\..\src\resume.cpp" />
+    <ClCompile Include="..\..\..\src\star.cpp" />
+    <ClCompile Include="..\..\..\src\vec2.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\..\resources\black-hole-mirrored.png" />
+    <Image Include="..\..\..\resources\black-hole.png" />
+    <Image Include="..\..\..\resources\interviewer.png" />
+    <Image Include="..\..\..\resources\interviewer_mirrored.png" />
+    <Image Include="..\..\..\resources\JSS-cover-img.png" />
+    <Image Include="..\..\..\resources\manager_desk.png" />
+    <Image Include="..\..\..\resources\resume.png" />
+    <Image Include="..\..\..\resources\rocket-boost-frame-0.png" />
+    <Image Include="..\..\..\resources\rocket-boost-frame-1.png" />
+    <Image Include="..\..\..\resources\rocket-boost-frame-2.png" />
+    <Image Include="..\..\..\resources\rocket-boost-frame-3.png" />
+    <Image Include="..\..\..\resources\rocket-boost-frame-4.png" />
+    <Image Include="..\..\..\resources\star-frame-0.png" />
+    <Image Include="..\..\..\resources\star-frame-1.png" />
+    <Image Include="..\..\..\resources\star-frame-2.png" />
     <Image Include="..\..\..\src\businessman.bmp" />
     <Image Include="..\..\..\src\businessman.png" />
   </ItemGroup>
@@ -157,10 +203,17 @@
     <ClInclude Include="..\..\..\inc\globals.hpp" />
     <ClInclude Include="..\..\..\inc\interviewer.hpp" />
     <ClInclude Include="..\..\..\inc\manager.hpp" />
+    <ClInclude Include="..\..\..\inc\meter.hpp" />
     <ClInclude Include="..\..\..\inc\resume.hpp" />
+    <ClInclude Include="..\..\..\inc\star.hpp" />
+    <ClInclude Include="..\..\..\inc\vec2.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\resources\user_settings" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\..\..\resources\Comfortaa\Comfortaa-VariableFont_wght.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -33,12 +33,66 @@
     <ClCompile Include="..\..\..\src\interviewer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\meter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\star.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\vec2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\src\businessman.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\..\..\src\businessman.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\resources\black-hole.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\resources\black-hole-mirrored.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\resources\interviewer.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\resources\interviewer_mirrored.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\resources\JSS-cover-img.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\resources\manager_desk.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\resources\resume.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\resources\rocket-boost-frame-0.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\resources\rocket-boost-frame-1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\resources\rocket-boost-frame-2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\resources\rocket-boost-frame-3.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\resources\rocket-boost-frame-4.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\resources\star-frame-0.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\resources\star-frame-1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\resources\star-frame-2.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
@@ -64,8 +118,25 @@
     <ClInclude Include="..\..\..\inc\interviewer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\inc\meter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\inc\star.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\inc\vec2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="..\..\..\resources\user_settings">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\..\..\resources\Comfortaa\Comfortaa-VariableFont_wght.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
   </ItemGroup>
 </Project>
