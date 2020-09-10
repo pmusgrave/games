@@ -65,7 +65,7 @@ Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* mana
   rocket_frame_rate[0] = rand()%10;
   rocket_frame_rate[1] = rand()%10;
   rocket_frame_rate[2] = rand()%10;
-  rocket_frame_rate[3] = rand()%3;
+  rocket_frame_rate[3] = rand()%10;
 
   al_init_font_addon();
   al_init_ttf_addon();

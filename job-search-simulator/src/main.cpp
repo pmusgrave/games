@@ -325,18 +325,23 @@ int main(int argc, char **argv) {
     ALLEGRO_CHANNEL_CONF_2);
   must_init(audio_mixer, "create audio mixer");
   ALLEGRO_AUDIO_STREAM* intro_music = al_load_audio_stream("resources/soundtrack/intro.ogg", 4, 2048);
+  ALLEGRO_AUDIO_STREAM* interview_music = al_load_audio_stream("resources/soundtrack/interview.ogg", 4, 2048);
   ALLEGRO_AUDIO_STREAM* level_music = al_load_audio_stream("resources/soundtrack/level.ogg", 4, 2048);
   must_init(intro_music, "load intro music stream");
+  must_init(interview_music, "load interview music stream");
   must_init(level_music, "load level music stream");
   al_set_audio_stream_playmode(intro_music, ALLEGRO_PLAYMODE_LOOP);
+  al_set_audio_stream_playmode(interview_music, ALLEGRO_PLAYMODE_ONCE);
   al_set_audio_stream_playmode(level_music, ALLEGRO_PLAYMODE_LOOP);
-  bool intro_music_playing = false, level_music_playing = false;
+  bool intro_music_playing = false, level_music_playing = false, interview_music_playing = false;
   al_set_mixer_gain(audio_mixer, user_setting_audio_volume);
 
   al_attach_mixer_to_voice(audio_mixer, voice);
   al_attach_audio_stream_to_mixer(intro_music, audio_mixer);
+  al_attach_audio_stream_to_mixer(interview_music, audio_mixer);
   al_attach_audio_stream_to_mixer(level_music, audio_mixer);
   al_set_audio_stream_playing(intro_music, intro_music_playing);
+  al_set_audio_stream_playing(interview_music, interview_music_playing);
   al_set_audio_stream_playing(level_music, level_music_playing);
 
   al_register_event_source(queue, al_get_keyboard_event_source());
@@ -397,13 +402,15 @@ int main(int argc, char **argv) {
   std::string res_str = res_ss.str();
 
   std::vector<MenuItem> menu {
-    MenuItem("Continue", true, [&context, &audio_mixer, &intro_music, &level_music, &intro_music_playing, &level_music_playing]() {
+    MenuItem("Continue", true, [&context, &audio_mixer, &intro_music, &level_music, &intro_music_playing, &level_music_playing, &interview_music, &interview_music_playing]() {
       al_set_audio_stream_playing(level_music, false);
+      al_set_audio_stream_playing(interview_music, false);
       al_set_audio_stream_playing(intro_music, false);
       al_set_mixer_gain(audio_mixer, context.audio_volume);
       context.show_menu = !context.show_menu;
       if (!context.show_menu) {
         al_set_audio_stream_playing(intro_music, intro_music_playing);
+        al_set_audio_stream_playing(interview_music, interview_music_playing);
         al_set_audio_stream_playing(level_music, level_music_playing);
         context.menu_confirm_action();
       }
@@ -586,6 +593,7 @@ int main(int argc, char **argv) {
           context.menu[context.menu_selected_index].selected = true;
           al_set_mixer_gain(audio_mixer, context.audio_volume);
           al_set_audio_stream_playing(intro_music, intro_music_playing);
+          al_set_audio_stream_playing(interview_music, interview_music_playing);
           al_set_audio_stream_playing(level_music, level_music_playing);
           context.menu_confirm_action();
         }
@@ -596,6 +604,7 @@ int main(int argc, char **argv) {
         // context.show_menu = !context.show_menu;
         context.show_menu = true;
         al_set_audio_stream_playing(level_music, false);
+        al_set_audio_stream_playing(interview_music, false);
         al_set_audio_stream_playing(intro_music, false);
         for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
           key[i] &= KEY_SEEN;
@@ -726,13 +735,18 @@ int main(int argc, char **argv) {
                    ALLEGRO_ALIGN_CENTRE,
                    "Get a job");
       al_flip_display();
-	  std::chrono::milliseconds timespan(3000);
+      std::chrono::milliseconds timespan(3000);
       std::this_thread::sleep_for(timespan);
       context.state = GameState::normal;
       al_stop_samples();
       intro_music_playing = true;
+      interview_music_playing = false;
       level_music_playing = false;
+      al_rewind_audio_stream(intro_music);
+      al_rewind_audio_stream(interview_music);
+      al_rewind_audio_stream(level_music);
       al_set_audio_stream_playing(level_music, level_music_playing);
+      al_set_audio_stream_playing(interview_music, interview_music_playing);
       al_set_audio_stream_playing(intro_music, intro_music_playing);
       // al_play_sample(intro_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
     }
@@ -921,6 +935,17 @@ int main(int argc, char **argv) {
           int y = ((unsigned int)y_pos_distr(gen))%(resolution.y);// + (radius/2);
           interviewers.push_back(std::move(new Interviewer(x, y, abs(fire_rate(gen)), &bullets)));
         }
+
+        al_stop_samples();
+        intro_music_playing = false;
+        interview_music_playing = true;
+        level_music_playing = false;
+        al_rewind_audio_stream(intro_music);
+        al_rewind_audio_stream(interview_music);
+        al_rewind_audio_stream(level_music);
+        al_set_audio_stream_playing(level_music, level_music_playing);
+        al_set_audio_stream_playing(interview_music, interview_music_playing);
+        al_set_audio_stream_playing(intro_music, intro_music_playing);
       }
 
       if (!context.show_menu && context.state == GameState::interlude_win && current_level%36 == 0) {
@@ -1184,8 +1209,13 @@ int main(int argc, char **argv) {
 
         al_stop_samples();
         intro_music_playing = false;
+        interview_music_playing = false;
         level_music_playing = true;
+        al_rewind_audio_stream(intro_music);
+        al_rewind_audio_stream(interview_music);
+        al_rewind_audio_stream(level_music);
         al_set_audio_stream_playing(intro_music, intro_music_playing);
+        al_set_audio_stream_playing(interview_music, interview_music_playing);
         al_set_audio_stream_playing(level_music, level_music_playing);
         // al_play_sample(level_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
       }
@@ -1226,8 +1256,13 @@ int main(int argc, char **argv) {
         std::this_thread::sleep_for(timespan);
         al_stop_samples();
         intro_music_playing = false;
+        interview_music_playing = false;
         level_music_playing = true;
+        al_rewind_audio_stream(intro_music);
+        al_rewind_audio_stream(interview_music);
+        al_rewind_audio_stream(level_music);
         al_set_audio_stream_playing(intro_music, intro_music_playing);
+        al_set_audio_stream_playing(interview_music, interview_music_playing);
         al_set_audio_stream_playing(level_music, level_music_playing);
         // al_play_sample(level_music, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
       }
@@ -1293,10 +1328,12 @@ int main(int argc, char **argv) {
   al_destroy_event_queue(queue);
   al_stop_samples();
   al_set_audio_stream_playing(intro_music, false);
+  al_set_audio_stream_playing(interview_music, false);
   al_set_audio_stream_playing(level_music, false);
   al_destroy_voice(voice);
   al_destroy_mixer(audio_mixer);
   al_destroy_audio_stream(intro_music);
+  al_destroy_audio_stream(interview_music);
   al_destroy_audio_stream(level_music);
   // al_destroy_sample(intro_music);
   // al_destroy_sample(level_music);
@@ -1312,6 +1349,7 @@ int main(int argc, char **argv) {
     user_settings_file << context.audio_volume << std::endl;
     user_settings_file.close();
   }
+  user_settings_file.close();
 
   return 0;
 }
