@@ -41,8 +41,8 @@ Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* mana
 {
   al_init_image_addon();
   img = al_load_bitmap("resources/resume.png");
-  rocket_boost_sprite[0] = al_load_bitmap("resources/rocket-boost-frame-0.png");
-  rocket_boost_sprite[1] = al_load_bitmap("resources/rocket-boost-frame-1.png");
+  rocket_boost_sprite[0] = al_load_bitmap("resources/rocket-boost-frame-3.png");
+  rocket_boost_sprite[1] = al_load_bitmap("resources/rocket-boost-frame-2.png");
   rocket_boost_sprite[2] = al_load_bitmap("resources/rocket-boost-frame-2.png");
   rocket_boost_sprite[3] = al_load_bitmap("resources/rocket-boost-frame-3.png");
   rocket_boost_sprite[4] = al_load_bitmap("resources/rocket-boost-frame-4.png");
@@ -62,9 +62,9 @@ Resume::Resume(int x, int y, std::vector<BlackHole*>* black_holes, Manager* mana
   rocket_frame_index[1] = 0;
   rocket_frame_index[2] = 0;
   rocket_frame_index[3] = 0;
-  rocket_frame_rate[0] = rand()%3;
-  rocket_frame_rate[1] = rand()%3;
-  rocket_frame_rate[2] = rand()%3;
+  rocket_frame_rate[0] = rand()%10;
+  rocket_frame_rate[1] = rand()%10;
+  rocket_frame_rate[2] = rand()%10;
   rocket_frame_rate[3] = rand()%3;
 
   al_init_font_addon();

@@ -359,8 +359,6 @@ int main(int argc, char **argv) {
   Resume resume(0, resolution.y / 2, &black_holes, &manager);
   entities.push_back(&resume);
 
-  resume.rocket_boost_enable();
-
   for (int i = 0; i < 100; i++) {
     entities.push_back(new Star());
   }
