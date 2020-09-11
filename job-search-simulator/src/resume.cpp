@@ -238,7 +238,7 @@ double Resume::get_scalar_velocity_squared() {
 
 void Resume::handle_a() {
   if (interlude) {
-    x -= 10;
+    x -= resolution.x*0.0052;
     if (x <= 0) x = 0;
   }
   else if (!launched) {
@@ -253,7 +253,7 @@ void Resume::handle_a() {
 
 void Resume::handle_d() {
   if (interlude) {
-    x += 10;
+    x += resolution.x*0.0052;
     if (x >= resolution.x - width) x = resolution.x - width;
   }
   else if (!launched) {
@@ -268,7 +268,7 @@ void Resume::handle_d() {
 
 void Resume::handle_s() {
   if (interlude) {
-    y += 10;
+    y += resolution.y*0.0093;
     if (y >= resolution.y - height) y = resolution.y - height;
   }
   else if (!launched) {
@@ -289,7 +289,7 @@ void Resume::handle_space() {
 
 void Resume::handle_w() {
   if (interlude) {
-    y -= 10;
+    y -= resolution.y*0.0093;
     if (y <= 0) y = 0;
   }
   else if (!launched) {
@@ -312,13 +312,13 @@ void Resume::launch() {
 
 void Resume::move_down() {
   if (!launched)
-      y += 10;
+      y += resolution.y*0.0093;
     y = y % resolution.y;
 }
 
 void Resume::move_up() {
   if (!launched)
-    y -= 10;
+    y -= resolution.y*0.0093;
   if (y <= 0)
     y = 0;
 }
@@ -389,16 +389,14 @@ void Resume::update() {
   for (itr = black_holes->begin(); itr < black_holes->end(); itr++) {
     double dx = (*itr)->x - x;
     double dy = (*itr)->y - y;
-    double r = sqrt(pow(dx,2) + pow(dy,2));
+    double r_sq = pow(dx,2) + pow(dy,2);
     double theta = atan(abs(dy/dx));
-    double a = (*itr)->G * (*itr)->m / pow(r, 2);
+    double a = (*itr)->G * (*itr)->m / r_sq;
     vx = dx > 0 ? vx + a*cos(theta) : vx - a*cos(theta);
     vy = dy > 0 ? vy + a*sin(theta) : vy - a*cos(theta);
-    //std::cout << "a:" << a << std::endl;
-    //std::cout << "vx:" << vx << " vy: " << vy << " r:" << r << std::endl;
   }
-  x = (int)(x+vx);//*resolution.x*0.00052);
-  y = (int)(y+vy);//*resolution.y*0.00092);
+  x = (int)(x+vx*resolution.x/1920);
+  y = (int)(y+vy*resolution.y/1080);
   if (x <= 0) {
     vx = -vx;
     x = 0;
@@ -441,6 +439,5 @@ void Resume::update() {
           && (y+height) <= (manager->y + manager->height)))
       ) {
     win = true;
-    //reset();
   }
 }
