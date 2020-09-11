@@ -40,7 +40,7 @@ enum GameState {
   game_win,
 };
 
-std::array<screen_resolution,18> resolution_settings {
+std::array<screen_resolution,19> resolution_settings {
   screen_resolution(1920,1080, "auto"),
   screen_resolution(640,480, "640x480"),
   screen_resolution(800,600, "800x600"),
@@ -57,6 +57,7 @@ std::array<screen_resolution,18> resolution_settings {
   screen_resolution(1920,1200, "1920x1200"),
   screen_resolution(2560,1080, "2560x1080"),
   screen_resolution(2560,1440, "2560x1440"),
+  screen_resolution(2560,1600, "2560x1600"),
   screen_resolution(3440,1440, "3440x1440"),
   screen_resolution(3840,2160, "3840x2160"),
 };
@@ -117,7 +118,7 @@ struct GameContext {
     if (menu[menu_selected_index].label.substr(0,17) == "Screen Resolution") {
       screen_resolution_index--;
       if (screen_resolution_index < 0) screen_resolution_index = resolution_settings.size() - 1;
-      std::array<screen_resolution,18>::iterator scr_res_itr;
+      std::array<screen_resolution,19>::iterator scr_res_itr;
       for (scr_res_itr = resolution_settings.begin(); scr_res_itr < resolution_settings.end(); scr_res_itr++) {
         (*scr_res_itr).selected = false;
       }
@@ -143,7 +144,7 @@ struct GameContext {
     if (menu[menu_selected_index].label.substr(0,17) == "Screen Resolution") {
       screen_resolution_index++;
       if (screen_resolution_index >= resolution_settings.size()) screen_resolution_index = 0;
-      std::array<screen_resolution,18>::iterator scr_res_itr;
+      std::array<screen_resolution,19>::iterator scr_res_itr;
       for (scr_res_itr = resolution_settings.begin(); scr_res_itr < resolution_settings.end(); scr_res_itr++) {
         (*scr_res_itr).selected = false;
       }

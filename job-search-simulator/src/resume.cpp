@@ -206,24 +206,24 @@ void Resume::draw() {
     al_draw_line(
       (x + width),
       (y + (height / 2)),
-      (x + width) + 15,
+      (x + width) + resolution.x*0.0078,
       (y + (height / 2)),
       al_map_rgb(255, 255, 255),
       1
     );
     al_draw_line(
-      (x + width) + 15,
+      (x + width) + resolution.x*0.0078,
       (y + (height / 2)),
-      (x + width) + 10,
-      (y + (height / 2)) + 5,
+      (x + width) + resolution.x*0.0052,
+      (y + (height / 2)) + resolution.x*0.0026,
       al_map_rgb(255, 255, 255),
       1
     );
     al_draw_line(
-      (x + width) + 15,
+      (x + width) + resolution.x*0.0078,
       (y + (height / 2)),
-      (x + width) + 10,
-      (y + (height / 2)) - 5,
+      (x + width) + resolution.x*0.0052,
+      (y + (height / 2)) - resolution.x*0.0026,
       al_map_rgb(255, 255, 255),
       1
     );
