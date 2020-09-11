@@ -97,7 +97,7 @@ void Resume::draw() {
       al_get_bitmap_width(rocket_boost_sprite[rocket_frame_index[0]])/2,
       0,
       x+width/2, y+height,
-      0.35,0.35,
+      resolution.x*0.000182,resolution.x*0.000182,
       0,
       0);
     // al_draw_filled_triangle(x + width/2 - resolution.y * 0.00926, y + height,
@@ -116,7 +116,7 @@ void Resume::draw() {
       al_get_bitmap_width(rocket_boost_sprite[rocket_frame_index[1]])/2,
       0,
       x, y+height/2,
-      0.35,0.35,
+      resolution.x*0.000182,resolution.x*0.000182,
       M_PI/2,
       0);
     // al_draw_filled_triangle(x, y + height/2 - resolution.y * 0.00926,
@@ -135,7 +135,7 @@ void Resume::draw() {
       al_get_bitmap_width(rocket_boost_sprite[rocket_frame_index[2]])/2,
       0,
       x+width, y+height/2,
-      0.35,0.35,
+      resolution.x*0.000182,resolution.x*0.000182,
       -M_PI/2,
       0);
     // al_draw_filled_triangle(x + width, y + height/2 - resolution.y * 0.00926,
@@ -154,7 +154,7 @@ void Resume::draw() {
       al_get_bitmap_width(rocket_boost_sprite[rocket_frame_index[3]])/2,
       0,
       x+width/2, y,
-      0.35,0.35,
+      resolution.x*0.000182,resolution.x*0.000182,
       M_PI,
       0);
   //   al_draw_filled_triangle(x + width/2 - resolution.y * 0.00926, y,
@@ -392,8 +392,8 @@ void Resume::update() {
     double r_sq = pow(dx,2) + pow(dy,2);
     double theta = atan(abs(dy/dx));
     double a = (*itr)->G * (*itr)->m / r_sq;
-    vx = dx > 0 ? vx + a*cos(theta) : vx - a*cos(theta);
-    vy = dy > 0 ? vy + a*sin(theta) : vy - a*cos(theta);
+    vx = dx > 0 ? vx + a*cos(theta)*resolution.x/1920 : vx - a*cos(theta)*resolution.x/1920;
+    vy = dy > 0 ? vy + a*sin(theta)*resolution.y/1080 : vy - a*cos(theta)*resolution.y/1080;
   }
   x = (int)(x+vx*resolution.x/1920);
   y = (int)(y+vy*resolution.y/1080);

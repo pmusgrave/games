@@ -42,7 +42,16 @@ Interviewer::~Interviewer() {
 }
 
 void Interviewer::draw() {
-  al_draw_tinted_bitmap(img, al_map_rgb(color.r, color.g, color.b), x, y, 0);
+  al_draw_tinted_scaled_bitmap(
+    img,
+    al_map_rgb(color.r, color.g, color.b),
+    0,0,
+    al_get_bitmap_width(img),
+    al_get_bitmap_height(img),
+    x,y,
+    (resolution.x * 0.046),
+    (resolution.x * 0.046),
+    0);
   // al_draw_filled_rectangle(x, y,
   //                          x + width, y + height,
   //                          al_map_rgba_f(1, 1, 1, 1));
@@ -61,8 +70,8 @@ void Interviewer::update() {
 
   if (spawn_bullets) {
     launch_angle += launch_angle_inc;
-    int launch_vec_x = (int) (cos(launch_angle) * 10);
-    int launch_vec_y = (int) (sin(launch_angle) * 10);
-    bullets->push_back(std::move(new Bullet(x + width, y + height, launch_vec_x, launch_vec_y)));
+    int launch_vec_x = (int) (cos(launch_angle) * (resolution.x*0.0052));
+    int launch_vec_y = (int) (sin(launch_angle) * (resolution.x*0.0052));
+    bullets->push_back(std::move(new Bullet(x + resolution.x * 0.023, y + resolution.x * 0.023, launch_vec_x, launch_vec_y)));
   }
 }
