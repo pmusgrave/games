@@ -95,9 +95,8 @@ struct GameContext {
     if (menu_selected_index >= menu.size()) {
       menu_selected_index = 0;
     }
-    std::vector<MenuItem>::iterator menu_itr;
-    for (menu_itr = menu.begin(); menu_itr < menu.end(); menu_itr++) {
-      (*menu_itr).selected = false;
+    for (auto& menu_item : menu) {
+      menu_item.selected = false;
     }
     menu[menu_selected_index].selected = true;
   }
@@ -118,9 +117,8 @@ struct GameContext {
     if (menu[menu_selected_index].label.substr(0,17) == "Screen Resolution") {
       screen_resolution_index--;
       if (screen_resolution_index < 0) screen_resolution_index = resolution_settings.size() - 1;
-      std::array<screen_resolution,19>::iterator scr_res_itr;
-      for (scr_res_itr = resolution_settings.begin(); scr_res_itr < resolution_settings.end(); scr_res_itr++) {
-        (*scr_res_itr).selected = false;
+      for (auto& screen_res_item : resolution_settings) {
+        screen_res_item.selected = false;
       }
       resolution_settings[screen_resolution_index].selected = true;
       resolution = resolution_settings[screen_resolution_index];
@@ -144,9 +142,8 @@ struct GameContext {
     if (menu[menu_selected_index].label.substr(0,17) == "Screen Resolution") {
       screen_resolution_index++;
       if (screen_resolution_index >= resolution_settings.size()) screen_resolution_index = 0;
-      std::array<screen_resolution,19>::iterator scr_res_itr;
-      for (scr_res_itr = resolution_settings.begin(); scr_res_itr < resolution_settings.end(); scr_res_itr++) {
-        (*scr_res_itr).selected = false;
+      for (auto& screen_res_item : resolution_settings) {
+        screen_res_item.selected = false;
       }
       resolution_settings[screen_resolution_index].selected = true;
       resolution = resolution_settings[screen_resolution_index];
@@ -163,9 +160,8 @@ struct GameContext {
     if (menu_selected_index < 0) {
       menu_selected_index = menu.size()-1;
     }
-    std::vector<MenuItem>::iterator menu_itr;
-    for (menu_itr = menu.begin(); menu_itr < menu.end(); menu_itr++) {
-      (*menu_itr).selected = false;
+    for (auto& menu_item : menu) {
+      menu_item.selected = false;
     }
     menu[menu_selected_index].selected = true;
   }
